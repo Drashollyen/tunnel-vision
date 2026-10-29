@@ -119,6 +119,9 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          # GameCI looks up its CLI release via the GitHub API. Without a token that call shares a
+          # 60 requests/hour limit with every job on the runner's IP and fails with 403.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           testMode: all
           githubToken: ${{ secrets.GITHUB_TOKEN }}
