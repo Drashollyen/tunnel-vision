@@ -1,6 +1,6 @@
 # Contributing to Tunnel Vision
 
-`main` is always playable. Nobody pushes to it directly: every change goes through a branch and a pull request (PR), and must pass CI and get one review before it's merged. If you haven't set up your clone yet, do the [Quick start](README.md#quick-start) first.
+`main` is always playable. Nobody pushes to it directly: every change goes through a branch and a pull request (PR), and must pass CI before it's merged. Reviews are optional but encouraged. If you haven't set up your clone yet, do the [Quick start](README.md#quick-start) first.
 
 ## The everyday loop
 
@@ -62,7 +62,7 @@ git push --force-with-lease
 
 (The first push of a new branch is just `git push`. `--force-with-lease` is only needed after a rebase, and it refuses to overwrite anything someone else pushed.)
 
-Open the PR on GitHub, fill in the template, and request a review from a groupmate. The PR title becomes the single commit on `main`, so give it the same `type: description` format.
+Open the PR on GitHub and fill in the template. Asking a groupmate to review is optional but recommended, especially for scenes, prefabs and anything that changes how the game plays. The PR title becomes the single commit on `main`, so give it the same `type: description` format.
 
 **6. Get it green and merged**
 
@@ -70,9 +70,9 @@ The PR can only merge when:
 
 - **Lint**, **Unity tests** and **PR title** checks pass
 - it's up to date with `main` (if GitHub shows *"This branch is out-of-date"*, repeat step 4)
-- one other person approved it and all review comments are resolved
+- all review comments (if anyone left some) are resolved
 
-Then click **Squash and merge**. The branch is deleted automatically. Go back to step 1 for your next task.
+Then you (the author) click **Squash and merge**. The branch is deleted automatically. Go back to step 1 for your next task.
 
 ## What the hooks stop you from doing
 
@@ -128,7 +128,7 @@ Use a dedicated Unity account for CI if you can. See the [GameCI activation docs
 
 ### Branch rules
 
-`main` is protected by the ruleset in `.github/rulesets/main.json`: PRs only, 1 approval, stale approvals dismissed on new pushes, conversations resolved, required checks (`Lint`, `Unity tests`, `PR title`) on an up-to-date branch, linear history, no force pushes or deletion. To re-apply it after editing the file:
+`main` is protected by the ruleset in `.github/rulesets/main.json`: PRs only (no approval required, so authors merge their own PRs), conversations resolved, required checks (`Lint`, `Unity tests`, `PR title`) on an up-to-date branch, linear history, no force pushes or deletion. To re-apply it after editing the file:
 
 ```bash
 gh api -X PUT repos/Drashollyen/tunnel-vision/rulesets/$(gh api repos/Drashollyen/tunnel-vision/rulesets --jq '.[] | select(.name=="main") | .id') --input .github/rulesets/main.json
