@@ -8,25 +8,27 @@ Install:
 
 - [Unity Hub](https://unity.com/download) with editor **6000.6.3f1**
 - [Git for Windows](https://git-scm.com/download/win) (includes Git Bash and Git LFS)
+- [GitHub Desktop](https://desktop.github.com/) if you prefer not to use Git commands
 - Optional: [.NET SDK](https://dotnet.microsoft.com/download), used by the pre-commit hook to check C# formatting
 
-In Git Bash:
+**1. Clone**
 
-```bash
-git clone https://github.com/Drashollyen/tunnel-vision.git
-```
+- **GitHub Desktop:** **File > Clone repository > URL**, paste `https://github.com/Drashollyen/tunnel-vision.git`, click **Clone**.
+- **Command line:** in Git Bash run `git clone https://github.com/Drashollyen/tunnel-vision.git`
 
-```bash
-cd tunnel-vision
-```
+**2. Run the setup script (once per clone)**
+
+In File Explorer, right-click the `tunnel-vision` folder > **Show more options > Open Git Bash here**, then run:
 
 ```bash
 bash scripts/setup.sh
 ```
 
-`setup.sh` pulls the LFS files, installs the git hooks and configures Unity Smart Merge. Run it once per clone.
+This pulls the LFS files, installs the git hooks and configures Unity Smart Merge.
 
-Then **Unity Hub > Add > Add project from disk >** select `tunnel-vision`. Open `Assets/_Project/Scenes/MainMenu.unity` and press Play.
+**3. Open in Unity**
+
+**Unity Hub > Add > Add project from disk >** select `tunnel-vision`. Open `Assets/_Project/Scenes/MainMenu.unity` and press Play.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before your first change.
 

@@ -23,5 +23,5 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   fi
 done <<< "$refs"
 
-command -v git-lfs >/dev/null 2>&1 || { echo "✖ Git LFS is not installed. See README > Quick start."; exit 2; }
+command -v git-lfs >/dev/null 2>&1 || { echo "✖ Git LFS is not installed. See README > Setup."; exit 2; }
 printf '%s\n' "$refs" | git lfs pre-push "$@"
