@@ -1,5 +1,5 @@
-# Builds a playable Windows version after every merge to main, or on demand from the
-# Actions tab (Build > Run workflow). Download it from the run's "Artifacts" section.
+# Builds the game for Windows (our only target platform) after every merge to main, or on
+# demand from the Actions tab (Build > Run workflow). Download it from the run's "Artifacts" section.
 name: Build
 
 on:
@@ -16,14 +16,11 @@ permissions:
 
 jobs:
   build:
-    name: Build ${{ matrix.targetPlatform }}
+    name: Build Windows
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        targetPlatform:
-          - StandaloneWindows64
+    env:
+      TARGET_PLATFORM: StandaloneWindows64
     steps:
       - uses: actions/checkout@v7
         with:
@@ -48,8 +45,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: Library
-          key: Library-${{ matrix.targetPlatform }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: Library-${{ matrix.targetPlatform }}-
+          key: Library-${{ env.TARGET_PLATFORM }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-${{ env.TARGET_PLATFORM }}-
 
       - name: Build
         uses: game-ci/unity-builder@v5.0.1
@@ -58,12 +55,12 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: ${{ matrix.targetPlatform }}
+          targetPlatform: ${{ env.TARGET_PLATFORM }}
           buildName: TunnelVision
 
       - name: Upload build
         uses: actions/upload-artifact@v7
         with:
-          name: TunnelVision-${{ matrix.targetPlatform }}-${{ github.sha }}
-          path: build/${{ matrix.targetPlatform }}
+          name: TunnelVision-${{ env.TARGET_PLATFORM }}-${{ github.sha }}
+          path: build/${{ env.TARGET_PLATFORM }}
           retention-days: 14
