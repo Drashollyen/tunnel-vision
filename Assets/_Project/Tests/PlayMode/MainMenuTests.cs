@@ -66,6 +66,30 @@ namespace TunnelVision.Tests
             }
         }
 
+        [Test]
+        public void MenuControls_PlayInterfaceSounds()
+        {
+            Assert.That(Object.FindAnyObjectByType<UiSoundPlayer>(), Is.Not.Null);
+
+            foreach (var name in new[] { "Play Button", "Options Button", "Quit Button", "Back Button", "Reset Button" })
+            {
+                Assert.That(Find(name).GetComponent<UiSelectableSounds>(), Is.Not.Null, name + " has no sounds");
+            }
+        }
+
+        [Test]
+        public void VisionCone_IsBehindTheMenuAndIgnoresClicks()
+        {
+            var vision = Object.FindAnyObjectByType<VisionConeBackground>();
+            Assert.That(vision, Is.Not.Null);
+            Assert.That(vision.transform.GetSiblingIndex(), Is.LessThan(Find("Menu").transform.GetSiblingIndex()));
+
+            foreach (var image in vision.GetComponentsInChildren<Image>())
+            {
+                Assert.That(image.raycastTarget, Is.False, image.name + " blocks clicks");
+            }
+        }
+
         [UnityTest]
         public IEnumerator PlayButton_LoadsGameScene()
         {

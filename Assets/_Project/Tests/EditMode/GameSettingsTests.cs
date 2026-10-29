@@ -34,6 +34,8 @@ namespace TunnelVision.Tests
             settings.Load();
 
             Assert.That(settings.MasterVolume, Is.EqualTo(GameSettings.DefaultMasterVolume));
+            Assert.That(settings.InterfaceVolume, Is.EqualTo(GameSettings.DefaultInterfaceVolume));
+            Assert.That(settings.InterfaceSounds, Is.EqualTo(GameSettings.DefaultInterfaceSounds));
             Assert.That(settings.Fullscreen, Is.EqualTo(GameSettings.DefaultFullscreen));
         }
 
@@ -41,13 +43,21 @@ namespace TunnelVision.Tests
         public void Save_ThenLoad_RoundTripsValues()
         {
             var store = new MemoryStore();
-            var settings = new GameSettings(store) { MasterVolume = 0.25f, Fullscreen = false };
+            var settings = new GameSettings(store)
+            {
+                MasterVolume = 0.25f,
+                InterfaceVolume = 0.5f,
+                InterfaceSounds = false,
+                Fullscreen = false,
+            };
 
             settings.Save();
             var reloaded = new GameSettings(store);
             reloaded.Load();
 
             Assert.That(reloaded.MasterVolume, Is.EqualTo(0.25f));
+            Assert.That(reloaded.InterfaceVolume, Is.EqualTo(0.5f));
+            Assert.That(reloaded.InterfaceSounds, Is.False);
             Assert.That(reloaded.Fullscreen, Is.False);
             Assert.That(store.SaveCount, Is.EqualTo(1));
         }
@@ -62,14 +72,43 @@ namespace TunnelVision.Tests
             Assert.That(settings.MasterVolume, Is.EqualTo(expected));
         }
 
+        [TestCase(-1f, 0f)]
+        [TestCase(1.5f, 1f)]
+        public void InterfaceVolume_IsClampedToZeroOne(float input, float expected)
+        {
+            var settings = new GameSettings(new MemoryStore()) { InterfaceVolume = input };
+
+            Assert.That(settings.InterfaceVolume, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void EffectiveInterfaceVolume_IsZeroWhenInterfaceSoundsOff()
+        {
+            var settings = new GameSettings(new MemoryStore()) { InterfaceVolume = 0.6f };
+
+            Assert.That(settings.EffectiveInterfaceVolume, Is.EqualTo(0.6f));
+
+            settings.InterfaceSounds = false;
+
+            Assert.That(settings.EffectiveInterfaceVolume, Is.EqualTo(0f));
+        }
+
         [Test]
         public void ResetToDefaults_RestoresDefaults()
         {
-            var settings = new GameSettings(new MemoryStore()) { MasterVolume = 0.1f, Fullscreen = false };
+            var settings = new GameSettings(new MemoryStore())
+            {
+                MasterVolume = 0.1f,
+                InterfaceVolume = 0.1f,
+                InterfaceSounds = false,
+                Fullscreen = false,
+            };
 
             settings.ResetToDefaults();
 
             Assert.That(settings.MasterVolume, Is.EqualTo(GameSettings.DefaultMasterVolume));
+            Assert.That(settings.InterfaceVolume, Is.EqualTo(GameSettings.DefaultInterfaceVolume));
+            Assert.That(settings.InterfaceSounds, Is.EqualTo(GameSettings.DefaultInterfaceSounds));
             Assert.That(settings.Fullscreen, Is.EqualTo(GameSettings.DefaultFullscreen));
         }
     }
