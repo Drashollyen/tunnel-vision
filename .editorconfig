@@ -1,0 +1,73 @@
+# Shared editor settings. Visual Studio, Rider and VS Code read this automatically.
+# CI checks C# formatting with: dotnet format whitespace Assets/_Project --folder --verify-no-changes
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml,asmdef,asmref,inputactions}]
+indent_size = 2
+
+[*.asmdef]
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
+
+# Unity serializes these itself; never reformat them.
+[*.{unity,prefab,asset,meta,mat,anim,controller,mixer,physicsMaterial2D}]
+trim_trailing_whitespace = false
+insert_final_newline = unset
+
+[*.cs]
+# Layout
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_preserve_single_line_statements = false
+csharp_preserve_single_line_blocks = true
+
+# Usings
+dotnet_sort_system_directives_first = true
+csharp_using_directive_placement = outside_namespace:warning
+
+# Style
+csharp_prefer_braces = true:warning
+csharp_style_var_when_type_is_apparent = true:suggestion
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_method = false:warning
+dotnet_style_qualification_for_property = false:warning
+
+# Naming: PascalCase types/methods/properties, _camelCase private fields,
+# camelCase for [SerializeField] private fields (so they read naturally in the Inspector).
+dotnet_naming_rule.types_pascal.severity = warning
+dotnet_naming_rule.types_pascal.symbols = types
+dotnet_naming_rule.types_pascal.style = pascal
+dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum, delegate, method, property, event
+dotnet_naming_style.pascal.capitalization = pascal_case
+
+dotnet_naming_rule.interfaces_i.severity = warning
+dotnet_naming_rule.interfaces_i.symbols = interfaces
+dotnet_naming_rule.interfaces_i.style = i_prefix
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+dotnet_naming_style.i_prefix.required_prefix = I
+dotnet_naming_style.i_prefix.capitalization = pascal_case
+
+dotnet_naming_rule.consts_pascal.severity = warning
+dotnet_naming_rule.consts_pascal.symbols = consts
+dotnet_naming_rule.consts_pascal.style = pascal
+dotnet_naming_symbols.consts.applicable_kinds = field
+dotnet_naming_symbols.consts.required_modifiers = const
+
+# Unity-specific: don't flag unused private Unity messages (Start, Update, OnEnable...).
+dotnet_diagnostic.IDE0051.severity = none
+dotnet_diagnostic.IDE0044.severity = none

@@ -1,0 +1,34 @@
+# PRs are squash-merged, so the PR title becomes the single commit message on main.
+# This check keeps those titles in Conventional Commits form, e.g. "feat: add main menu".
+name: PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  pr-title:
+    name: PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            art
+            audio
+            level
+            ui
+            refactor
+            test
+            docs
+            chore
+            ci
+            perf
+          requireScope: false

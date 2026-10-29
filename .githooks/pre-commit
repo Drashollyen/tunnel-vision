@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Installed by scripts/setup. Runs the same quick checks as CI before each commit.
+set -euo pipefail
+
+branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+if [[ "$branch" == "main" ]]; then
+  echo "✖ Don't commit on main. Create a branch first:  git switch -c feat/my-change"
+  exit 1
+fi
+
+bash .github/scripts/check-meta.sh
+
+if git diff --cached --name-only | grep -q '\.cs$'; then
+  if command -v dotnet >/dev/null 2>&1; then
+    if ! dotnet format whitespace Assets/_Project --folder --verify-no-changes >/dev/null 2>&1; then
+      echo "✖ C# formatting issues. Fix them with:  dotnet format whitespace Assets/_Project --folder"
+      echo "  then 'git add' the files again."
+      exit 1
+    fi
+  else
+    echo "⚠ dotnet SDK not found, skipping the C# format check (CI will still run it)."
+  fi
+fi

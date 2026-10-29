@@ -1,0 +1,106 @@
+# Runs on every pull request and on main. The "Lint" and "Unity tests" jobs are required
+# status checks in the main branch ruleset, so a PR can't merge until both pass.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A new push to the same PR cancels the run that is still going.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Meta files match assets
+        run: bash .github/scripts/check-meta.sh
+
+      - name: No generated folders or oversized non-LFS files
+        run: bash .github/scripts/check-forbidden-files.sh
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: C# formatting (.editorconfig)
+        run: dotnet format whitespace Assets/_Project --folder --verify-no-changes --verbosity diagnostic
+
+      - name: Branch is up to date with main
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor origin/main "${{ github.event.pull_request.head.sha }}"; then
+            echo "::error::This branch is behind main. Run 'git fetch origin && git rebase origin/main', then push with --force-with-lease."
+            exit 1
+          fi
+
+  unity-tests:
+    name: Unity tests
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: false
+
+      # Cache LFS objects so every run doesn't re-download the art (LFS bandwidth is limited).
+      - name: Create LFS file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+      - name: Restore LFS cache
+        uses: actions/cache@v6
+        with:
+          path: .git/lfs
+          key: lfs-${{ hashFiles('.lfs-assets-id') }}
+
+      - name: Git LFS pull
+        run: |
+          git lfs pull
+          git add .
+          git reset --hard
+
+      - name: Restore Unity Library cache
+        uses: actions/cache@v6
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-
+
+      - name: Run EditMode and PlayMode tests
+        id: tests
+        uses: game-ci/unity-test-runner@v4.3.2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          testMode: all
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Unity test results
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: ${{ steps.tests.outputs.artifactsPath }}
+          retention-days: 14

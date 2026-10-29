@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Installed by scripts/setup. Stops pushes to main and pushes of branches that are behind main.
+set -euo pipefail
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [[ "$remote_ref" == "refs/heads/main" ]]; then
+    echo "✖ Don't push to main directly. Push your branch and open a pull request."
+    exit 1
+  fi
+  [[ "$local_sha" =~ ^0+$ ]] && continue  # deleting a branch
+
+  git fetch --quiet origin main
+  if ! git merge-base --is-ancestor origin/main "$local_sha"; then
+    echo "✖ Your branch is behind main. Update it first:"
+    echo "    git fetch origin"
+    echo "    git rebase origin/main"
+    echo "    git push --force-with-lease"
+    exit 1
+  fi
+done

@@ -1,0 +1,5 @@
+# Owners are automatically asked to review PRs that touch these paths.
+# Project-wide settings and CI affect everyone, so they get an extra pair of eyes.
+/.github/          @kemuriXD
+/ProjectSettings/  @kemuriXD
+/Packages/         @kemuriXD

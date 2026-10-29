@@ -112,3 +112,12 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# CI scratch file (LFS cache key)
+.lfs-assets-id
+
+# Editors
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Installed by scripts/setup. Enforces Conventional Commits: "type: short description".
+set -euo pipefail
+
+msg=$(head -n1 "$1")
+types="feat|fix|art|audio|level|ui|refactor|test|docs|chore|ci|perf|revert"
+
+if [[ "$msg" =~ ^(Merge|Revert|fixup!|squash!) ]]; then
+  exit 0
+fi
+
+if ! [[ "$msg" =~ ^($types)(\([a-z0-9-]+\))?!?:\ .+ ]]; then
+  echo "✖ Commit message must look like:  <type>: <what changed>"
+  echo "    types: ${types//|/, }"
+  echo "    e.g.   feat: add pause menu"
+  echo "           fix(ui): options panel not closing"
+  echo "  Yours:  $msg"
+  exit 1
+fi

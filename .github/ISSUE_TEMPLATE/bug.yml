@@ -1,0 +1,30 @@
+name: Bug report
+description: Something is broken or behaves wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: And what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open MainMenu scene and press Play
+        2. Click Options
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Branch / commit
+      placeholder: main @ a1b2c3d
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console errors or screenshots

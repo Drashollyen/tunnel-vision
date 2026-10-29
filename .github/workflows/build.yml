@@ -1,0 +1,69 @@
+# Builds a playable Windows version after every merge to main, or on demand from the
+# Actions tab (Build > Run workflow). Download it from the run's "Artifacts" section.
+name: Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.targetPlatform }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          - StandaloneWindows64
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: false
+
+      - name: Create LFS file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+      - name: Restore LFS cache
+        uses: actions/cache@v6
+        with:
+          path: .git/lfs
+          key: lfs-${{ hashFiles('.lfs-assets-id') }}
+
+      - name: Git LFS pull
+        run: |
+          git lfs pull
+          git add .
+          git reset --hard
+
+      - name: Restore Unity Library cache
+        uses: actions/cache@v6
+        with:
+          path: Library
+          key: Library-${{ matrix.targetPlatform }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-${{ matrix.targetPlatform }}-
+
+      - name: Build
+        uses: game-ci/unity-builder@v5.0.1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: ${{ matrix.targetPlatform }}
+          buildName: TunnelVision
+
+      - name: Upload build
+        uses: actions/upload-artifact@v7
+        with:
+          name: TunnelVision-${{ matrix.targetPlatform }}-${{ github.sha }}
+          path: build/${{ matrix.targetPlatform }}
+          retention-days: 14
