@@ -66,6 +66,17 @@ namespace TunnelVision.Tests
             }
         }
 
+        [Test]
+        public void MenuControls_PlayInterfaceSounds()
+        {
+            Assert.That(Object.FindAnyObjectByType<UiSoundPlayer>(), Is.Not.Null);
+
+            foreach (var name in new[] { "Play Button", "Options Button", "Quit Button", "Back Button", "Reset Button" })
+            {
+                Assert.That(Find(name).GetComponent<UiSelectableSounds>(), Is.Not.Null, name + " has no sounds");
+            }
+        }
+
         [UnityTest]
         public IEnumerator PlayButton_LoadsGameScene()
         {

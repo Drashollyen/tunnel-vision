@@ -1,5 +1,4 @@
 using System.IO;
-using BloodlinesUI;
 using TMPro;
 using TunnelVision.UI;
 using UnityEditor;
@@ -10,13 +9,15 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.TextCore.LowLevel;
 using UnityEngine.UI;
 
 namespace TunnelVision.Editor
 {
     /// <summary>
-    /// Generates the MainMenu and placeholder Game scenes from Bloodlines UI prefabs and registers
-    /// them in the build scene list. Run it from the menu bar: Tunnel Vision > Rebuild Menu Scenes.
+    /// Generates the fairground-style MainMenu and placeholder Game scenes from the Kenney UI Pack and
+    /// Shooting Gallery sprites, and registers them in the build scene list.
+    /// Run it from the menu bar: Tunnel Vision > Rebuild Menu Scenes.
     /// Re-running overwrites both scenes, so make hand edits in the scene only once you stop using this.
     /// </summary>
     public static class MainMenuSceneBuilder
@@ -24,20 +25,40 @@ namespace TunnelVision.Editor
         public const string MainMenuScenePath = "Assets/_Project/Scenes/MainMenu.unity";
         public const string GameScenePath = "Assets/_Project/Scenes/Game.unity";
 
-        private const string Kit = "Assets/ThirdParty/Bloodlines UI/";
-        private const string RedButton = Kit + "Prefabs/Button/Button 1 (Red).prefab";
-        private const string GrayButton = Kit + "Prefabs/Button/Button 2 (Gray).prefab";
-        private const string SliderPrefab = Kit + "Prefabs/Slider (Segments)/Slider 3 (Segments).prefab";
-        private const string TogglePrefab = Kit + "Prefabs/Toggle/Toggle 1 (Square).prefab";
-        private const string PanelSprite = Kit + "Textures/Frame/Frame_main_menu.png";
-        private const string TitleFont = Kit + "Fonts/ManufacturingConsent SDF.asset";
-        private const string BodyFont = Kit + "Fonts/MedievalSharp SDF.asset";
-        private const string HoverSfx = Kit + "Audio/Hover Button SFX.wav";
-        private const string ClickSfx = Kit + "Audio/Click Button SFX.wav";
+        private const string UiPack = "Assets/ThirdParty/Kenney/UI Pack/";
+        private const string Gallery = "Assets/ThirdParty/Kenney/Shooting Gallery/";
 
-        private static readonly Color Background = new Color(0.03f, 0.03f, 0.03f, 1f);
-        private static readonly Color Blood = new Color(0.66f, 0.05f, 0.0f, 1f);
-        private static readonly Color Bone = new Color(0.85f, 0.83f, 0.8f, 1f);
+        private const string RedButton = UiPack + "PNG/Red/button_rectangle_depth_gradient.png";
+        private const string YellowButton = UiPack + "PNG/Yellow/button_rectangle_depth_gradient.png";
+        private const string BlueButton = UiPack + "PNG/Blue/button_rectangle_depth_gradient.png";
+        private const string SliderTrack = UiPack + "PNG/Red/slide_horizontal_grey.png";
+        private const string SliderFill = UiPack + "PNG/Red/slide_horizontal_color.png";
+        private const string SliderHandle = UiPack + "PNG/Red/slide_hangle.png";
+        private const string CheckBox = UiPack + "PNG/Red/check_square_grey.png";
+        private const string CheckMark = UiPack + "PNG/Red/check_square_color_checkmark.png";
+        private const string HoverSfx = UiPack + "Sounds/tap-a.ogg";
+        private const string ClickSfx = UiPack + "Sounds/click-a.ogg";
+        private const string FontFile = UiPack + "Font/Kenney Future.ttf";
+
+        private const string Tent = Gallery + "PNG/bg_blue.png";
+        private const string Wood = Gallery + "PNG/bg_wood.png";
+        private const string Curtain = Gallery + "PNG/curtain.png";
+        private const string Valance = Gallery + "PNG/curtain_straight.png";
+
+        // Generated from Kenney Future on first run and reused after that.
+        private const string FontFolder = "Assets/_Project/UI/Fonts";
+        private const string FontAssetPath = FontFolder + "/Kenney Future SDF.asset";
+        private const string OutlineMaterialPath = FontFolder + "/Kenney Future SDF Outline.mat";
+
+        private static readonly Color SkyBlue = new Color(0.27f, 0.62f, 0.86f, 1f);
+        private static readonly Color DarkWood = new Color(0.35f, 0.2f, 0.08f, 1f);
+
+        // Sprite borders for 9-slicing, in source pixels: left, bottom, right, top.
+        private static readonly Vector4 ButtonBorder = new Vector4(16f, 20f, 16f, 16f);
+        private static readonly Vector4 BarBorder = new Vector4(16f, 0f, 16f, 0f);
+
+        // Slider bars are drawn at their source height (16px) divided by this, so the round end caps keep their shape.
+        private const float BarScale = 0.75f;
 
         private const float ButtonWidth = 440f;
         private const float ButtonHeight = 110f;
@@ -46,6 +67,7 @@ namespace TunnelVision.Editor
         public static void BuildAll()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(MainMenuScenePath));
+            ConfigureSprites();
             BuildGameScene();
             BuildMainMenuScene();
 
@@ -67,37 +89,43 @@ namespace TunnelVision.Editor
 
         private static void BuildMainMenuScene()
         {
+            var font = LoadOrCreateFontAsset();
+            var textMaterial = LoadOrCreateOutlineMaterial(font);
+
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             CreateCamera();
             CreateEventSystem();
 
             var canvas = CreateCanvas();
+            CreateStall(canvas);
+
             var menu = new GameObject("Menu", typeof(RectTransform)).GetComponent<RectTransform>();
             menu.SetParent(canvas, false);
             Stretch(menu);
             var controller = menu.gameObject.AddComponent<MainMenuController>();
 
+            var style = new TextStyle(font, textMaterial);
+
             // Main panel
             var mainPanel = CreatePanel("Main Panel", menu);
-            CreateText("Title", mainPanel, "Tunnel Vision", TitleFont, 110, Blood);
-            var play = CreateButton("Play Button", mainPanel, RedButton, "Play");
-            var options = CreateButton("Options Button", mainPanel, GrayButton, "Options");
-            var quit = CreateButton("Quit Button", mainPanel, GrayButton, "Quit");
+            style.Create("Title", mainPanel, "Tunnel Vision", 96);
+            var play = CreateButton("Play Button", mainPanel, RedButton, "Play", style);
+            var options = CreateButton("Options Button", mainPanel, YellowButton, "Options", style);
+            var quit = CreateButton("Quit Button", mainPanel, BlueButton, "Quit", style);
 
             // Options panel
             var optionsPanel = CreatePanel("Options Panel", menu);
             var optionsController = optionsPanel.gameObject.AddComponent<OptionsMenuController>();
-            CreateText("Title", optionsPanel, "Options", TitleFont, 90, Blood);
-            var masterVolume = CreateLabelledSlider("Master Volume", optionsPanel, "Master volume: {0}%");
-            var uiVolume = CreateLabelledSlider("Interface Volume", optionsPanel, "Interface sounds: {0}%");
-            var fullscreen = CreateLabelledToggle("Fullscreen", optionsPanel, "Fullscreen");
-            var uiSounds = CreateLabelledToggle("Interface Sounds", optionsPanel, "Interface sounds");
+            style.Create("Title", optionsPanel, "Options", 80);
+            var masterVolume = CreateLabelledSlider("Master Volume", optionsPanel, style, out var masterLabel);
+            var uiVolume = CreateLabelledSlider("Interface Volume", optionsPanel, style, out var uiLabel);
+            var fullscreen = CreateLabelledToggle("Fullscreen", optionsPanel, "Fullscreen", style);
+            var uiSounds = CreateLabelledToggle("Interface Sounds", optionsPanel, "Interface sounds", style);
             var footer = CreateRow("Footer", optionsPanel, 30f);
-            var reset = CreateButton("Reset Button", footer, GrayButton, "Reset", 300f);
-            var back = CreateButton("Back Button", footer, RedButton, "Back", 300f);
+            var reset = CreateButton("Reset Button", footer, BlueButton, "Reset", style, 300f);
+            var back = CreateButton("Back Button", footer, RedButton, "Back", style, 300f);
 
-            // Bloodlines UI sound manager: plays hover/click SFX and owns the interface volume + on/off.
-            CreateSoundManager(uiVolume, uiSounds);
+            CreateSoundPlayer();
 
             Wire(controller, "gameSceneName", "Game");
             Wire(controller, "mainPanel", mainPanel.gameObject);
@@ -105,6 +133,10 @@ namespace TunnelVision.Editor
             Wire(controller, "mainFirstSelected", play);
             Wire(controller, "optionsFirstSelected", masterVolume);
             Wire(optionsController, "masterVolumeSlider", masterVolume);
+            Wire(optionsController, "masterVolumeLabel", masterLabel);
+            Wire(optionsController, "interfaceVolumeSlider", uiVolume);
+            Wire(optionsController, "interfaceVolumeLabel", uiLabel);
+            Wire(optionsController, "interfaceSoundsToggle", uiSounds);
             Wire(optionsController, "fullscreenToggle", fullscreen);
 
             AddClick(play, controller.Play);
@@ -124,7 +156,7 @@ namespace TunnelVision.Editor
             var camera = go.AddComponent<Camera>();
             camera.orthographic = true;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = Background;
+            camera.backgroundColor = SkyBlue;
             go.AddComponent<AudioListener>();
         }
 
@@ -145,33 +177,60 @@ namespace TunnelVision.Editor
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
-
-            var root = (RectTransform)go.transform;
-            var background = new GameObject("Background", typeof(RectTransform), typeof(Image));
-            background.transform.SetParent(root, false);
-            Stretch((RectTransform)background.transform);
-            background.GetComponent<Image>().color = Background;
-            return root;
+            return (RectTransform)go.transform;
         }
 
         /// <summary>
-        /// A centered, 9-sliced frame that grows and shrinks to fit whatever is placed inside it.
+        /// The fairground stall around the menu: striped tent wall, wooden counter, curtains and a valance.
+        /// </summary>
+        private static void CreateStall(RectTransform canvas)
+        {
+            var stall = new GameObject("Stall", typeof(RectTransform)).GetComponent<RectTransform>();
+            stall.SetParent(canvas, false);
+            Stretch(stall);
+
+            var tent = CreateImage("Tent", stall, Tent, Image.Type.Tiled);
+            Stretch(tent);
+
+            var counter = CreateImage("Counter", stall, Wood, Image.Type.Tiled);
+            counter.anchorMin = Vector2.zero;
+            counter.anchorMax = new Vector2(1f, 0f);
+            counter.pivot = new Vector2(0.5f, 0f);
+            counter.sizeDelta = new Vector2(0f, 150f);
+
+            foreach (var left in new[] { true, false })
+            {
+                var curtain = CreateImage(left ? "Curtain Left" : "Curtain Right", stall, Curtain, Image.Type.Simple);
+                curtain.anchorMin = new Vector2(left ? 0f : 1f, 0f);
+                curtain.anchorMax = new Vector2(left ? 0f : 1f, 1f);
+                curtain.sizeDelta = new Vector2(300f, 0f);
+                curtain.anchoredPosition = new Vector2(left ? 150f : -150f, 0f);
+                curtain.localScale = new Vector3(left ? 1f : -1f, 1f, 1f);
+            }
+
+            var valance = CreateImage("Valance", stall, Valance, Image.Type.Tiled);
+            valance.anchorMin = new Vector2(0f, 1f);
+            valance.anchorMax = Vector2.one;
+            valance.pivot = new Vector2(0.5f, 1f);
+            valance.sizeDelta = new Vector2(0f, 120f);
+            valance.GetComponent<Image>().pixelsPerUnitMultiplier = 80f / 120f; // One tile fills the height.
+        }
+
+        /// <summary>
+        /// A centered wooden sign that grows and shrinks to fit whatever is placed inside it.
         /// </summary>
         private static RectTransform CreatePanel(string name, Transform parent)
         {
-            var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
-            var rect = (RectTransform)go.transform;
-            rect.SetParent(parent, false);
+            var rect = CreateImage(name, parent, Wood, Image.Type.Tiled);
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = Vector2.zero;
 
-            var image = go.GetComponent<Image>();
-            image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(PanelSprite);
-            image.type = Image.Type.Sliced;
-            image.pixelsPerUnitMultiplier = 0.5f;
+            var outline = rect.gameObject.AddComponent<Outline>();
+            outline.effectColor = DarkWood;
+            outline.effectDistance = new Vector2(6f, -6f);
 
-            var layout = go.GetComponent<VerticalLayoutGroup>();
-            layout.padding = new RectOffset(110, 110, 80, 90);
+            var layout = rect.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(90, 90, 60, 70);
             layout.spacing = 28f;
             layout.childAlignment = TextAnchor.MiddleCenter;
             layout.childControlWidth = true;
@@ -179,7 +238,7 @@ namespace TunnelVision.Editor
             layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
 
-            var fitter = go.GetComponent<ContentSizeFitter>();
+            var fitter = rect.gameObject.AddComponent<ContentSizeFitter>();
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             return rect;
@@ -200,41 +259,39 @@ namespace TunnelVision.Editor
             return rect;
         }
 
-        private static TextMeshProUGUI CreateText(string name, Transform parent, string text, string fontPath, float size, Color color)
+        private static RectTransform CreateImage(string name, Transform parent, string spritePath, Image.Type type)
         {
-            var go = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
-            go.transform.SetParent(parent, false);
-            var tmp = go.GetComponent<TextMeshProUGUI>();
-            tmp.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(fontPath);
-            tmp.text = text;
-            tmp.fontSize = size;
-            tmp.color = color;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.textWrappingMode = TextWrappingModes.NoWrap;
-            return tmp;
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+            var rect = (RectTransform)go.transform;
+            rect.SetParent(parent, false);
+            var image = go.GetComponent<Image>();
+            image.sprite = LoadSprite(spritePath);
+            image.type = type;
+            return rect;
         }
 
-        private static Button CreateButton(string name, Transform parent, string prefabPath, string label, float width = ButtonWidth)
+        private static Button CreateButton(string name, Transform parent, string spritePath, string label, TextStyle style, float width = ButtonWidth)
         {
-            var go = InstantiatePrefab(prefabPath, parent, name);
-            SetPreferredSize(go, width, ButtonHeight);
+            var rect = CreateImage(name, parent, spritePath, Image.Type.Sliced);
+            rect.GetComponent<Image>().pixelsPerUnitMultiplier = 0.6f;
+            SetPreferredSize(rect.gameObject, width, ButtonHeight);
 
-            var text = go.GetComponentInChildren<TextMeshProUGUI>();
-            text.text = label;
-            text.fontSize = 52;
-            text.textWrappingMode = TextWrappingModes.NoWrap;
+            var button = rect.gameObject.AddComponent<Button>();
+            var colors = button.colors;
+            colors.highlightedColor = new Color(1f, 0.93f, 0.8f, 1f);
+            colors.selectedColor = colors.highlightedColor;
+            colors.pressedColor = new Color(0.8f, 0.8f, 0.8f, 1f);
+            button.colors = colors;
+            rect.gameObject.AddComponent<UiSelectableSounds>();
 
-            var sfx = go.GetComponent<ButtonSFX>();
-            if (sfx != null)
-            {
-                Wire(sfx, "hoverSound", AssetDatabase.LoadAssetAtPath<AudioClip>(HoverSfx));
-                Wire(sfx, "clickSound", AssetDatabase.LoadAssetAtPath<AudioClip>(ClickSfx));
-            }
-
-            return go.GetComponent<Button>();
+            var text = style.Create("Label", rect, label, 50);
+            var textRect = text.rectTransform;
+            Stretch(textRect);
+            textRect.offsetMin = new Vector2(0f, 10f); // Sit on the button face, above its darker bottom edge.
+            return button;
         }
 
-        private static Slider CreateLabelledSlider(string name, Transform parent, string format)
+        private static Slider CreateLabelledSlider(string name, Transform parent, TextStyle style, out TMP_Text label)
         {
             var group = new GameObject(name, typeof(RectTransform), typeof(VerticalLayoutGroup));
             group.transform.SetParent(parent, false);
@@ -246,53 +303,202 @@ namespace TunnelVision.Editor
             layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
 
-            var label = CreateText("Label", group.transform, string.Format(format, 80), BodyFont, 40, Bone);
+            // OptionsMenuController fills in the text with the current percentage.
+            label = style.Create("Label", group.transform, name, 40);
             label.alignment = TextAlignmentOptions.Left;
 
-            var go = InstantiatePrefab(SliderPrefab, group.transform, "Slider");
-            SetPreferredSize(go, 620f, 46f);
-            var slider = go.GetComponent<Slider>();
+            var root = new GameObject("Slider", typeof(RectTransform), typeof(Slider));
+            root.transform.SetParent(group.transform, false);
+            SetPreferredSize(root, 620f, 48f);
 
-            var sync = group.AddComponent<SliderTextSynchronizer>();
-            Wire(sync, "slider", slider);
-            Wire(sync, "textComponent", label);
-            Wire(sync, "textFormat", format);
+            var track = CreateImage("Background", root.transform, SliderTrack, Image.Type.Sliced);
+            SetBarAnchors(track);
+            track.GetComponent<Image>().pixelsPerUnitMultiplier = BarScale;
+
+            var fillArea = new GameObject("Fill Area", typeof(RectTransform)).GetComponent<RectTransform>();
+            fillArea.SetParent(root.transform, false);
+            SetBarAnchors(fillArea);
+            var fill = CreateImage("Fill", fillArea, SliderFill, Image.Type.Sliced);
+            fill.GetComponent<Image>().pixelsPerUnitMultiplier = BarScale;
+            fill.sizeDelta = Vector2.zero;
+
+            var handleArea = new GameObject("Handle Slide Area", typeof(RectTransform)).GetComponent<RectTransform>();
+            handleArea.SetParent(root.transform, false);
+            Stretch(handleArea);
+            handleArea.offsetMin = new Vector2(18f, 0f);
+            handleArea.offsetMax = new Vector2(-18f, 0f);
+            var handle = CreateImage("Handle", handleArea, SliderHandle, Image.Type.Simple);
+            handle.sizeDelta = new Vector2(36f, 0f);
+
+            var slider = root.GetComponent<Slider>();
+            slider.fillRect = fill;
+            slider.handleRect = handle;
+            slider.targetGraphic = handle.GetComponent<Image>();
+            slider.direction = Slider.Direction.LeftToRight;
+            slider.minValue = 0f;
+            slider.maxValue = 1f;
+            slider.value = 0.8f;
+            root.AddComponent<UiSelectableSounds>();
             return slider;
         }
 
-        private static Toggle CreateLabelledToggle(string name, Transform parent, string labelText)
+        private static Toggle CreateLabelledToggle(string name, Transform parent, string labelText, TextStyle style)
         {
             var row = CreateRow(name, parent, 24f);
-            var go = InstantiatePrefab(TogglePrefab, row, "Toggle");
-            SetPreferredSize(go, 50f, 50f);
-            var label = CreateText("Label", row, labelText, BodyFont, 40, Bone);
+
+            var box = CreateImage("Toggle", row, CheckBox, Image.Type.Simple);
+            SetPreferredSize(box.gameObject, 52f, 52f);
+            var check = CreateImage("Checkmark", box, CheckMark, Image.Type.Simple);
+            Stretch(check);
+
+            var toggle = box.gameObject.AddComponent<Toggle>();
+            toggle.targetGraphic = box.GetComponent<Image>();
+            toggle.graphic = check.GetComponent<Image>();
+            toggle.isOn = true;
+            box.gameObject.AddComponent<UiSelectableSounds>();
+
+            var label = style.Create("Label", row, labelText, 40);
             label.alignment = TextAlignmentOptions.Left;
-            SetPreferredSize(label.gameObject, 546f, -1f);
-            return go.GetComponent<Toggle>();
+            SetPreferredSize(label.gameObject, 544f, -1f);
+            return toggle;
         }
 
-        private static void CreateSoundManager(Slider volume, Toggle enabled)
+        private static void CreateSoundPlayer()
         {
-            var go = new GameObject("Sound Manager", typeof(AudioSource), typeof(SoundManager));
-            var source = go.GetComponent<AudioSource>();
-            source.playOnAwake = false;
-            var manager = go.GetComponent<SoundManager>();
-            Wire(manager, "audioSource", source);
-            Wire(manager, "volumeSlider", volume);
-            Wire(manager, "soundToggle", enabled);
+            var go = new GameObject("UI Sound Player", typeof(AudioSource), typeof(UiSoundPlayer));
+            go.GetComponent<AudioSource>().playOnAwake = false;
+            var player = go.GetComponent<UiSoundPlayer>();
+            Wire(player, "hoverSound", AssetDatabase.LoadAssetAtPath<AudioClip>(HoverSfx));
+            Wire(player, "clickSound", AssetDatabase.LoadAssetAtPath<AudioClip>(ClickSfx));
         }
 
-        private static GameObject InstantiatePrefab(string path, Transform parent, string name)
+        /// <summary>
+        /// Imports the Kenney PNGs as UI sprites: full-rect meshes, borders for 9-slicing, and
+        /// repeat wrapping on the backgrounds so tiled images use one quad.
+        /// </summary>
+        private static void ConfigureSprites()
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            if (prefab == null)
+            ConfigureSprite(RedButton, ButtonBorder);
+            ConfigureSprite(YellowButton, ButtonBorder);
+            ConfigureSprite(BlueButton, ButtonBorder);
+            ConfigureSprite(SliderTrack, BarBorder);
+            ConfigureSprite(SliderFill, BarBorder);
+            ConfigureSprite(SliderHandle, Vector4.zero);
+            ConfigureSprite(CheckBox, Vector4.zero);
+            ConfigureSprite(CheckMark, Vector4.zero);
+            ConfigureSprite(Curtain, Vector4.zero);
+            ConfigureSprite(Tent, Vector4.zero, TextureWrapMode.Repeat);
+            ConfigureSprite(Wood, Vector4.zero, TextureWrapMode.Repeat);
+            ConfigureSprite(Valance, Vector4.zero, TextureWrapMode.Repeat);
+        }
+
+        private static void ConfigureSprite(string path, Vector4 border, TextureWrapMode wrap = TextureWrapMode.Clamp)
+        {
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer == null)
             {
-                throw new FileNotFoundException($"Bloodlines UI prefab not found: {path}");
+                throw new FileNotFoundException($"Sprite not found: {path}");
             }
 
-            var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
-            go.name = name;
-            return go;
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+            settings.textureType = TextureImporterType.Sprite;
+            settings.spriteMode = (int)SpriteImportMode.Single;
+            settings.spriteMeshType = SpriteMeshType.FullRect;
+            settings.spriteBorder = border;
+            settings.mipmapEnabled = false;
+            settings.alphaIsTransparency = true;
+            settings.wrapMode = wrap;
+            importer.SetTextureSettings(settings);
+            importer.SaveAndReimport();
+        }
+
+        private static Sprite LoadSprite(string path)
+        {
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (sprite == null)
+            {
+                throw new FileNotFoundException($"Sprite not found: {path}");
+            }
+
+            return sprite;
+        }
+
+        /// <summary>
+        /// A static SDF font asset with the printable ASCII characters, so the atlas never changes at runtime.
+        /// </summary>
+        private static TMP_FontAsset LoadOrCreateFontAsset()
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontAssetPath);
+            if (asset != null)
+            {
+                return asset;
+            }
+
+            EnsureFolder(FontFolder);
+            var font = AssetDatabase.LoadAssetAtPath<Font>(FontFile);
+            asset = TMP_FontAsset.CreateFontAsset(font, 72, 8, GlyphRenderMode.SDFAA, 1024, 1024);
+            asset.name = Path.GetFileNameWithoutExtension(FontAssetPath);
+            AssetDatabase.CreateAsset(asset, FontAssetPath);
+
+            asset.atlasTexture.name = asset.name + " Atlas";
+            AssetDatabase.AddObjectToAsset(asset.atlasTexture, asset);
+            asset.material.name = asset.name + " Material";
+            AssetDatabase.AddObjectToAsset(asset.material, asset);
+
+            var ascii = new char[95];
+            for (var i = 0; i < ascii.Length; i++)
+            {
+                ascii[i] = (char)(32 + i);
+            }
+
+            asset.TryAddCharacters(new string(ascii));
+            asset.atlasPopulationMode = AtlasPopulationMode.Static;
+            EditorUtility.SetDirty(asset);
+            AssetDatabase.SaveAssets();
+            return asset;
+        }
+
+        /// <summary>White text with a dark wood outline and drop shadow, like a painted fairground sign.</summary>
+        private static Material LoadOrCreateOutlineMaterial(TMP_FontAsset font)
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(OutlineMaterialPath);
+            if (material != null)
+            {
+                return material;
+            }
+
+            material = new Material(font.material);
+            material.SetFloat(ShaderUtilities.ID_FaceDilate, 0.2f);
+            material.EnableKeyword(ShaderUtilities.Keyword_Outline);
+            material.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.3f);
+            material.SetColor(ShaderUtilities.ID_OutlineColor, DarkWood);
+            material.EnableKeyword(ShaderUtilities.Keyword_Underlay);
+            material.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(0f, 0f, 0f, 0.5f));
+            material.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, -0.8f);
+            material.SetFloat(ShaderUtilities.ID_UnderlayDilate, 0.3f);
+            AssetDatabase.CreateAsset(material, OutlineMaterialPath);
+            return material;
+        }
+
+        private static void EnsureFolder(string path)
+        {
+            if (AssetDatabase.IsValidFolder(path))
+            {
+                return;
+            }
+
+            var parent = Path.GetDirectoryName(path).Replace('\\', '/');
+            EnsureFolder(parent);
+            AssetDatabase.CreateFolder(parent, Path.GetFileName(path));
+        }
+
+        private static void SetBarAnchors(RectTransform rect)
+        {
+            rect.anchorMin = new Vector2(0f, 0.5f);
+            rect.anchorMax = new Vector2(1f, 0.5f);
+            rect.sizeDelta = new Vector2(0f, 16f / BarScale);
+            rect.anchoredPosition = Vector2.zero;
         }
 
         private static void SetPreferredSize(GameObject go, float width, float height)
@@ -301,7 +507,6 @@ namespace TunnelVision.Editor
             {
                 element = go.AddComponent<LayoutElement>();
             }
-
 
             element.preferredWidth = width;
             element.preferredHeight = height;
@@ -331,6 +536,34 @@ namespace TunnelVision.Editor
             var so = new SerializedObject(target);
             so.FindProperty(field).stringValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Creates menu text in the shared font and sign-style material.</summary>
+        private readonly struct TextStyle
+        {
+            private readonly TMP_FontAsset _font;
+            private readonly Material _material;
+
+            public TextStyle(TMP_FontAsset font, Material material)
+            {
+                _font = font;
+                _material = material;
+            }
+
+            public TextMeshProUGUI Create(string name, Transform parent, string text, float size)
+            {
+                var go = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
+                go.transform.SetParent(parent, false);
+                var tmp = go.GetComponent<TextMeshProUGUI>();
+                tmp.font = _font;
+                tmp.fontSharedMaterial = _material;
+                tmp.text = text;
+                tmp.fontSize = size;
+                tmp.color = Color.white;
+                tmp.alignment = TextAlignmentOptions.Center;
+                tmp.textWrappingMode = TextWrappingModes.NoWrap;
+                return tmp;
+            }
         }
     }
 }
