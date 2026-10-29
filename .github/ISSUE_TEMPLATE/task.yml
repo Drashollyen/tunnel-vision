@@ -1,0 +1,22 @@
+name: Task / feature
+description: A piece of work for the game (feature, art, level, sound...)
+labels: [task]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should exist when this is done?
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      placeholder: |
+        - [ ] Pause menu opens with Esc
+        - [ ] Resume and Quit to menu work
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / references
