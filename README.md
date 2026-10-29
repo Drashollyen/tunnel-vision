@@ -2,8 +2,6 @@
 
 A 2D Unity game made by a small group. Built with **Unity 6000.6.3f1** and the Universal Render Pipeline (2D).
 
-![Main menu](Docs/Screenshots/main-menu-1920x1080.png)
-
 ## Quick start
 
 You need:
@@ -46,7 +44,6 @@ Assets/
     Bloodlines UI/          UI kit from the Unity Asset Store (don't edit, see CREDITS.md)
   Settings/                 URP and Input System settings
   TextMesh Pro/             TMP essential resources
-Docs/Screenshots/           Menu previews (regenerate with Tunnel Vision > Capture Menu Previews)
 .github/                    CI workflows, PR/issue templates, main branch ruleset
 .githooks/                  Local checks installed by scripts/setup.sh
 ```
@@ -62,10 +59,6 @@ Docs/Screenshots/           Menu previews (regenerate with Tunnel Vision > Captu
 The panels are centered, scale with screen resolution (Canvas Scaler, reference 1920×1080), and resize to fit their contents (Vertical Layout Group + Content Size Fitter). You can add, remove or reorder buttons and the frame adjusts.
 
 Once you start editing the menu by hand in the scene, stop using the rebuild menu item, because it overwrites the scene.
-
-| Main menu | Options |
-|---|---|
-| ![Main menu at 1280x1024](Docs/Screenshots/main-menu-1280x1024.png) | ![Options at 1280x1024](Docs/Screenshots/options-1280x1024.png) |
 
 ## Continuous integration
 
