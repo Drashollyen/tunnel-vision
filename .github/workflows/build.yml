@@ -1,10 +1,17 @@
 # Builds the game for Windows (our only target platform) after every merge to main, or on
 # demand from the Actions tab (Build > Run workflow). Download it from the run's "Artifacts" section.
+# Merges that only touch docs or GitHub config don't trigger a build.
 name: Build
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'Assets/**'
+      - 'Packages/**'
+      - 'ProjectSettings/**'
+      - '.gitattributes'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
 
 concurrency:

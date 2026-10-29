@@ -1,5 +1,6 @@
 # Runs on every pull request and on main. The "Lint" and "Unity tests" jobs are required
 # status checks in the main branch ruleset, so a PR can't merge until both pass.
+# "Unity tests" only runs when Unity files change (see the "changes" job); otherwise it is skipped.
 name: CI
 
 on:
@@ -49,9 +50,35 @@ jobs:
             exit 1
           fi
 
+  # Works out whether anything Unity cares about changed. Docs-only or GitHub-config-only
+  # changes skip the Unity job; GitHub treats a skipped required check as passed.
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      unity: ${{ steps.filter.outputs.unity }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: dorny/paths-filter@v4.0.3
+        id: filter
+        with:
+          filters: |
+            unity:
+              - 'Assets/**'
+              - 'Packages/**'
+              - 'ProjectSettings/**'
+              - '.gitattributes'
+              - '.github/workflows/ci.yml'
+
   unity-tests:
     name: Unity tests
-    needs: lint
+    needs: [lint, changes]
+    if: needs.changes.outputs.unity == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:

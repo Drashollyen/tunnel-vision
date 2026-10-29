@@ -74,10 +74,10 @@ Every pull request runs:
 | Check | What it does |
 |---|---|
 | **Lint** | `.meta` files match assets, no `Library/`/`Temp/` or big non-LFS files, C# formatting matches `.editorconfig`, branch is up to date with `main` |
-| **Unity tests** | EditMode and PlayMode tests via [GameCI](https://game.ci) |
+| **Unity tests** | EditMode and PlayMode tests via [GameCI](https://game.ci). Skipped (counts as passed) when a PR only changes docs or GitHub config |
 | **PR title** | Title follows `type: description` (it becomes the commit message on `main`) |
 
-Each merge to `main` also produces a **Windows build**. Download it from the run's *Artifacts* section under the **Actions** tab. You can also run the *Build* workflow by hand.
+Each merge to `main` that changes the game (`Assets/`, `Packages/`, `ProjectSettings/`) also produces a **Windows build**. Download it from the run's *Artifacts* section under the **Actions** tab. You can also run the *Build* workflow by hand.
 
 ## Credits
 
