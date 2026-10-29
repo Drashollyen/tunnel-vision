@@ -68,7 +68,7 @@ Open the PR on GitHub and fill in the template. Asking a groupmate to review is 
 
 The PR can only merge when:
 
-- **Lint**, **Unity tests** and **PR title** checks pass
+- **Lint**, **Unity tests**, **Build Windows** and **PR title** checks pass (Unity tests and Build Windows show as skipped when your change doesn't need them; that counts as passing)
 - it's up to date with `main` (if GitHub shows *"This branch is out-of-date"*, repeat step 4)
 - all review comments (if anyone left some) are resolved
 
@@ -128,7 +128,7 @@ Use a dedicated Unity account for CI if you can. See the [GameCI activation docs
 
 ### Branch rules
 
-`main` is protected by the ruleset in `.github/rulesets/main.json`: PRs only (no approval required, so authors merge their own PRs), conversations resolved, required checks (`Lint`, `Unity tests`, `PR title`) on an up-to-date branch, linear history, no force pushes or deletion. To re-apply it after editing the file:
+`main` is protected by the ruleset in `.github/rulesets/main.json`: PRs only (no approval required, so authors merge their own PRs), conversations resolved, required checks (`Lint`, `Unity tests`, `Build Windows`, `PR title`) on an up-to-date branch, linear history, no force pushes or deletion. To re-apply it after editing the file:
 
 ```bash
 gh api -X PUT repos/Drashollyen/tunnel-vision/rulesets/$(gh api repos/Drashollyen/tunnel-vision/rulesets --jq '.[] | select(.name=="main") | .id') --input .github/rulesets/main.json

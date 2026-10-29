@@ -75,9 +75,10 @@ Every pull request runs:
 |---|---|
 | **Lint** | `.meta` files match assets, no `Library/`/`Temp/` or big non-LFS files, C# formatting matches `.editorconfig`, branch is up to date with `main` |
 | **Unity tests** | EditMode and PlayMode tests via [GameCI](https://game.ci). Skipped (counts as passed) when a PR only changes docs or GitHub config |
+| **Build Windows** | Only on PRs that change the build setup (`build.yml`, e.g. a Dependabot builder update), so a new builder is proven before merging. Skipped (counts as passed) on all other PRs |
 | **PR title** | Title follows `type: description` (it becomes the commit message on `main`) |
 
-Each merge to `main` that changes the game (`Assets/`, `Packages/`, `ProjectSettings/`) also produces a **Windows build**. Download it from the run's *Artifacts* section under the **Actions** tab. You can also run the *Build* workflow by hand.
+Each merge to `main` that changes the game (`Assets/`, `Packages/`, `ProjectSettings/`) also produces a **Windows build**. Nothing is built twice: a build-setup change is tested on its PR and not rebuilt after merging. Download it from the run's *Artifacts* section under the **Actions** tab. You can also run the *Build* workflow by hand.
 
 ## Credits
 
