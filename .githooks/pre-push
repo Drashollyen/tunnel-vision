@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
-# Installed by scripts/setup. Stops pushes to main and pushes of branches that are behind main.
+# Installed by scripts/setup. Stops pushes to main and pushes of branches that are behind main,
+# then hands over to Git LFS so large files get uploaded.
 set -euo pipefail
 
+refs=$(cat)
+
 while read -r local_ref local_sha remote_ref remote_sha; do
+  [[ -z "${local_ref:-}" ]] && continue
   if [[ "$remote_ref" == "refs/heads/main" ]]; then
     echo "✖ Don't push to main directly. Push your branch and open a pull request."
     exit 1
@@ -17,4 +21,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     echo "    git push --force-with-lease"
     exit 1
   fi
-done
+done <<< "$refs"
+
+command -v git-lfs >/dev/null 2>&1 || { echo "✖ Git LFS is not installed. See README > Quick start."; exit 2; }
+printf '%s\n' "$refs" | git lfs pre-push "$@"

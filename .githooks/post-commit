@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Installed by scripts/setup. Keeps Git LFS working, since core.hooksPath replaces its default hooks.
+command -v git-lfs >/dev/null 2>&1 || exit 0
+git lfs post-commit "$@"
