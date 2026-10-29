@@ -77,6 +77,19 @@ namespace TunnelVision.Tests
             }
         }
 
+        [Test]
+        public void VisionCone_IsBehindTheMenuAndIgnoresClicks()
+        {
+            var vision = Object.FindAnyObjectByType<VisionConeBackground>();
+            Assert.That(vision, Is.Not.Null);
+            Assert.That(vision.transform.GetSiblingIndex(), Is.LessThan(Find("Menu").transform.GetSiblingIndex()));
+
+            foreach (var image in vision.GetComponentsInChildren<Image>())
+            {
+                Assert.That(image.raycastTarget, Is.False, image.name + " blocks clicks");
+            }
+        }
+
         [UnityTest]
         public IEnumerator PlayButton_LoadsGameScene()
         {
