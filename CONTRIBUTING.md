@@ -4,6 +4,30 @@ All changes go through a branch and a pull request. Nothing is pushed to `main` 
 
 ## Workflow
 
+Same steps either way. Use [GitHub Desktop](#github-desktop) or the [command line](#command-line).
+
+Branch names: `type/short-description`, e.g. `feat/pause-menu`, `fix/options-volume`, `art/player-sprites`.
+
+Commit messages and PR titles: `type: what changed`, lower case. Types: `feat`, `fix`, `art`, `audio`, `level`, `ui`, `refactor`, `test`, `docs`, `chore`, `ci`, `perf`.
+
+### GitHub Desktop
+
+**1. Update main:** **Current Branch > main**, then **Fetch origin** and **Pull origin**.
+
+**2. Create a branch:** **Current Branch > New Branch**, enter the name, base it on `main`, click **Create Branch**.
+
+**3. Commit:** in the **Changes** tab, tick only the files you meant to change. Right-click any scene, prefab or `ProjectSettings` file you didn't mean to change > **Discard changes**. Write the summary as `feat: add pause menu`, then click **Commit to feat/pause-menu**.
+
+**4. Update from main:** **Branch > Update from main**. On a conflict, Desktop lists the files: open each, fix it, then click **Continue merge**. Scenes and prefabs are usually merged for you (see [Scene and prefab conflicts](#scene-and-prefab-conflicts)).
+
+**5. Push and open a PR:** click **Push origin** (or **Publish branch** the first time), then **Preview Pull Request > Create pull request**. Fill in the template on GitHub.
+
+**6. Merge:** see [Merging](#merging).
+
+If a commit or push is rejected, Desktop shows the hook's message. Fix what it says and try again.
+
+### Command line
+
 **1. Update main**
 
 ```bash
@@ -15,8 +39,6 @@ git pull
 ```
 
 **2. Create a branch**
-
-Name it `type/short-description`, e.g. `feat/pause-menu`, `fix/options-volume`, `art/player-sprites`.
 
 ```bash
 git switch -c feat/pause-menu
@@ -35,8 +57,6 @@ git add <files>
 ```bash
 git commit -m "feat: add pause menu"
 ```
-
-Format: `type: what changed`, lower case. Types: `feat`, `fix`, `art`, `audio`, `level`, `ui`, `refactor`, `test`, `docs`, `chore`, `ci`, `perf`.
 
 Check `git status` before committing. Leave out scenes, prefabs or `ProjectSettings` you didn't mean to change: `git restore <file>`.
 
@@ -60,12 +80,14 @@ git push --force-with-lease
 
 Open the PR on GitHub and fill in the template. The PR title becomes the commit on `main`, so use the `type: description` format.
 
-**6. Merge**
+**6. Merge:** see [Merging](#merging).
+
+### Merging
 
 The PR can merge when:
 
 - **Lint**, **Unity tests**, **Build Windows** and **PR title** pass (skipped counts as passed)
-- the branch is up to date with `main` (if not, repeat step 4)
+- the branch is up to date with `main` (if not, repeat step 4, or click **Update branch** on the PR page)
 - all review comments are resolved
 
 Click **Squash and merge**. The branch is deleted automatically.
