@@ -173,3 +173,6 @@ LightingData.asset     binary
 # Shell scripts and git hooks must keep LF endings or bash fails on Windows checkouts
 *.sh                    text eol=lf
 .githooks/*             text eol=lf
+
+# C# keeps LF endings to match .editorconfig, so the format check passes on Windows checkouts
+*.cs                    text eol=lf

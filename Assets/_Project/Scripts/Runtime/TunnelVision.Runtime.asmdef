@@ -4,8 +4,7 @@
     "references": [
         "UnityEngine.UI",
         "Unity.TextMeshPro",
-        "Unity.InputSystem",
-        "Alebardium.BloodlinesUI"
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
