@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/sh
+# Not "env bash": under GitHub Desktop that can pick WSL's bash, which has no Git LFS or dotnet.
 # Installed by scripts/setup. Enforces Conventional Commits: "type: short description".
 set -euo pipefail
 
