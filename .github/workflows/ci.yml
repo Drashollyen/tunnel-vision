@@ -109,8 +109,9 @@ jobs:
         uses: actions/cache@v6
         with:
           path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: Library-
+          # A separate prefix, because a plain "Library-" also matches the Windows build's caches.
+          key: Library-tests-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-tests-
 
       - name: Run EditMode and PlayMode tests
         id: tests
