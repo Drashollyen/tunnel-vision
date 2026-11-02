@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/sh
+# Not "env bash": under GitHub Desktop that can pick WSL's bash, which has no Git LFS or dotnet.
 # Installed by scripts/setup. Stops pushes to main and pushes of branches that are behind main,
 # then hands over to Git LFS so large files get uploaded.
 set -euo pipefail
