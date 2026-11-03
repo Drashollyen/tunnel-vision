@@ -10,7 +10,7 @@ namespace TunnelVision.Tests
     public class IntroScreenTests
     {
         private const string IntroScene = "IntroScreen";
-        private const string GameScene = "Game";
+        private const string GameScene = "ConeTest";
 
         [UnitySetUp]
         public IEnumerator LoadIntroScreen()
