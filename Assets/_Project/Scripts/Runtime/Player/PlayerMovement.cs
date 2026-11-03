@@ -26,9 +26,11 @@ namespace TunnelVision.Player
         [Header("Looking")]
         [SerializeField] private Transform eyeball;
         [SerializeField] private float eyeTurnSpeed = 360f;
+        private float targetAngle = 0f;
 
         private bool facingRight = true;
         private Vector2 lookInput;
+
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
@@ -96,8 +98,6 @@ namespace TunnelVision.Player
 
         private void UpdateLooking()
         {
-            float forwardAngle = facingRight ? 0f : 180f;
-            float targetAngle = forwardAngle;
 
             if (lookInput.sqrMagnitude > 0.01f)
             {
@@ -110,7 +110,7 @@ namespace TunnelVision.Player
 
             float currentAngle = eyeball.localEulerAngles.z;
 
-            float nextAngle = Mathf.MoveTowardsAngle(
+            targetAngle = Mathf.MoveTowardsAngle(
                 currentAngle,
                 targetAngle,
                 eyeTurnSpeed * Time.deltaTime
@@ -118,7 +118,7 @@ namespace TunnelVision.Player
 
             // Converts angles into Unity-ready values
             eyeball.localRotation = Quaternion.Euler(
-                0f, 0f, nextAngle
+                0f, 0f, targetAngle
             );
 
         }
