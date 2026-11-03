@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Ground
   - 
   - 
   - 
@@ -38,6 +38,18 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2032720819
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Deco
+    uniqueID: 444636515
+    locked: 0
+  - name: Body
+    uniqueID: 992151227
+    locked: 0
+  - name: Eyeball
+    uniqueID: 2081152475
     locked: 0
