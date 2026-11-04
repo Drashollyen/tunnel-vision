@@ -11,6 +11,8 @@ namespace TunnelVision.Gameplay
 
         public int CurrentLives { get; private set; }
 
+        public int MaxLives => maxLives;
+
         public bool IsDead => CurrentLives <= 0;
 
         private void Awake()
