@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TunnelVision.Enemies
 {
-    public class EnemyTest : MonoBehaviour
+    public class Chaplin : MonoBehaviour
     {
 
         private BoxCollider2D bc;
@@ -29,7 +29,6 @@ namespace TunnelVision.Enemies
             bool isTouchingAnything = bc.IsTouchingLayers();
             if (isTouchingAnything && !swordStarted)
             {
-                Debug.Log("touching");
                 swordStarted = true;
                 StartCoroutine(PlayIHYN());
             }
