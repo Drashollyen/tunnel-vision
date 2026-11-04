@@ -104,11 +104,44 @@ On a conflict, Desktop lists the files. Scenes and prefabs are usually merged fo
 2. Click **Preview Pull Request > Create pull request**.
 3. **Change the base branch from `main` to `revamp`.** This is the `base:` dropdown at the top of the page.
 4. Write the title as `type: what changed`. For example: `feat: add pause menu`.
-5. Fill in the template and link your card, for example `Card: #22`.
+5. Fill in the template and link your card, for example `Card: #22`. See [What to write in the PR](#what-to-write-in-the-pr).
 6. Add screenshots or a video for anything visual.
 
 > [!CAUTION]
 > **Check the base branch says `revamp` before you click Create.** If it says `main`, change it. Your work would otherwise skip `revamp`.
+
+### What to write in the PR
+
+> [!IMPORTANT]
+> **Replace the hint text in the template with your own words.** The `<!-- ... -->` lines are hidden on the PR page, but they still end up in the merge commit message.
+
+- **Say what you actually tested.** "It works" doesn't help anyone. Say what you clicked and what happened.
+- **Tick only what's true.** If a box doesn't apply, leave it unticked and say why.
+
+A filled-in PR looks like this:
+
+```markdown
+## What does this change?
+
+Adds the pause menu, opened with Esc. Card: #31
+
+## How did you test it?
+
+Paused during ConeTest, changed the volume in Options, then resumed. Quit to menu also works.
+
+## Screenshots / video
+
+(drag your screenshot in here)
+
+## Checklist
+
+- [x] The base branch at the top of this page is `revamp`, not `main`
+- [x] PR title follows `type: description` (it becomes the commit message)
+- [x] I got the latest `revamp` and checked the game still runs
+- [x] Every new/moved asset has its `.meta` file committed
+- [x] No unrelated changes (scenes/prefabs I didn't mean to touch, ProjectSettings noise)
+- [ ] New third-party assets are listed in `CREDITS.md` (no new assets in this PR)
+```
 
 ## 7. Merge
 
