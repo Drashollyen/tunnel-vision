@@ -19,7 +19,7 @@ on:
       - 'ProjectSettings/**'
       - '.gitattributes'
   pull_request:
-    branches: [main]
+    branches: [main, revamp]
   workflow_dispatch:
 
 concurrency:
@@ -66,6 +66,14 @@ jobs:
     env:
       TARGET_PLATFORM: StandaloneWindows64
     steps:
+      # The Unity Docker image is large and some runners don't have room for it, which fails the
+      # build with "no space left on device". This job doesn't use any of these tools.
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android /opt/ghc /usr/local/.ghcup /usr/share/dotnet /opt/hostedtoolcache/CodeQL
+          df -h /
+
       - uses: actions/checkout@v7
         with:
           lfs: false
@@ -85,7 +93,11 @@ jobs:
           git add .
           git reset --hard
 
+      # Unity gets killed on startup (exit code 137) when it restores a Library saved from these
+      # exact files. Pushes only build when game files changed, so they get an older Library.
+      # PR and manual builds can match, so they build from scratch.
       - name: Restore Unity Library cache
+        if: github.event_name == 'push'
         uses: actions/cache@v6
         with:
           path: Library

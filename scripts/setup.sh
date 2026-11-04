@@ -40,4 +40,13 @@ else
   echo "  ⚠ Unity $version not found in the default Hub folder. Install it via Unity Hub, then re-run this script."
 fi
 
-echo "✔ Done. Open the project in Unity Hub (Add > select this folder) using Unity $version."
+echo "→ .NET SDK (fixes C# whitespace when you commit)"
+if command -v dotnet >/dev/null 2>&1; then
+  echo "  found $(dotnet --version)"
+else
+  echo "  ⚠ Not found. Install it, or C# formatting checks can fail on your PRs:"
+  echo "    winget install Microsoft.DotNet.SDK.10"
+fi
+
+echo "✔ Done. Add the project in Unity Hub (Add > select this folder) using Unity $version."
+echo "  Before opening it, create your own branch. See CONTRIBUTING.md."

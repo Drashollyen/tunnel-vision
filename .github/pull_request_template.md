@@ -1,10 +1,10 @@
 ## What does this change?
 
-<!-- One or two sentences. Link the issue if there is one: "Closes #12". -->
+<!-- One or two sentences. Link your card from the board, for example: Card: #22 -->
 
 ## How did you test it?
 
-<!-- e.g. "Opened MainMenu, clicked Options, changed volume, restarted: value kept." -->
+<!-- For example: Opened IntroScreen, clicked Options, changed volume, restarted: value kept. -->
 
 ## Screenshots / video
 
@@ -12,8 +12,9 @@
 
 ## Checklist
 
-- [ ] PR title follows `type: description` (it becomes the commit message on main)
-- [ ] Branch is up to date with `main` (`git fetch origin && git rebase origin/main`)
+- [ ] **The base branch at the top of this page is `revamp`, not `main`**
+- [ ] PR title follows `type: description` (it becomes the commit message)
+- [ ] I got the latest `revamp` and checked the game still runs
 - [ ] Every new/moved asset has its `.meta` file committed
 - [ ] No unrelated changes (scenes/prefabs I didn't mean to touch, ProjectSettings noise)
 - [ ] New third-party assets are listed in `CREDITS.md`
