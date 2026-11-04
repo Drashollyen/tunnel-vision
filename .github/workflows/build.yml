@@ -93,7 +93,11 @@ jobs:
           git add .
           git reset --hard
 
+      # Unity gets killed on startup (exit code 137) when it restores a Library saved from these
+      # exact files. Pushes only build when game files changed, so they get an older Library.
+      # PR and manual builds can match, so they build from scratch.
       - name: Restore Unity Library cache
+        if: github.event_name == 'push'
         uses: actions/cache@v6
         with:
           path: Library
