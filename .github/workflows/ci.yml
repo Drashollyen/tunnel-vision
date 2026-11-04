@@ -1,13 +1,13 @@
-# Runs on every pull request and on main. The "Lint" and "Unity tests" jobs are required
+# Runs on every pull request into main or revamp, and on pushes to them. The "Lint" and "Unity tests" jobs are required
 # status checks in the main branch ruleset, so a PR can't merge until both pass.
 # "Unity tests" only runs when Unity files change (see the "changes" job); otherwise it is skipped.
 name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, revamp]
   push:
-    branches: [main]
+    branches: [main, revamp]
   workflow_dispatch:
 
 # A new push to the same PR cancels the run that is still going.
@@ -39,10 +39,14 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: C# formatting (.editorconfig)
-        run: dotnet format whitespace Assets/_Project --folder --verify-no-changes --verbosity diagnostic
+        run: |
+          if ! dotnet format whitespace Assets/_Project --folder --verify-no-changes --verbosity diagnostic; then
+            echo "::error::C# whitespace needs fixing. Install the .NET SDK (see README), run 'dotnet format whitespace Assets/_Project --folder' in Git Bash, then commit."
+            exit 1
+          fi
 
       - name: Branch is up to date with main
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.base_ref == 'main'
         run: |
           git fetch origin main
           if ! git merge-base --is-ancestor origin/main "${{ github.event.pull_request.head.sha }}"; then

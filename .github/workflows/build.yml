@@ -19,7 +19,7 @@ on:
       - 'ProjectSettings/**'
       - '.gitattributes'
   pull_request:
-    branches: [main]
+    branches: [main, revamp]
   workflow_dispatch:
 
 concurrency:

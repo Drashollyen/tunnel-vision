@@ -1,68 +1,92 @@
 # Tunnel Vision
 
-2D Unity game. **Unity 6000.6.3f1**, Universal Render Pipeline (2D), Windows builds.
+2D Unity game for Windows. **Unity 6000.6.3f1**, Universal Render Pipeline (2D).
+
+- **Tasks:** [project board](https://github.com/orgs/Drashollyen/projects/1)
+- **Plan:** [roadmap issue](https://github.com/Drashollyen/tunnel-vision/issues/66)
+- **How to work on the game:** [CONTRIBUTING.md](CONTRIBUTING.md)
+
+> [!IMPORTANT]
+> **Never open Unity until you are on your own branch.** Unity works on whichever branch is selected in GitHub Desktop. See [Set up your branch](CONTRIBUTING.md#2-set-up-your-branch-before-opening-unity).
 
 ## Setup
 
-Install:
+You only do this once.
+
+**1. Install these**
 
 - [Unity Hub](https://unity.com/download) with editor **6000.6.3f1**
-- [Git for Windows](https://git-scm.com/download/win) (includes Git Bash and Git LFS)
-- [GitHub Desktop](https://desktop.github.com/) if you prefer not to use Git commands
-- Optional: [.NET SDK](https://dotnet.microsoft.com/download), used by the pre-commit hook to check C# formatting
+- [Git for Windows](https://git-scm.com/download/win), which includes Git Bash and Git LFS
+- [GitHub Desktop](https://desktop.github.com/), unless you prefer Git commands
+- [.NET SDK 10](https://dotnet.microsoft.com/download), which fixes C# whitespace for you when you commit
 
-**1. Clone**
+**2. Clone the project**
 
-- **GitHub Desktop:** **File > Clone repository > URL**, paste `https://github.com/Drashollyen/tunnel-vision.git`, click **Clone**.
-- **Command line:** in Git Bash run `git clone https://github.com/Drashollyen/tunnel-vision.git`
+In GitHub Desktop, go to **File > Clone repository > URL**, paste the address below and click **Clone**.
 
-**2. Run the setup script (once per clone)**
+```
+https://github.com/Drashollyen/tunnel-vision.git
+```
 
-In File Explorer, right-click the `tunnel-vision` folder > **Show more options > Open Git Bash here**, then run:
+Or in Git Bash:
+
+```bash
+git clone https://github.com/Drashollyen/tunnel-vision.git
+```
+
+**3. Run the setup script**
+
+In File Explorer, right-click the `tunnel-vision` folder and choose **Show more options > Open Git Bash here**. Then run:
 
 ```bash
 bash scripts/setup.sh
 ```
 
-This pulls the LFS files, installs the git hooks and configures Unity Smart Merge.
+This downloads the large files, installs the checks that run when you commit, and sets up Unity Smart Merge.
 
-**3. Open in Unity**
+> [!WARNING]
+> **Skipping the setup script causes problems.** Without it, images and sounds can be missing, and merging scenes is much harder.
 
-**Unity Hub > Add > Add project from disk >** select `tunnel-vision`. Open `Assets/_Project/Scenes/IntroScreen.unity` and press Play.
+**4. Add the project to Unity Hub**
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before your first change.
+Go to **Unity Hub > Add > Add project from disk** and select `tunnel-vision`. **Don't open it yet.** Follow [Set up your branch](CONTRIBUTING.md#2-set-up-your-branch-before-opening-unity) first.
 
 ## Project layout
 
 ```
 Assets/
   _Project/                 Game content. All new work goes here.
-    Scenes/                 IntroScreen (first in build), Game
+    Art/                    Sprites and physics materials
+    Audio/                  Music and sound effects
+    Input/                  Player controls
+    Prefabs/                Reusable objects, including Player
+    Scenes/                 IntroScreen (first in build), ConeTest, UITest, Game
     Scripts/Runtime/        Game code (TunnelVision.Runtime)
     Tests/EditMode/         Unit tests
     Tests/PlayMode/         Scene tests
-  ThirdParty/               Store assets. Don't edit (see CREDITS.md)
+    UI/                     Fonts and interface textures
+  ThirdParty/               Downloaded assets. Don't edit (see CREDITS.md)
   Settings/                 URP and Input System settings
   TextMesh Pro/             TMP resources
 .github/                    CI workflows, templates, main ruleset
-.githooks/                  Local git hooks
+.githooks/                  Checks that run when you commit and push
 ```
 
 ## Main menu
 
 `IntroScreen` is built by hand in the Editor and driven by `IntroScreenController`.
 
-- **Play** loads the scene set in `IntroScreenController > Next Scene Game` (default `Game`).
+- **Play** loads the scene set in `IntroScreenController > Next Scene Name` (currently `ConeTest`).
 - **Options** opens a "Coming soon" page with a Back button.
 - **Quit** closes the game.
 
 ## CI
 
-Checks on every PR:
+These checks run on every PR:
 
 | Check | What it does |
 |---|---|
-| **Lint** | `.meta` files, forbidden files, C# formatting, branch up to date with `main` |
+| **Lint** | `.meta` files, forbidden files, C# formatting. PRs into `main` must also be up to date with `main` |
 | **Unity tests** | EditMode and PlayMode tests. Skipped for docs/GitHub-only changes |
 | **Build Windows** | Runs only when `build.yml` changes. Skipped otherwise |
 | **PR title** | `type: description` format |
