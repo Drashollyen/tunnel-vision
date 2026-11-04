@@ -83,6 +83,7 @@ Full steps are in [CONTRIBUTING.md](CONTRIBUTING.md).
 - PRs go into `revamp`, and GitHub picks that for you. If the base branch says `main`, change it.
 - Write `Closes #22` in your PR, using your card's number. The card closes when the PR merges.
 - If your PR says it's out of date, click **Update branch** and wait for the checks to run again.
+- **Don't merge your own PR.** kemuri reviews and merges it.
 - Add a line to `CREDITS.md` whenever you add an asset: name, link, and licence if there is one.
 
 **The game**
