@@ -19,18 +19,22 @@ namespace TunnelVision.UI
         [SerializeField] private AudioClip clickClip;
         [Tooltip("How loud the click is compared with the hover sound, before the player's settings.")]
         [SerializeField, Range(0f, 1f)] private float clickVolume = 0.6f;
+        [Tooltip("Played when a greyed out control is clicked, at the same volume as the click.")]
+        [SerializeField] private AudioClip disabledClickClip;
 
         private void Awake()
         {
             foreach (Selectable selectable in GetComponentsInChildren<Selectable>(true))
             {
-                selectable.gameObject.AddComponent<InterfaceSoundTrigger>().Initialize(this);
+                selectable.gameObject.AddComponent<InterfaceSoundTrigger>();
             }
         }
 
         public void PlayHover() => Play(hoverClip, 1f);
 
         public void PlayClick() => Play(clickClip, clickVolume);
+
+        public void PlayDisabledClick() => Play(disabledClickClip, clickVolume);
 
         private static void Play(AudioClip clip, float volume)
         {
