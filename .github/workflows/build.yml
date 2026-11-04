@@ -66,6 +66,14 @@ jobs:
     env:
       TARGET_PLATFORM: StandaloneWindows64
     steps:
+      # The Unity Docker image is large and some runners don't have room for it, which fails the
+      # build with "no space left on device". This job doesn't use any of these tools.
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android /opt/ghc /usr/local/.ghcup /usr/share/dotnet /opt/hostedtoolcache/CodeQL
+          df -h /
+
       - uses: actions/checkout@v7
         with:
           lfs: false
