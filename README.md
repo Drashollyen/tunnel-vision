@@ -34,6 +34,8 @@ Or in Git Bash:
 git clone https://github.com/Drashollyen/tunnel-vision.git
 ```
 
+`revamp` is the default branch until Nov 19, so that's the branch you start on.
+
 **3. Run the setup script**
 
 In File Explorer, right-click the `tunnel-vision` folder and choose **Show more options > Open Git Bash here**. Then run:
@@ -91,7 +93,7 @@ These checks run on every PR:
 | **Build Windows** | Runs only when `build.yml` changes. Skipped otherwise |
 | **PR title** | `type: description` format |
 
-Merges to `main` that change `Assets/`, `Packages/` or `ProjectSettings/` produce a Windows build. Download it from the run's **Artifacts** in the **Actions** tab.
+Merges into `revamp` and `main` need these checks to pass and the branch to be up to date. Merges to `main` that change `Assets/`, `Packages/` or `ProjectSettings/` produce a Windows build. Download it from the run's **Artifacts** in the **Actions** tab.
 
 ## Credits
 

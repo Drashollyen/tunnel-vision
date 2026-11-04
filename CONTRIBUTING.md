@@ -8,10 +8,10 @@ Set up your clone first: [README.md](README.md#setup).
 > 1. **Assign yourself a card** before you start.
 > 2. **Close Unity before you switch branches.**
 > 3. **Work on your own branch, made from `revamp`.** Never work on `main` or `revamp`.
-> 4. **Your PR goes into `revamp`, not `main`.** GitHub picks `main` by default, so change it.
+> 4. **Your PR goes into `revamp`.** GitHub picks it for you, so leave the base branch alone.
 > 5. **Only one person works in a scene at a time.**
 
-Everyone works on their own branch. Finished work goes into `revamp`, the shared copy of the game. `revamp` goes into `main` at the end.
+Everyone works on their own branch. Finished work goes into `revamp`, the shared copy of the game and the repo's default branch until Nov 19. `revamp` goes into `main` at the end.
 
 ```
 main ──────────────────────────────────────────► final merge (Nov 19)
@@ -89,12 +89,11 @@ Do this before opening a PR, and whenever you need someone else's work. Your bra
 
 1. **Close Unity.**
 2. In GitHub Desktop, click **Fetch origin**.
-3. Go to **Branch > Merge into current branch**.
-4. Choose **`origin/revamp`** and click **Create a merge commit**.
-5. Open Unity and check the game still runs.
+3. Go to **Branch > Update from revamp**.
+4. Open Unity and check the game still runs.
 
 > [!WARNING]
-> **Don't use Branch > Update from main.** That brings in `main`, not `revamp`.
+> **If the menu says Update from main, don't click it.** That brings in `main`, not `revamp`. Use **Branch > Merge into current branch**, choose **`origin/revamp`** and click **Create a merge commit**.
 
 On a conflict, Desktop lists the files. Scenes and prefabs are usually merged for you. If they aren't, see [Scene and prefab conflicts](#scene-and-prefab-conflicts).
 
@@ -102,9 +101,9 @@ On a conflict, Desktop lists the files. Scenes and prefabs are usually merged fo
 
 1. Click **Push origin**, or **Publish branch** the first time.
 2. Click **Preview Pull Request > Create pull request**.
-3. **Change the base branch from `main` to `revamp`.** This is the `base:` dropdown at the top of the page.
+3. Check that the `base:` dropdown at the top of the page says `revamp`.
 4. Write the title as `type: what changed`. For example: `feat: add pause menu`.
-5. Fill in the template and link your card, for example `Card: #22`. See [What to write in the PR](#what-to-write-in-the-pr).
+5. Fill in the template and link your card with `Closes #22`, using your card's number. See [What to write in the PR](#what-to-write-in-the-pr).
 6. Add screenshots or a video for anything visual.
 
 > [!CAUTION]
@@ -123,7 +122,7 @@ A filled-in PR looks like this:
 ```markdown
 ## What does this change?
 
-Adds the pause menu, opened with Esc. Card: #31
+Adds the pause menu, opened with Esc. Closes #31
 
 ## How did you test it?
 
@@ -135,7 +134,7 @@ Paused during ConeTest, changed the volume in Options, then resumed. Quit to men
 
 ## Checklist
 
-- [x] The base branch at the top of this page is `revamp`, not `main`
+- [x] The base branch at the top of this page is `revamp`
 - [x] PR title follows `type: description` (it becomes the commit message)
 - [x] I got the latest `revamp` and checked the game still runs
 - [x] Every new/moved asset has its `.meta` file committed
@@ -145,16 +144,20 @@ Paused during ConeTest, changed the volume in Options, then resumed. Quit to men
 
 ## 7. Merge
 
-Wait for the checks to finish. **Don't merge while a check is red or still running.** A skipped check counts as passed.
+The PR can merge when:
 
-Click **Squash and merge**. Your branch is deleted automatically.
+- all checks have passed (a skipped check counts as passed)
+- your branch has the latest `revamp`. If it doesn't, click **Update branch** on the PR page and wait for the checks to run again
+- all review comments are resolved
+
+Then click **Squash and merge**. Your branch is deleted automatically.
 
 > [!IMPORTANT]
 > **Open the game after your PR merges.** If something broke, tell the group and fix it first.
 
 ## 8. Finish the card
 
-**Close your card by hand and check it's in Done on the board.** `Closes #22` only closes cards on PRs into `main`, so it won't do this for PRs into `revamp`.
+**Check your card closed and moved to Done on the board.** `Closes #22` does this when the PR merges. If you forgot to write it, close the card by hand.
 
 Then go back to [step 1](#1-pick-or-create-a-card).
 
