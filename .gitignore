@@ -26,6 +26,11 @@
 *.unitypackage.meta
 crashlytics-build.properties
 
+# Written by the Performance Testing package during builds. Remove the
+# Resources.meta line if the project ever adds a real Assets/Resources folder.
+/Assets/Resources/PerformanceTestRun*
+/Assets/Resources.meta
+
 # Generated IDE project files (Unity regenerates them)
 ExportedObj/
 .consulo/
