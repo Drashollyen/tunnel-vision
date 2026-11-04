@@ -5,7 +5,7 @@ namespace TunnelVision.UI
 {
     public class IntroScreenController : MonoBehaviour
     {
-        [SerializeField] private string nextSceneName = "Game";
+        [SerializeField] private string nextSceneName = "ConeTest";
         [SerializeField] private GameObject mainPanel;
         [SerializeField] private GameObject optionsPanel;
 
