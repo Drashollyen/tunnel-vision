@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using TunnelVision.Settings;
+using UnityEngine;
 
 namespace TunnelVision.Tests
 {
@@ -36,7 +37,9 @@ namespace TunnelVision.Tests
             Assert.That(settings.MasterVolume, Is.EqualTo(GameSettings.DefaultMasterVolume));
             Assert.That(settings.InterfaceVolume, Is.EqualTo(GameSettings.DefaultInterfaceVolume));
             Assert.That(settings.InterfaceSounds, Is.EqualTo(GameSettings.DefaultInterfaceSounds));
-            Assert.That(settings.Fullscreen, Is.EqualTo(GameSettings.DefaultFullscreen));
+            Assert.That(settings.DisplayMode, Is.EqualTo(GameSettings.DefaultDisplayMode));
+            Assert.That(settings.ResolutionWidth, Is.EqualTo(GameSettings.DefaultResolutionSize));
+            Assert.That(settings.ResolutionHeight, Is.EqualTo(GameSettings.DefaultResolutionSize));
         }
 
         [Test]
@@ -48,7 +51,9 @@ namespace TunnelVision.Tests
                 MasterVolume = 0.25f,
                 InterfaceVolume = 0.5f,
                 InterfaceSounds = false,
-                Fullscreen = false,
+                DisplayMode = FullScreenMode.Windowed,
+                ResolutionWidth = 1280,
+                ResolutionHeight = 720,
             };
 
             settings.Save();
@@ -58,8 +63,62 @@ namespace TunnelVision.Tests
             Assert.That(reloaded.MasterVolume, Is.EqualTo(0.25f));
             Assert.That(reloaded.InterfaceVolume, Is.EqualTo(0.5f));
             Assert.That(reloaded.InterfaceSounds, Is.False);
-            Assert.That(reloaded.Fullscreen, Is.False);
+            Assert.That(reloaded.DisplayMode, Is.EqualTo(FullScreenMode.Windowed));
+            Assert.That(reloaded.ResolutionWidth, Is.EqualTo(1280));
+            Assert.That(reloaded.ResolutionHeight, Is.EqualTo(720));
             Assert.That(store.SaveCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Load_WithUnsupportedDisplayMode_UsesDefault()
+        {
+            var store = new MemoryStore();
+            store.SetInt(GameSettings.DisplayModeKey, (int)FullScreenMode.MaximizedWindow);
+            var settings = new GameSettings(store);
+
+            settings.Load();
+
+            Assert.That(settings.DisplayMode, Is.EqualTo(GameSettings.DefaultDisplayMode));
+        }
+
+        [TestCase(FullScreenMode.ExclusiveFullScreen, 1280, 720, 1280, 720)]
+        [TestCase(FullScreenMode.Windowed, 1280, 720, 1280, 720)]
+        [TestCase(FullScreenMode.FullScreenWindow, 1280, 720, 2560, 1440)]
+        [TestCase(FullScreenMode.Windowed, 0, 0, 2560, 1440)]
+        public void GetWindowSize_FollowsModeAndSavedSize(
+            FullScreenMode mode, int width, int height, int expectedWidth, int expectedHeight)
+        {
+            var settings = new GameSettings(new MemoryStore())
+            {
+                DisplayMode = mode,
+                ResolutionWidth = width,
+                ResolutionHeight = height,
+            };
+
+            Vector2Int size = settings.GetWindowSize(new Vector2Int(2560, 1440));
+
+            Assert.That(size, Is.EqualTo(new Vector2Int(expectedWidth, expectedHeight)));
+        }
+
+        [Test]
+        public void ResolutionList_RemovesRepeatsAndTinySizes_LargestFirst()
+        {
+            var available = new[]
+            {
+                new Vector2Int(640, 480),
+                new Vector2Int(1280, 720),
+                new Vector2Int(1920, 1080),
+                new Vector2Int(1920, 1080),
+            };
+
+            var list = ResolutionList.Build(available, new Vector2Int(1600, 900));
+
+            Assert.That(list, Is.EqualTo(new[]
+            {
+                new Vector2Int(1920, 1080),
+                new Vector2Int(1600, 900),
+                new Vector2Int(1280, 720),
+            }));
         }
 
         [TestCase(-1f, 0f)]
@@ -101,7 +160,9 @@ namespace TunnelVision.Tests
                 MasterVolume = 0.1f,
                 InterfaceVolume = 0.1f,
                 InterfaceSounds = false,
-                Fullscreen = false,
+                DisplayMode = FullScreenMode.Windowed,
+                ResolutionWidth = 1280,
+                ResolutionHeight = 720,
             };
 
             settings.ResetToDefaults();
@@ -109,7 +170,9 @@ namespace TunnelVision.Tests
             Assert.That(settings.MasterVolume, Is.EqualTo(GameSettings.DefaultMasterVolume));
             Assert.That(settings.InterfaceVolume, Is.EqualTo(GameSettings.DefaultInterfaceVolume));
             Assert.That(settings.InterfaceSounds, Is.EqualTo(GameSettings.DefaultInterfaceSounds));
-            Assert.That(settings.Fullscreen, Is.EqualTo(GameSettings.DefaultFullscreen));
+            Assert.That(settings.DisplayMode, Is.EqualTo(GameSettings.DefaultDisplayMode));
+            Assert.That(settings.ResolutionWidth, Is.EqualTo(GameSettings.DefaultResolutionSize));
+            Assert.That(settings.ResolutionHeight, Is.EqualTo(GameSettings.DefaultResolutionSize));
         }
     }
 }

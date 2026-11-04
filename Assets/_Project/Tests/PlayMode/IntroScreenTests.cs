@@ -93,7 +93,7 @@ namespace TunnelVision.Tests
             SettingsService.Current.MasterVolume = 0.25f;
             SettingsService.Current.InterfaceVolume = 0.75f;
             SettingsService.Current.InterfaceSounds = false;
-            SettingsService.Current.Fullscreen = false;
+            SettingsService.Current.DisplayMode = FullScreenMode.Windowed;
 
             FindButton("Options Button").onClick.Invoke();
             yield return null;
@@ -102,7 +102,66 @@ namespace TunnelVision.Tests
             Assert.That(Find("Interface Volume Slider").GetComponent<Slider>().value, Is.EqualTo(0.75f));
             Assert.That(Find("Interface Volume Slider").GetComponent<Slider>().interactable, Is.False);
             Assert.That(Find("Interface Sounds Toggle").GetComponent<Toggle>().isOn, Is.False);
-            Assert.That(Find("Fullscreen Toggle").GetComponent<Toggle>().isOn, Is.False);
+            Assert.That(DisplayModeDropdown().captionText.text, Is.EqualTo("Windowed"));
+            Assert.That(ResolutionDropdown().interactable, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator OptionsPage_BorderlessFillsTheScreen_SoResolutionIsLocked()
+        {
+            SettingsService.Current.DisplayMode = FullScreenMode.Windowed;
+            FindButton("Options Button").onClick.Invoke();
+            yield return null;
+
+            DisplayModeDropdown().value = 1;
+
+            Assert.That(SettingsService.Current.DisplayMode, Is.EqualTo(FullScreenMode.FullScreenWindow));
+            Assert.That(ResolutionDropdown().interactable, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator DropdownListItems_PlaySoundsWithoutErrors()
+        {
+            FindButton("Options Button").onClick.Invoke();
+            yield return null;
+
+            TMP_Dropdown dropdown = DisplayModeDropdown();
+            dropdown.Show();
+            yield return null;
+
+            var triggers = dropdown.GetComponentsInChildren<InterfaceSoundTrigger>();
+            Assert.That(triggers, Is.Not.Empty);
+            foreach (InterfaceSoundTrigger trigger in triggers)
+            {
+                trigger.OnPointerEnter(null);
+            }
+
+            var items = dropdown.GetComponentsInChildren<Toggle>();
+            Assert.That(items, Is.Not.Empty);
+            foreach (Toggle item in items)
+            {
+                Assert.That(item.GetComponent<InterfaceSoundTrigger>().PlaysHoverSound, Is.True, item.name);
+            }
+
+            dropdown.Hide();
+        }
+
+        [UnityTest]
+        public IEnumerator ClosedDropdowns_DontPlayHoverSound_AndGreyedOutOnesAreDisabled()
+        {
+            SettingsService.Current.DisplayMode = FullScreenMode.FullScreenWindow;
+            FindButton("Options Button").onClick.Invoke();
+            yield return null;
+
+            var open = DisplayModeDropdown().GetComponent<InterfaceSoundTrigger>();
+            var greyedOut = ResolutionDropdown().GetComponent<InterfaceSoundTrigger>();
+
+            Assert.That(open.PlaysHoverSound, Is.False);
+            Assert.That(open.IsInteractable, Is.True);
+            Assert.That(greyedOut.PlaysHoverSound, Is.False);
+            Assert.That(greyedOut.IsInteractable, Is.False);
+
+            greyedOut.OnPointerClick(null);
         }
 
         [UnityTest]
@@ -114,7 +173,9 @@ namespace TunnelVision.Tests
             Find("Master Volume Slider").GetComponent<Slider>().value = 0.3f;
             Find("Interface Volume Slider").GetComponent<Slider>().value = 0.6f;
             Find("Interface Sounds Toggle").GetComponent<Toggle>().isOn = false;
-            Find("Fullscreen Toggle").GetComponent<Toggle>().isOn = false;
+            DisplayModeDropdown().value = 2;
+            ResolutionDropdown().onValueChanged.Invoke(0);
+            string chosenResolution = ResolutionDropdown().options[0].text;
 
             Assert.That(AudioListener.volume, Is.EqualTo(0.3f).Within(0.001f));
             Assert.That(SettingsService.Current.EffectiveInterfaceVolume, Is.EqualTo(0f));
@@ -127,7 +188,8 @@ namespace TunnelVision.Tests
             Assert.That(restarted.MasterVolume, Is.EqualTo(0.3f).Within(0.001f));
             Assert.That(restarted.InterfaceVolume, Is.EqualTo(0.6f).Within(0.001f));
             Assert.That(restarted.InterfaceSounds, Is.False);
-            Assert.That(restarted.Fullscreen, Is.False);
+            Assert.That(restarted.DisplayMode, Is.EqualTo(FullScreenMode.Windowed));
+            Assert.That($"{restarted.ResolutionWidth} x {restarted.ResolutionHeight}", Is.EqualTo(chosenResolution));
         }
 
         [UnityTest]
@@ -160,6 +222,12 @@ namespace TunnelVision.Tests
 
             Assert.That(GameObject.Find(InterfaceSounds.PlayerName), Is.Not.Null);
         }
+
+        private static TMP_Dropdown DisplayModeDropdown() =>
+            Find("Display Mode Dropdown").GetComponent<TMP_Dropdown>();
+
+        private static TMP_Dropdown ResolutionDropdown() =>
+            Find("Resolution Dropdown").GetComponent<TMP_Dropdown>();
 
         private static GameObject Find(string name)
         {
