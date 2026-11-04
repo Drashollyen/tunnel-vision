@@ -74,14 +74,6 @@ Assets/
 .githooks/                  Checks that run when you commit and push
 ```
 
-## Main menu
-
-`IntroScreen` is built by hand in the Editor and driven by `IntroScreenController`.
-
-- **Play** loads the scene set in `IntroScreenController > Next Scene Name` (currently `ConeTest`).
-- **Options** opens a "Coming soon" page with a Back button.
-- **Quit** closes the game.
-
 ## CI
 
 These checks run on every PR:
