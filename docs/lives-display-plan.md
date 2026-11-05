@@ -135,7 +135,7 @@ Check: `Lives Display` turns blue in the Hierarchy, and its `Eyes` list still ha
 
 - [ ] **Step 4: Make `HUD.prefab`**
 
-Drag `HUD Canvas` into `Prefabs/UI/`, choose **Original Prefab**, and rename the asset `HUD`. Open `HUD`, delete `You Died Text`, rename the root `HUD`, and save.
+Drag `HUD Canvas` into `Prefabs/UI/`, choose **Original Prefab**, and rename the asset `HUD`. Open `HUD`, delete `Game Over Text` (called `You Died Text` when this step was done), rename the root `HUD`, and save.
 
 Check: `HUD` contains `Lives Display` as a blue nested prefab, with anchors top left, position (40, -40). The Canvas Scaler is still 1920x1080, match 0.5, and the Canvas sort order is 10.
 

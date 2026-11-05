@@ -53,7 +53,7 @@ The eyes keep the sprite they use now, `eyeball2processing3.png` from Code Infer
 - `PlayerLives` gets a public read-only `MaxLives`, for the warning above.
 - `LivesDisplay` loses its `playerLives` Inspector slot and finds `PlayerLives` in the scene when it starts.
 - If there's no `PlayerLives` in the scene, `LivesDisplay` logs a clear error and turns itself off. It doesn't crash.
-- `LivesDisplay` no longer handles the "You Died" text. It comes back in #32 as part of `GameOverScreen`. Only test keys can reach zero lives until #24 is done, so players won't miss it.
+- `LivesDisplay` no longer handles the end of game text, which now reads "Game Over" instead of "You Died". It comes back in #32 as part of `GameOverScreen`. Only test keys can reach zero lives until #24 is done, so players won't miss it.
 
 ### Not Included
 
