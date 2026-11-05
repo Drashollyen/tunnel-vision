@@ -900,7 +900,7 @@ MonoBehaviour:
     rid: 5156287400885878987
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 00000000b3db2879dbdd0b7cbb06233b639d801ai
@@ -2361,11 +2361,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1027931269093535866, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.05
       objectReference: {fileID: 0}
     - target: {fileID: 1027931269093535866, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.75
+      value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 2888902924824645870, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2410,7 +2410,7 @@ PrefabInstance:
     - target: {fileID: 3283070381209266726, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -3231413284377484461, guid: ef81125edff6eeb47929ce222d34495e, type: 3}
+      objectReference: {fileID: -3231413284377484461, guid: 54fef6bd5d5e21843afe98280325480a, type: 3}
     - target: {fileID: 6186631764941048867, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
       propertyPath: m_Name
       value: Player
@@ -2430,6 +2430,30 @@ PrefabInstance:
     - target: {fileID: 8181885355727786699, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
       propertyPath: eyeTurnSpeed
       value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 8511036995494511783, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
+      propertyPath: m_PointLightInnerAngle
+      value: 38
+      objectReference: {fileID: 0}
+    - target: {fileID: 8511036995494511783, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
+      propertyPath: m_PointLightOuterAngle
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8511036995494511783, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
+      propertyPath: 'managedReferences[5156287445799010304]'
+      value: 'Unity.RenderPipelines.Universal.2D.Runtime UnityEngine.Rendering.Universal.Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 8511036995494511783, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
+      propertyPath: managedReferences[5156287400885878986].m_Provider2DCache
+      value: 5156287445799010304
+      objectReference: {fileID: 0}
+    - target: {fileID: 8511036995494511783, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
+      propertyPath: managedReferences[5156287400885878986].m_SelectedHashCode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8511036995494511783, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
+      propertyPath: managedReferences[5156287445799010304].m_Cache.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9165052933793468484, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
       propertyPath: m_Size.y
