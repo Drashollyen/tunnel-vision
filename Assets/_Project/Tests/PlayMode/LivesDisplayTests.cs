@@ -5,6 +5,7 @@ using NUnit.Framework;
 using TunnelVision.Gameplay;
 using TunnelVision.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
@@ -15,7 +16,22 @@ namespace TunnelVision.Tests
         private static readonly Color Bright = Color.white;
         private static readonly Color Dim = new Color(0.3f, 0.3f, 0.3f, 0.4f);
 
+        private static int _sceneCount;
+
         private readonly List<GameObject> _created = new List<GameObject>();
+
+        // Other tests can leave a scene loaded, and its player would be found instead of this test's.
+        [UnitySetUp]
+        public IEnumerator StartInAnEmptyScene()
+        {
+            Scene empty = SceneManager.CreateScene($"LivesDisplayTest{++_sceneCount}");
+            Scene previous = SceneManager.GetActiveScene();
+            SceneManager.SetActiveScene(empty);
+            yield return SceneManager.UnloadSceneAsync(previous);
+
+            // Without a listener, Unity logs a message that fails the tests checking for no extra logs.
+            _created.Add(new GameObject("Test Listener", typeof(AudioListener)));
+        }
 
         [TearDown]
         public void DestroyCreatedObjects()
