@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 992151227
-  m_SortingLayer: 0
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 459347376000829041, guid: 5cbb7ac402290214cad4fda79208968a, type: 3}
@@ -306,7 +306,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 2081152475
-  m_SortingLayer: 0
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 8658351832292309105, guid: e3ba714f64f556a49b88a3d691c131df, type: 3}
@@ -333,6 +333,7 @@ GameObject:
   - component: {fileID: 2405651895646631557}
   - component: {fileID: 4355562892634983909}
   - component: {fileID: 8181885355727786699}
+  - component: {fileID: 9073848396303848130}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -572,3 +573,16 @@ MonoBehaviour:
   bodySprite: {fileID: 7765362616553655266}
   eyeball: {fileID: 1027931269093535866}
   eyeTurnSpeed: 360
+--- !u!114 &9073848396303848130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6186631764941048867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf5a584ff51f01c42803f3ccbc40ce96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Gameplay.PlayerLives
+  maxLives: 3

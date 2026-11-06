@@ -5,13 +5,12 @@ namespace TunnelVision.Enemies
 {
     public class Chaplin : MonoBehaviour
     {
-
         private BoxCollider2D bc;
         private SpriteRenderer currSprite;
         private bool swordStarted = false;
         public Sprite swordSprite;
 
-        [SerializeField] private AudioSource ihyn;
+        [SerializeField] private AudioSource ihyn; // Var name is short for I Hate You Nicholas
         [SerializeField] private AudioSource swordaudio;
 
 
@@ -20,7 +19,6 @@ namespace TunnelVision.Enemies
         {
             bc = GetComponent<BoxCollider2D>();
             currSprite = GetComponent<SpriteRenderer>();
-
         }
 
         // Update is called once per frame
