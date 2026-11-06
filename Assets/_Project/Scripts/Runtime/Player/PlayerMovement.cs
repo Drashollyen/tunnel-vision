@@ -53,18 +53,16 @@ namespace TunnelVision.Player
 
         public void Jump(InputAction.CallbackContext context)
         {
-            if (IsGrounded())
+            // If the player is on the ground when the jump button is pressed
+            if (context.performed && IsGrounded())
             {
+                rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpPower);
+            }
 
-                if (context.performed)
-                {
-                    rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpPower);
-                }
-                else if (context.canceled)
-                {
-                    rb.linearVelocity = new Vector2(rb.linearVelocityX, rb.linearVelocityY * 0.5f);
-                }
-
+            // If the player releases the jump button while in mid-air
+            else if (context.canceled && rb.linearVelocityY > 0f)
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocityX, rb.linearVelocityY * 0.5f);
             }
         }
 
