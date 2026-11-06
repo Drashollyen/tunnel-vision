@@ -12,12 +12,13 @@ Prefabs live in `Assets/_Project/Prefabs/UI/`.
 
 | Prefab | What it shows | Card |
 |---|---|---|
-| `LivesDisplay` | Eyes, top left | First |
+| `LivesDisplay` | Eyes, top left | Done |
+| `RoundOverMessage` | "Round Over" or "Game Over", centred | Done |
 | `TimerDisplay`, `CollectibleCounter` | Timer and collectible count | #34 |
 | `PauseMenu` | Resume, options, quit | #31 |
-| `GameOverScreen`, `LevelCompleteScreen` | End of level screens | #32 |
+| `GameOverScreen`, `LevelCompleteScreen` | Retry and next level buttons | #32 |
 
-The canvas keeps the settings it has in `UITest`: Screen Space Overlay, scaling from 1920x1080, match 0.5, sort order 10.
+The canvas uses Screen Space Overlay, scaling from 1920x1080, match 0.5, sort order 10.
 
 ### Changing The HUD For One Level
 
@@ -31,10 +32,14 @@ If several levels end up needing the same different layout, make a prefab varian
 
 ```
 HUD (Canvas prefab)
-└─ LivesDisplay (nested prefab, anchored top left, 40px in)
-   ├─ Eye 1
-   ├─ Eye 2
-   └─ Eye 3
+├─ LivesDisplay (nested prefab, anchored top left, 40px in)
+│  ├─ Eye 1
+│  ├─ Eye 2
+│  └─ Eye 3
+└─ RoundOverMessage (nested prefab, full screen, drawn on top)
+   └─ Panel (hidden until needed)
+      ├─ Title
+      └─ Subtitle
 ```
 
 ### Art
@@ -53,57 +58,39 @@ The eyes keep the sprite they use now, `eyeball2processing3.png` from Code Infer
 - `PlayerLives` gets a public read-only `MaxLives`, for the warning above.
 - `LivesDisplay` loses its `playerLives` Inspector slot and finds `PlayerLives` in the scene when it starts.
 - If there's no `PlayerLives` in the scene, `LivesDisplay` logs a clear error and turns itself off. It doesn't crash.
-- `LivesDisplay` no longer handles the end of game text, which now reads "Game Over" instead of "You Died". It comes back in #32 as part of `GameOverScreen`. Only test keys can reach zero lives until #24 is done, so players won't miss it.
+- `LivesDisplay` only dims eyes. The end of round text is handled by `RoundOverMessage`.
 
-### Not Included
+## Round Over Message
+
+Shown in the middle of the screen whenever the player loses a life.
+
+| Lives left | Title | Subtitle |
+|---|---|---|
+| 2 | Round Over | 2 Lives Remaining |
+| 1 | Round Over | 1 Life Remaining |
+| 0 | Game Over | none |
+
+- "Round Over" hides after 2 seconds (**Show Seconds** on the component). Losing another life restarts the 2 seconds.
+- "Game Over" stays until lives are restored. Retry and Quit To Menu come in #32.
+- The timing uses unscaled time, so the message still goes away if the game is paused.
+- Like `LivesDisplay`, it finds `PlayerLives` by itself and logs a clear error if there isn't one.
+- The title is red, size 120, and the subtitle is white, size 48, both in `Nunito-Bold SDF`.
+
+## Not Included
 
 - Real damage (#24)
 - Timer and collectible count (#34)
 - Pixel art for the eye
 
-## Testing Each Element
+## Testing
 
-Every HUD element goes through the same steps:
+Everything is tested by hand in the Unity Editor. There are no automated tests or test keys for the HUD.
 
-1. Build the element, along with a test scene and any test keys it needs.
-2. Try it in Unity using its checklist.
-3. Fix anything that fails and try again.
-4. Once it passes, delete the test scene and test keys in the same PR, before it merges. Test code never reaches `revamp`.
+For each element:
 
-Test scenes go in `Assets/_Project/Scenes/Test/` and aren't added to the build.
+1. Build it as a prefab in `Assets/_Project/Prefabs/UI/` and add it to `HUD` if it belongs there.
+2. Drop `HUD` and `Player` into a scene, without saving shared scenes, and work through the element's checks in Play mode.
+3. Check the prefab works in someone else's scene with nothing to wire up.
+4. Remove any temporary test scenes or test code before the PR merges.
 
-Automated tests in `Assets/_Project/Tests/` stay after the manual test code is removed. They aren't part of the game build, and CI runs them on every PR, so they catch anyone breaking the element later.
-
-### Lives Test Setup
-
-`LivesTest.unity` contains only a camera, `Player` and `HUD`, plus an object with `HudTestKeys`. `HudTestKeys` is changed to find `PlayerLives` by itself. K loses a life, and at zero lives it restores all of them.
-
-### Lives Checklist
-
-- [ ] Press Play: three bright eyes in the top left, and no errors in the Console
-- [ ] Press K: one eye dims each press, from the first life lost to the last
-- [ ] Press K at zero lives: all three eyes come back
-- [ ] Change the Game view to other sizes (1920x1080, 1280x720, 16:10): the eyes stay top left at a sensible size
-- [ ] Set `maxLives` to 2 on the player and press Play: a warning appears in the Console
-- [ ] Disable `Player` and press Play: a clear error appears in the Console, and the game keeps running
-- [ ] Move the lives display on the scene's HUD copy, then edit the eye colour in `HUD.prefab`: the scene keeps its position and gets the new colour
-
-Undo the last three changes after trying them.
-
-### Automated Test
-
-`LivesDisplayTests` in `Tests/PlayMode` covers dimming, restoring, and the missing `PlayerLives` error.
-
-### Cleanup After Lives Pass
-
-- Delete `LivesTest.unity` and `HudTestKeys.cs`. This also ticks off the `HudTestKeys` item on #24.
-- `UITest.unity` still uses `HudTestKeys` and isn't in the build. Delete it only once kemuri confirms nothing in it is still needed.
-
-## Who Does What
-
-- Scripts, the automated test and test keys are written in code.
-- The prefabs and test scene are made by hand in the Unity Editor, following short written steps.
-
-## Later Elements
-
-Each element gets its own short section here before it's built, with its own test setup and checklist. `PauseMenu` will be the first to have buttons, so it will need an EventSystem in the scene. That gets decided in #31.
+Until real damage arrives in #24, nothing in the game takes a life. To check the lives display or Round Over again before then, add a temporary test key on your own branch and remove it before opening the PR.

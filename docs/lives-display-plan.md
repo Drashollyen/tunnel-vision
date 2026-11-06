@@ -1,5 +1,7 @@
 # Lives Display Build Plan
 
+> **Done.** This plan has been carried out. Its test code (`HudTestKeys`, `LivesDisplayTests` and the test scenes) was removed afterwards, because the HUD is now tested by hand. See [ui-prefabs-design.md](ui-prefabs-design.md) for how things stand.
+
 **Goal:** Turn the eye lives display into a drag-in `HUD` prefab that works in any scene with no wiring.
 
 **Approach:** `LivesDisplay` finds `PlayerLives` by itself, and `PlayerLives` moves onto `Player.prefab`. Code changes and the automated test come first. The prefabs and test scene are then made by hand in Unity, tried against the checklist, and the test code is removed before the PR merges.

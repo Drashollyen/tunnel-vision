@@ -62,7 +62,7 @@ Assets/
     Audio/                  Music and sound effects
     Input/                  Player controls
     Prefabs/                Reusable objects, including Player
-    Scenes/                 IntroScreen (first in build), ConeTest, UITest, Game
+    Scenes/                 IntroScreen (first in build), ConeTest, Game
     Scripts/Runtime/        Game code (TunnelVision.Runtime)
     Tests/EditMode/         Unit tests
     Tests/PlayMode/         Scene tests
