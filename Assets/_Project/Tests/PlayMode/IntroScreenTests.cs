@@ -181,6 +181,8 @@ namespace TunnelVision.Tests
             Assert.That(SettingsService.Current.EffectiveInterfaceVolume, Is.EqualTo(0f));
             Assert.That(Find("Interface Volume Slider").GetComponent<Slider>().interactable, Is.False);
 
+            FindButton("Back Button").onClick.Invoke();
+
             // A new instance only sees what was saved, the same as starting the game again.
             var restarted = new GameSettings(new PlayerPrefsSettingsStore());
             restarted.Load();
@@ -214,9 +216,9 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator ClickSound_KeepsPlayingWhenTheSceneChanges()
+        public IEnumerator ClickSoundPlayer_SurvivesSceneChange()
         {
-            Object.FindFirstObjectByType<InterfaceSounds>().PlayClick();
+            Object.FindAnyObjectByType<InterfaceSounds>().PlayClick();
 
             yield return SceneManager.LoadSceneAsync(GameScene);
 

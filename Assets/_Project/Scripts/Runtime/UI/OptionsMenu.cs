@@ -59,11 +59,16 @@ namespace TunnelVision.UI
             RefreshResolutions();
         }
 
+        // Sliders change on every tick of a drag, so they're only saved when the page closes.
+        private void OnDisable()
+        {
+            SettingsService.Current.Save();
+        }
+
         private void SetMasterVolume(float value)
         {
             SettingsService.Current.MasterVolume = value;
             SettingsService.Current.ApplyAudio();
-            SettingsService.Current.Save();
         }
 
         private void SetInterfaceSounds(bool isOn)
@@ -76,7 +81,6 @@ namespace TunnelVision.UI
         private void SetInterfaceVolume(float value)
         {
             SettingsService.Current.InterfaceVolume = value;
-            SettingsService.Current.Save();
         }
 
         private void SetDisplayMode(int index)
@@ -117,8 +121,7 @@ namespace TunnelVision.UI
 
         private static Vector2Int ScreenSize()
         {
-            Resolution screen = Screen.currentResolution;
-            return new Vector2Int(screen.width, screen.height);
+            return new Vector2Int(Display.main.systemWidth, Display.main.systemHeight);
         }
     }
 }

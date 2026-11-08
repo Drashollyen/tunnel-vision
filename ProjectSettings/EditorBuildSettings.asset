@@ -14,5 +14,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Game.unity
     guid: 6de843eb3c543484f8b72bcf5ea775a1
+  - enabled: 1
+    path: Assets/_Project/Scenes/LevelSelect.unity
+    guid: 43e3c455bf1c2834098b769906b9942e
+  - enabled: 1
+    path: Assets/_Project/Scenes/Levels/Level1_BigTop.unity
+    guid: c0fa079a206abbd4aa1b27112889a9e9
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

@@ -15,16 +15,16 @@ namespace TunnelVision.UI
         [SerializeField] private TMP_Text subtitle;
         [SerializeField] private float showSeconds = 2f;
 
-        private PlayerLives playerLives;
-        private int lastLives;
-        private float hideAt = float.PositiveInfinity;
+        private PlayerLives _playerLives;
+        private int _lastLives;
+        private float _hideAt = float.PositiveInfinity;
 
         private void Awake()
         {
             panel.SetActive(false);
-            playerLives = FindAnyObjectByType<PlayerLives>();
+            _playerLives = FindAnyObjectByType<PlayerLives>();
 
-            if (playerLives == null)
+            if (_playerLives == null)
             {
                 Debug.LogError("RoundOverMessage: no PlayerLives found in the scene. Add the Player prefab.");
                 enabled = false;
@@ -33,33 +33,33 @@ namespace TunnelVision.UI
 
         private void OnEnable()
         {
-            if (playerLives == null)
+            if (_playerLives == null)
             {
                 return;
             }
 
-            playerLives.LivesChanged += OnLivesChanged;
-            lastLives = playerLives.CurrentLives;
+            _playerLives.LivesChanged += OnLivesChanged;
+            _lastLives = _playerLives.CurrentLives;
         }
 
         private void OnDisable()
         {
-            if (playerLives != null)
+            if (_playerLives != null)
             {
-                playerLives.LivesChanged -= OnLivesChanged;
+                _playerLives.LivesChanged -= OnLivesChanged;
             }
         }
 
         private void Start()
         {
             // The player's Awake may run after this message's OnEnable, so read the lives again here.
-            lastLives = playerLives.CurrentLives;
+            _lastLives = _playerLives.CurrentLives;
         }
 
         private void Update()
         {
             // Unscaled time, so the message still goes away if something pauses the game.
-            if (Time.unscaledTime >= hideAt)
+            if (Time.unscaledTime >= _hideAt)
             {
                 Hide();
             }
@@ -67,8 +67,8 @@ namespace TunnelVision.UI
 
         private void OnLivesChanged(int lives)
         {
-            bool lostALife = lives < lastLives;
-            lastLives = lives;
+            bool lostALife = lives < _lastLives;
+            _lastLives = lives;
 
             if (!lostALife)
             {
@@ -82,20 +82,20 @@ namespace TunnelVision.UI
             {
                 title.text = "Game Over";
                 subtitle.gameObject.SetActive(false);
-                hideAt = float.PositiveInfinity;
+                _hideAt = float.PositiveInfinity;
                 return;
             }
 
             title.text = "Round Over";
             subtitle.text = lives == 1 ? "1 Life Remaining" : $"{lives} Lives Remaining";
             subtitle.gameObject.SetActive(true);
-            hideAt = Time.unscaledTime + showSeconds;
+            _hideAt = Time.unscaledTime + showSeconds;
         }
 
         private void Hide()
         {
             panel.SetActive(false);
-            hideAt = float.PositiveInfinity;
+            _hideAt = float.PositiveInfinity;
         }
     }
 }

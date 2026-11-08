@@ -13,7 +13,7 @@ namespace TunnelVision.UI
         public const string PlayerName = "Interface Sounds Player";
 
         // Kept across scenes, so the Play button's click isn't cut off when the level loads.
-        private static AudioSource s_player;
+        private static AudioSource _player;
 
         [SerializeField] private AudioClip hoverClip;
         [SerializeField] private AudioClip clickClip;
@@ -43,15 +43,15 @@ namespace TunnelVision.UI
                 return;
             }
 
-            if (s_player == null)
+            if (_player == null)
             {
                 var playerObject = new GameObject(PlayerName);
                 DontDestroyOnLoad(playerObject);
-                s_player = playerObject.AddComponent<AudioSource>();
-                s_player.playOnAwake = false;
+                _player = playerObject.AddComponent<AudioSource>();
+                _player.playOnAwake = false;
             }
 
-            s_player.PlayOneShot(clip, volume * SettingsService.Current.EffectiveInterfaceVolume);
+            _player.PlayOneShot(clip, volume * SettingsService.Current.EffectiveInterfaceVolume);
         }
     }
 }

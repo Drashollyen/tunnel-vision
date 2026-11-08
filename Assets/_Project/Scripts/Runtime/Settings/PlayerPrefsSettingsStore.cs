@@ -7,7 +7,6 @@ namespace TunnelVision.Settings
     /// </summary>
     public sealed class PlayerPrefsSettingsStore : ISettingsStore
     {
-        public bool HasKey(string key) => PlayerPrefs.HasKey(key);
 
         public float GetFloat(string key, float defaultValue) => PlayerPrefs.GetFloat(key, defaultValue);
 

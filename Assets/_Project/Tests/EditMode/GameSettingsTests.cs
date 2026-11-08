@@ -12,7 +12,6 @@ namespace TunnelVision.Tests
             public readonly Dictionary<string, object> Values = new Dictionary<string, object>();
             public int SaveCount;
 
-            public bool HasKey(string key) => Values.ContainsKey(key);
 
             public float GetFloat(string key, float defaultValue) =>
                 Values.TryGetValue(key, out var v) ? (float)v : defaultValue;

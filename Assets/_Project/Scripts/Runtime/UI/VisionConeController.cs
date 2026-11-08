@@ -3,27 +3,31 @@ using UnityEngine.InputSystem;
 
 namespace TunnelVision.UI
 {
+    /// <summary>
+    /// Points the intro screen's cone at the mouse. The cone in levels is driven by PlayerMovement.
+    /// </summary>
     public class VisionConeController : MonoBehaviour
     {
         [SerializeField] private float maxAngle = 60f;
         [SerializeField] private float followSpeed = 6f;
-        private float currentAngle;
-        private Camera mainCamera;
+        private float _currentAngle;
+        private Camera _mainCamera;
 
         private void Awake()
         {
-            mainCamera = Camera.main;
+            _mainCamera = Camera.main;
         }
 
-        // Update is called once per frame
-        void Update()
+        private void Update()
         {
             if (Mouse.current == null)
+            {
                 return;
+            }
 
             Vector2 mouseOnScreen = Mouse.current.position.ReadValue();
 
-            Vector3 mouseInWorld = mainCamera.ScreenToWorldPoint(mouseOnScreen);
+            Vector3 mouseInWorld = _mainCamera.ScreenToWorldPoint(mouseOnScreen);
 
             Vector3 direction = mouseInWorld - transform.position;
 
@@ -31,9 +35,9 @@ namespace TunnelVision.UI
 
             float target = Mathf.Clamp(angle, -maxAngle, maxAngle);
 
-            currentAngle = Mathf.LerpAngle(currentAngle, target, followSpeed * Time.deltaTime);
+            _currentAngle = Mathf.LerpAngle(_currentAngle, target, 1f - Mathf.Exp(-followSpeed * Time.deltaTime));
 
-            transform.rotation = Quaternion.Euler(0f, 0f, -currentAngle);
+            transform.rotation = Quaternion.Euler(0f, 0f, -_currentAngle);
         }
     }
 }

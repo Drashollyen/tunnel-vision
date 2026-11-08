@@ -263,6 +263,10 @@ The game uses pixel art. Import sprites with these settings so they stay crisp a
 - **Filter Mode:** Point (no filter)
 - **Compression:** None
 
+### New levels
+
+Follow [docs/new-level.md](docs/new-level.md) to start a level from the template.
+
 ### Scene and prefab conflicts
 
 `setup.sh` sets up Unity Smart Merge, which resolves most scene and prefab conflicts automatically. If one still conflicts, run `git mergetool`, or keep one side (`git checkout --ours <file>` or `--theirs`) and redo the other change in Unity.

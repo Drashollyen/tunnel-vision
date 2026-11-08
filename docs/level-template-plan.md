@@ -37,7 +37,7 @@ Asset Store packs need **Add to My Assets** on your account, then **Window > Pac
 Each has a test in Task 4 or a check in Task 5.
 
 - Nicholas walks off either edge of the starting floor: walls stop him, nothing falls out of the world.
-- The cone points away from every lit object: the screen is never pure black (far background still faint).
+- The cone points away from every object: nothing is visible at all, including outlines against the background.
 - A builder duplicates the template and moves the camera bounds: the camera stops at the new edges, not the template's.
 - A builder deletes the HUD from one level by mistake: the level still plays, and the template test catches it in the template itself.
 - Pixel Perfect Camera at window sizes that aren't a multiple of the reference resolution: no shimmer while walking.
@@ -62,14 +62,14 @@ This also ticks off most of #17. Bandits and Hero Knight can come in the same PR
 ## Task 2: Tiles and palette
 
 **Files:**
-- Create: `Assets/_Project/Tiles/Ground.asset` (Rule Tile: top edge, inner fill, left/right edges, corners)
+- Create: `Assets/_Project/Tiles/Ground.asset` (plain Tile from the red brick in `PlatformerTiles.png`; the pack has no edge or corner pieces)
 - Create: `Assets/_Project/Tiles/Props/*.asset` (one Tile per prop sprite)
 - Create: `Assets/_Project/Tiles/Palettes/BigTop.prefab` (Tile Palette holding both)
 
-- [ ] **Step 1:** Build `Ground` as a Rule Tile so builders paint with one brush and edges sort themselves out.
+- [ ] **Step 1:** Build `Ground` as a plain Tile, so builders paint with one brush.
 - [ ] **Step 2:** Make the `BigTop` palette with `Ground` first, then props.
-- [ ] **Step 3:** Paint a 10-tile test strip in an unsaved scene: corners and edges join with no gaps or seams.
-- [ ] **Step 4:** Commit `level: add ground rule tile and Big Top palette`.
+- [ ] **Step 3:** Paint a 10-tile test strip in an unsaved scene: tiles join with no gaps or seams.
+- [ ] **Step 4:** Commit `level: add ground tile and Big Top palette`.
 
 Zones 2 to 5 get their own palettes under #44.
 
@@ -116,10 +116,10 @@ Zones 2 to 5 get their own palettes under #44.
 |---|---|
 | `LevelRig` | none, position (0,0) |
 | `Player` | `Player.prefab` instance, at (0, 2) |
-| `Main Camera` | Camera (orthographic), CinemachineBrain, Pixel Perfect Camera (16 PPU, reference 480 x 270, upscale render texture off, crop off) |
-| `CinemachineCamera` | Follow `Player`, Position Composer (small dead zone, look-ahead off), Confiner 2D pointing at `CameraBounds`, Cinemachine Pixel Perfect extension |
+| `Main Camera` | Camera (orthographic), CinemachineBrain. No Pixel Perfect Camera while Nicholas's pixels are a different size from the world's; add it when he's redrawn |
+| `CinemachineCamera` | Follow `Player`, Position Composer (small dead zone, look-ahead off), Confiner 2D pointing at `CameraBounds` |
 | `CameraBounds` | PolygonCollider2D, Is Trigger, on Ignore Raycast; builders override its points per level |
-| `Global Light 2D` | Global, intensity 0, same as `ConeTest`, so only the cone lights the world |
+| `Global Light 2D` | Global, intensity 0 on every sorting layer, same as `ConeTest`, so nothing shows outside the cone |
 | `HUD` | `HUD.prefab` instance |
 | `EventSystem` | EventSystem + InputSystemUIInputModule |
 
@@ -129,7 +129,7 @@ Zones 2 to 5 get their own palettes under #44.
 |---|---|
 | `LevelRig` | the prefab above |
 | `Grid` | Grid (cell 1) with `Ground` tilemap (Ground layer, TilemapCollider2D used by composite, static Rigidbody2D, CompositeCollider2D; sorting `Ground`) and `Deco` tilemap (no collider; sorting `Deco`) |
-| `Background` | `Far` (factor 0.9, Sprite-Unlit-Default material at 30% tint, so it's always faintly visible), `Middle` (0.6, lit), `Near` (0.3, lit); sorting `Background` |
+| `Background` | `Far` (factor 0.9), `Middle` (0.6), `Near` (0.3), all lit; sorting `Background` |
 | `Platforms`, `Enemies`, `Hazards`, `Pickups`, `Checkpoints`, `Goal` | empty groups for #35, #38-#42, #22, #27, #23, #25 |
 
 Painted content: a floor about 40 tiles wide, walls 6 tiles high at both ends, one raised step to jump onto, and a few props on `Deco`. `CameraBounds` hugs the walls.
@@ -140,7 +140,7 @@ Painted content: a floor about 40 tiles wide, walls 6 tiles high at both ends, o
 [UnityTest] public IEnumerator HasExactlyOnePlayerWithLives()    // FindObjectsByType<PlayerLives>().Length == 1, CurrentLives == MaxLives
 [UnityTest] public IEnumerator HudFindsThePlayer()               // a LivesDisplay exists and is active
 [UnityTest] public IEnumerator PlayerLandsOnGround()             // after 1s: player rb.linearVelocity.y ~ 0 and player y > lowest Ground tile
-[UnityTest] public IEnumerator WorldIsDarkButFarLayerUnlit()     // global Light2D intensity == 0; Far renderer uses an unlit material
+[UnityTest] public IEnumerator GlobalLightIsOffSoOnlyTheConeLights()   // global Light2D intensity == 0
 [UnityTest] public IEnumerator CameraIsConfinedToBounds()        // CinemachineConfiner2D.BoundingShape2D is the rig's CameraBounds collider
 ```
 
@@ -168,5 +168,5 @@ Painted content: a floor about 40 tiles wide, walls 6 tiles high at both ends, o
 ## Open Points
 
 - **Ben's `feat/player-movement`** has new Nicholas sprites and a camera confiner commit. If it merges first, the rig uses its Player prefab as is; if the confiner overlaps, keep one.
-- **ConeTest** stays as the cone sandbox. Once Level 1 exists, the Play button still points at `ConeTest` until #25 changes it.
+- **ConeTest** is likely to become the tutorial, so it isn't the base for the template. `LevelRig` and `LevelTemplate` are built new, and `ConeTest` is left alone in this PR. Once the rig works, the tutorial can swap its own camera and light for `LevelRig` so it stays in step with the levels. The level order in #25 would then need the tutorial added.
 - **Kill zone at the bottom** belongs to #22. The template has walls and no pits, so it's playable without one.
