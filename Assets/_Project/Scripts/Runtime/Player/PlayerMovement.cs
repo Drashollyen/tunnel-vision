@@ -30,6 +30,7 @@ namespace TunnelVision.Player
 
         private bool facingRight = true;
         private Vector2 lookInput;
+        private bool controlsEnabled = true;
 
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -41,6 +42,9 @@ namespace TunnelVision.Player
         // Update is called once per frame
         void Update()
         {
+            if (!controlsEnabled)
+            { return; }
+
             rb.linearVelocity = new Vector2(horizontalMovement * moveSpeed, rb.linearVelocity.y);
             UpdateFacing();
             UpdateLooking();
@@ -48,11 +52,15 @@ namespace TunnelVision.Player
 
         public void Move(InputAction.CallbackContext context)
         {
+            if (!controlsEnabled)
+            { return; }
             horizontalMovement = context.ReadValue<Vector2>().x;
         }
 
         public void Jump(InputAction.CallbackContext context)
         {
+            if (!controlsEnabled)
+            { return; }
             // If the player is on the ground when the jump button is pressed
             if (context.performed && IsGrounded())
             {
@@ -68,6 +76,8 @@ namespace TunnelVision.Player
 
         public void Look(InputAction.CallbackContext context)
         {
+            if (!controlsEnabled)
+            { return; }
             lookInput = context.ReadValue<Vector2>();
         }
 
@@ -125,6 +135,14 @@ namespace TunnelVision.Player
         {
             Gizmos.color = Color.white;
             Gizmos.DrawWireCube(groundCheckPos.position, groundCheckSize);
+        }
+
+        public void EnableControls(bool value)
+        {
+            controlsEnabled = value;
+
+            horizontalMovement = 0f;
+            lookInput = Vector2.zero;
         }
 
     }

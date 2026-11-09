@@ -6,11 +6,8 @@ namespace TunnelVision.Gameplay
     public class PlayerLives : MonoBehaviour
     {
         [SerializeField] private int maxLives = 3;
-
         public event Action<int> LivesChanged;
-
         public int CurrentLives { get; private set; }
-
         public bool IsDead => CurrentLives <= 0;
 
         private void Awake()
