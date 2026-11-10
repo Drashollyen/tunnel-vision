@@ -3,6 +3,7 @@ using NUnit.Framework;
 using TunnelVision.Level;
 using TunnelVision.Player;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace TunnelVision.Tests
@@ -16,10 +17,16 @@ namespace TunnelVision.Tests
         private GameObject _other;
         private PlayerLives _lives;
         private PlayerRespawn _respawn;
+        private Scene _scene;
 
         [SetUp]
         public void CreatePlayer()
         {
+            // A scene of its own that isn't in the build, so the last life restarts in place
+            // instead of reloading whatever scene an earlier test left open.
+            _scene = SceneManager.CreateScene("RespawnTest " + System.Guid.NewGuid());
+            SceneManager.SetActiveScene(_scene);
+
             _player = new GameObject("Player");
             _player.transform.position = new Vector3(100f, 100f, 0f);
             var body = _player.AddComponent<Rigidbody2D>();
@@ -37,6 +44,8 @@ namespace TunnelVision.Tests
             {
                 Object.Destroy(_other);
             }
+
+            SceneManager.UnloadSceneAsync(_scene);
         }
 
         private IEnumerator WaitForRespawn()
