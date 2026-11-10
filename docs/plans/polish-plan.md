@@ -47,7 +47,7 @@ These go first because every later screen uses them.
 
 ## Phase 4: The Rest Of The Level UI
 
-In build order. The detail for each is in [ui-tasks.md](ui-tasks.md).
+In build order. The detail for each is in [ui-tasks.md](../ui-tasks.md).
 
 | # | Element | Card | Depends on |
 |---|---|---|---|

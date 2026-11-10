@@ -1,6 +1,6 @@
 # Lives Display Build Plan
 
-> **Done.** This plan has been carried out. Its test code (`HudTestKeys`, `LivesDisplayTests` and the test scenes) was removed afterwards, because the HUD is now tested by hand. See [ui-prefabs-design.md](ui-prefabs-design.md) for how things stand.
+> **Done.** This plan has been carried out. Its test code (`HudTestKeys`, `LivesDisplayTests` and the test scenes) was removed afterwards, because the HUD is now tested by hand. See [ui-prefabs-design.md](../ui-prefabs-design.md) for how things stand.
 
 **Goal:** Turn the eye lives display into a drag-in `HUD` prefab that works in any scene with no wiring.
 
@@ -8,7 +8,7 @@
 
 **Tech:** Unity 6000.6.3f1, uGUI, Unity Test Framework (PlayMode).
 
-**Spec:** [ui-prefabs-design.md](ui-prefabs-design.md)
+**Spec:** [ui-prefabs-design.md](../ui-prefabs-design.md)
 
 ## Rules For Every Task
 

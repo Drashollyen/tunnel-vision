@@ -78,7 +78,6 @@ More detail is in [Unity rules](#unity-rules).
 3. Right-click any scene, prefab or `ProjectSettings` file you didn't mean to change and choose **Discard changes**. Unity also changes these by itself, especially when you build, so discard them unless you changed them on purpose:
    - `Assets/Settings/UniversalRP.asset`
    - `Assets/Settings/UniversalRenderPipelineGlobalSettings.asset`
-   - `Assets/_Project/UI/Fonts/Nunito-Bold SDF.asset`
 4. Write the summary as `type: what changed`, in lower case. For example: `feat: add pause menu`.
 5. Click **Commit to your-branch**.
 
