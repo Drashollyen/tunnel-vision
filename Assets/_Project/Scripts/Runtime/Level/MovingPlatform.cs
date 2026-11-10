@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace TunnelVision
+namespace TunnelVision.Level
 {
     public class MovingPlatform : MonoBehaviour
     {

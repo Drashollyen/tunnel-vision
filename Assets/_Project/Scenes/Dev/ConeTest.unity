@@ -342,7 +342,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e89951c96459f40ab079d805eca8b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.LivesDisplay
-  playerLives: {fileID: 487421225}
+  playerLives: {fileID: 0}
   eyes:
   - {fileID: 742830084}
   - {fileID: 1074048727}
@@ -1102,65 +1102,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 485072556}
   m_CullTransparentMesh: 1
---- !u!1 &487421224
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 487421227}
-  - component: {fileID: 487421225}
-  - component: {fileID: 487421226}
-  m_Layer: 0
-  m_Name: Game Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &487421225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 487421224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf5a584ff51f01c42803f3ccbc40ce96, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Gameplay.PlayerLives
-  maxLives: 3
---- !u!114 &487421226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 487421224}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38822d0c81563664c9d9021e46128be0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.HudTestKeys
-  playerLives: {fileID: 487421225}
---- !u!4 &487421227
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 487421224}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.49752998, y: 0.40820998, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 928978137}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519016584
 GameObject:
   m_ObjectHideFlags: 0
@@ -2364,7 +2305,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5949e07a0cc06a4abe233eee70e932e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.MovingPlatform
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.MovingPlatform
   pointA: {fileID: 1967167653}
   pointB: {fileID: 270058523}
   moveSpeed: 2
@@ -2537,7 +2478,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 487421227}
   - {fileID: 2014970459}
   - {fileID: 44941424}
   - {fileID: 2069561968}
@@ -3550,7 +3490,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 100
+  m_SortingOrder: 9
   m_TargetDisplay: 0
 --- !u!224 &1549987454
 RectTransform:
@@ -4341,9 +4281,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2048959170}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 921030bc817053649ad583f93177f16c, type: 3}
+  m_Script: {fileID: 11500000, guid: d513f1929b4a9584780eb2aea126384e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Gameplay.Killer
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.Hazard
 --- !u!1 &2069561964
 GameObject:
   m_ObjectHideFlags: 0
@@ -4452,41 +4392,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2888902924824645870, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
   m_PrefabInstance: {fileID: 4322974745177258338}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2113539501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1917954801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf5a584ff51f01c42803f3ccbc40ce96, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Gameplay.PlayerLives
-  maxLives: 3
---- !u!114 &2113539506
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1917954801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcfc55587a96bcc449559668b327d273, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Player.PlayerDeath
-  movement: {fileID: 2113539507}
-  rb: {fileID: 2113539509}
-  lives: {fileID: 487421225}
-  visionLight: {fileID: 625885987}
-  globalLight: {fileID: 619394801}
-  blackFade: {fileID: 519016588}
-  revealDuration: 1
-  revealHoldDuration: 2
-  fadeDuration: 0.75
-  blackHoldDuration: 0.3
 --- !u!114 &2113539507 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8181885355727786699, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
@@ -4654,13 +4559,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2119102741}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a571aacaf8373f4eb3dd50ce9db8568, type: 3}
+  m_Script: {fileID: 11500000, guid: 869c2c41be5e61f469f4b0086afadd11, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Gameplay.Checkpoint
-  checkpointRenderer: {fileID: 2119102742}
-  defaultSprite: {fileID: 3587757262883878337, guid: e1a75a4c5c4cbbb419cddcdd5ed73661, type: 3}
-  activatedSprite: {fileID: 175122690585235773, guid: 691cdf60736780b41937927a613f6dab, type: 3}
-  respawnPoint: {fileID: 1510286255}
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.Checkpoint
+  respawnOffset: {x: -5.6, y: -1.254}
+  sprite: {fileID: 2119102742}
+  waitingColor: {r: 0.55, g: 0.55, b: 0.55, a: 1}
+  activeColor: {r: 1, g: 0.6, b: 0.85, a: 1}
+  waitingSprite: {fileID: 3587757262883878337, guid: e1a75a4c5c4cbbb419cddcdd5ed73661, type: 3}
+  activeSprite: {fileID: 175122690585235773, guid: 691cdf60736780b41937927a613f6dab, type: 3}
 --- !u!1001 &4322974745177258338
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4669,6 +4576,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4411583645078160918, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
+      propertyPath: globalLight
+      value: 
+      objectReference: {fileID: 619394801}
+    - target: {fileID: 4411583645078160918, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
+      propertyPath: blackFade
+      value: 
+      objectReference: {fileID: 519016588}
     - target: {fileID: 954299245662661287, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
       propertyPath: m_LocalPosition.y
       value: -1.6164
@@ -4800,13 +4715,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6186631764941048867, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2113539501}
-    - targetCorrespondingSourceObject: {fileID: 6186631764941048867, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2113539506}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 18b4182cba6ed92468ab936c498bd1ce, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

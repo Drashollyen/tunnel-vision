@@ -14,6 +14,10 @@ namespace TunnelVision.Level
         [SerializeField] private Color waitingColor = new Color(0.55f, 0.55f, 0.55f);
         [SerializeField] private Color activeColor = new Color(1f, 0.6f, 0.85f);
 
+        [Tooltip("Optional. When both are set, the checkpoint swaps sprites instead of changing colour.")]
+        [SerializeField] private Sprite waitingSprite;
+        [SerializeField] private Sprite activeSprite;
+
         public Vector3 RespawnPosition => transform.position + (Vector3)respawnOffset;
 
         private void Awake()
@@ -23,10 +27,19 @@ namespace TunnelVision.Level
 
         public void SetLit(bool lit)
         {
-            if (sprite != null)
+            if (sprite == null)
             {
-                sprite.color = lit ? activeColor : waitingColor;
+                return;
             }
+
+            if (waitingSprite != null && activeSprite != null)
+            {
+                sprite.sprite = lit ? activeSprite : waitingSprite;
+                sprite.color = Color.white;
+                return;
+            }
+
+            sprite.color = lit ? activeColor : waitingColor;
         }
 
         private void OnTriggerEnter2D(Collider2D other)
