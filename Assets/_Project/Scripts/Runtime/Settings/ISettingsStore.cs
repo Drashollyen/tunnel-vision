@@ -6,7 +6,6 @@ namespace TunnelVision.Settings
     /// </summary>
     public interface ISettingsStore
     {
-        bool HasKey(string key);
 
         float GetFloat(string key, float defaultValue);
 

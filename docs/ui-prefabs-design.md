@@ -14,9 +14,13 @@ Prefabs live in `Assets/_Project/Prefabs/UI/`.
 |---|---|---|
 | `LivesDisplay` | Eyes, top left | Done |
 | `RoundOverMessage` | "Round Over" or "Game Over", centred | Done |
-| `TimerDisplay`, `CollectibleCounter` | Timer and collectible count | #34 |
+| `TimerDisplay`, `CollectibleCounter` | Hunger timer countdown and collectible count | #34, #26 |
 | `PauseMenu` | Resume, options, quit | #31 |
 | `GameOverScreen`, `LevelCompleteScreen` | Retry and next level buttons | #32 |
+| `CheckpointMessage` | "Checkpoint Reached", top centre | #59 |
+| `PromptDisplay` | Tutorial prompts, bottom centre | #47 |
+
+The full task list is in [ui-tasks.md](ui-tasks.md).
 
 The canvas uses Screen Space Overlay, scaling from 1920x1080, match 0.5, sort order 10.
 
@@ -74,7 +78,7 @@ Shown in the middle of the screen whenever the player loses a life.
 - "Game Over" stays until lives are restored. Retry and Quit To Menu come in #32.
 - The timing uses unscaled time, so the message still goes away if the game is paused.
 - Like `LivesDisplay`, it finds `PlayerLives` by itself and logs a clear error if there isn't one.
-- The title is red, size 120, and the subtitle is white, size 48, both in `Nunito-Bold SDF`.
+- The title is red, size 156, and the subtitle is white, size 62, both in `Jersey10 SDF`.
 
 ## Not Included
 

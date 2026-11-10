@@ -116,8 +116,7 @@ namespace TunnelVision.Settings
 
         public void ApplyDisplay()
         {
-            Resolution screen = Screen.currentResolution;
-            Vector2Int size = GetWindowSize(new Vector2Int(screen.width, screen.height));
+            Vector2Int size = GetWindowSize(new Vector2Int(Display.main.systemWidth, Display.main.systemHeight));
             Screen.SetResolution(size.x, size.y, DisplayMode);
         }
 

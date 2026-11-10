@@ -334,6 +334,7 @@ GameObject:
   - component: {fileID: 4355562892634983909}
   - component: {fileID: 8181885355727786699}
   - component: {fileID: 9073848396303848130}
+  - component: {fileID: 4411583645078160918}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -584,5 +585,19 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf5a584ff51f01c42803f3ccbc40ce96, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Gameplay.PlayerLives
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Player.PlayerLives
   maxLives: 3
+--- !u!114 &4411583645078160918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6186631764941048867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f6f9ff20098a345b3bfd1a50aefef9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Player.PlayerRespawn
+  respawnDelay: 0.5
+  gameOverDelay: 2

@@ -13,7 +13,7 @@ namespace TunnelVision.Tests
     public class IntroScreenTests
     {
         private const string IntroScene = "IntroScreen";
-        private const string GameScene = "ConeTest";
+        private const string GameScene = "LevelSelect";
 
         private GameSettings _settingsBeforeTest;
 
@@ -56,16 +56,27 @@ namespace TunnelVision.Tests
         public IEnumerator OptionsButton_OpensOptions_AndBackReturns()
         {
             FindButton("Options Button").onClick.Invoke();
-            yield return null;
+            yield return WaitForPanelSwitch();
 
             Assert.That(Find("Main Panel").activeInHierarchy, Is.False);
             Assert.That(Find("Options Panel").activeInHierarchy, Is.True);
 
             FindButton("Back Button").onClick.Invoke();
-            yield return null;
+            yield return WaitForPanelSwitch();
 
             Assert.That(Find("Main Panel").activeInHierarchy, Is.True);
             Assert.That(Find("Options Panel").activeInHierarchy, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator OptionsButton_StaysInteractableForItsOwnClickSound()
+        {
+            var button = FindButton("Options Button");
+
+            button.onClick.Invoke();
+
+            Assert.That(button.GetComponent<InterfaceSoundTrigger>().IsInteractable, Is.True);
+            yield return WaitForPanelSwitch();
         }
 
         [UnityTest]
@@ -74,14 +85,14 @@ namespace TunnelVision.Tests
             Assert.That(Find("Info Panel").activeInHierarchy, Is.False);
 
             FindButton("Info Button").onClick.Invoke();
-            yield return null;
+            yield return WaitForPanelSwitch();
 
             Assert.That(Find("Main Panel").activeInHierarchy, Is.False);
             Assert.That(Find("Info Panel").activeInHierarchy, Is.True);
             Assert.That(Find("Info Text").GetComponent<TMP_Text>().text, Does.Contain("prototype"));
 
             FindButton("Close Button").onClick.Invoke();
-            yield return null;
+            yield return WaitForPanelSwitch();
 
             Assert.That(Find("Main Panel").activeInHierarchy, Is.True);
             Assert.That(Find("Info Panel").activeInHierarchy, Is.False);
@@ -181,6 +192,8 @@ namespace TunnelVision.Tests
             Assert.That(SettingsService.Current.EffectiveInterfaceVolume, Is.EqualTo(0f));
             Assert.That(Find("Interface Volume Slider").GetComponent<Slider>().interactable, Is.False);
 
+            FindButton("Back Button").onClick.Invoke();
+
             // A new instance only sees what was saved, the same as starting the game again.
             var restarted = new GameSettings(new PlayerPrefsSettingsStore());
             restarted.Load();
@@ -207,20 +220,26 @@ namespace TunnelVision.Tests
         public IEnumerator PlayButton_LoadsGameScene()
         {
             FindButton("Play Button").onClick.Invoke();
-            yield return null;
-            yield return null;
+            Assert.That(SceneFader.IsFading, Is.True);
+            yield return new WaitWhile(() => SceneFader.IsFading);
 
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo(GameScene));
         }
 
         [UnityTest]
-        public IEnumerator ClickSound_KeepsPlayingWhenTheSceneChanges()
+        public IEnumerator ClickSoundPlayer_SurvivesSceneChange()
         {
-            Object.FindFirstObjectByType<InterfaceSounds>().PlayClick();
+            Object.FindAnyObjectByType<InterfaceSounds>().PlayClick();
 
             yield return SceneManager.LoadSceneAsync(GameScene);
 
             Assert.That(GameObject.Find(InterfaceSounds.PlayerName), Is.Not.Null);
+        }
+
+        private static IEnumerator WaitForPanelSwitch()
+        {
+            var switcher = Object.FindAnyObjectByType<PanelSwitcher>();
+            yield return new WaitWhile(() => switcher.IsSwitching);
         }
 
         private static TMP_Dropdown DisplayModeDropdown() =>
