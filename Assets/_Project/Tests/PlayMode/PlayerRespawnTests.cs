@@ -1,6 +1,7 @@
 using System.Collections;
 using NUnit.Framework;
-using TunnelVision.Gameplay;
+using TunnelVision.Level;
+using TunnelVision.Player;
 using UnityEngine;
 using UnityEngine.TestTools;
 

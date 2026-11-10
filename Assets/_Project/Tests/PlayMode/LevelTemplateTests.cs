@@ -1,6 +1,5 @@
 using System.Collections;
 using NUnit.Framework;
-using TunnelVision.Gameplay;
 using TunnelVision.Player;
 using TunnelVision.UI;
 using Unity.Cinemachine;

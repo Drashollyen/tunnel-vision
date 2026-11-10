@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using TunnelVision.Gameplay;
+using TunnelVision.Level;
 using UnityEngine;
 
 namespace TunnelVision.Tests

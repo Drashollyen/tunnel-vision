@@ -406,7 +406,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab328c350a914bc44beae23aa57abdb3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Gameplay.LevelGoal
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.LevelGoal
   levelIndex: 0
   levelSelectScene: LevelSelect
 --- !u!61 &655052458
