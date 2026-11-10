@@ -264,7 +264,7 @@ The game uses pixel art. Import sprites with these settings so they stay crisp a
 
 ### New levels
 
-Follow [docs/new-level.md](docs/new-level.md) to start a level from the template.
+Follow [docs/new-level.md](docs/new-level.md) to start a level from a copy of Level 1.
 
 ### Scene and prefab conflicts
 

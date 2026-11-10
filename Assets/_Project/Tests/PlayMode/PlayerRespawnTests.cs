@@ -3,23 +3,30 @@ using NUnit.Framework;
 using TunnelVision.Level;
 using TunnelVision.Player;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace TunnelVision.Tests
 {
     public class PlayerRespawnTests
     {
-        private const float RespawnWait = 0.7f;
-        private const float GameOverWait = 2.2f;
+        // The death sequence takes about 5 seconds.
+        private const float RespawnTimeout = 10f;
 
         private GameObject _player;
         private GameObject _other;
         private PlayerLives _lives;
         private PlayerRespawn _respawn;
+        private Scene _scene;
 
         [SetUp]
         public void CreatePlayer()
         {
+            // A scene of its own that isn't in the build, so the last life restarts in place
+            // instead of reloading whatever scene an earlier test left open.
+            _scene = SceneManager.CreateScene("RespawnTest " + System.Guid.NewGuid());
+            SceneManager.SetActiveScene(_scene);
+
             _player = new GameObject("Player");
             _player.transform.position = new Vector3(100f, 100f, 0f);
             var body = _player.AddComponent<Rigidbody2D>();
@@ -37,6 +44,19 @@ namespace TunnelVision.Tests
             {
                 Object.Destroy(_other);
             }
+
+            SceneManager.UnloadSceneAsync(_scene);
+        }
+
+        private IEnumerator WaitForRespawn()
+        {
+            var giveUpAt = Time.realtimeSinceStartup + RespawnTimeout;
+            while (_respawn.IsRespawning && Time.realtimeSinceStartup < giveUpAt)
+            {
+                yield return null;
+            }
+
+            Assert.IsFalse(_respawn.IsRespawning, "The player never came back after dying.");
         }
 
         private Checkpoint MakeCheckpoint(Vector3 position)
@@ -52,7 +72,7 @@ namespace TunnelVision.Tests
         {
             _player.transform.position = new Vector3(120f, 100f, 0f);
             _respawn.Kill();
-            yield return new WaitForSeconds(RespawnWait);
+            yield return WaitForRespawn();
 
             Assert.AreEqual(2, _lives.CurrentLives);
             Assert.AreEqual(100f, _player.transform.position.x, 0.01f);
@@ -63,7 +83,7 @@ namespace TunnelVision.Tests
         {
             _respawn.Kill();
             _respawn.Kill();
-            yield return new WaitForSeconds(RespawnWait);
+            yield return WaitForRespawn();
 
             Assert.AreEqual(2, _lives.CurrentLives);
         }
@@ -72,14 +92,14 @@ namespace TunnelVision.Tests
         public IEnumerator Checkpoint_BecomesRespawnPointAndDoesNotRestoreLives()
         {
             _respawn.Kill();
-            yield return new WaitForSeconds(RespawnWait);
+            yield return WaitForRespawn();
 
             var checkpoint = MakeCheckpoint(new Vector3(200f, 50f, 0f));
             _respawn.ReachCheckpoint(checkpoint);
             Assert.AreEqual(2, _lives.CurrentLives);
 
             _respawn.Kill();
-            yield return new WaitForSeconds(RespawnWait);
+            yield return WaitForRespawn();
 
             Assert.AreEqual(1, _lives.CurrentLives);
             Assert.AreEqual(checkpoint.RespawnPosition.x, _player.transform.position.x, 0.01f);
@@ -94,12 +114,12 @@ namespace TunnelVision.Tests
             for (var i = 0; i < 2; i++)
             {
                 _respawn.Kill();
-                yield return new WaitForSeconds(RespawnWait);
+                yield return WaitForRespawn();
             }
 
             _respawn.Kill();
             Assert.IsTrue(_lives.IsDead);
-            yield return new WaitForSeconds(GameOverWait);
+            yield return WaitForRespawn();
 
             Assert.AreEqual(3, _lives.CurrentLives);
             Assert.AreEqual(100f, _player.transform.position.x, 0.01f);
