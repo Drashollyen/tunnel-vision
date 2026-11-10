@@ -1,5 +1,8 @@
 # Level Template Build Plan
 
+> [!NOTE]
+> **Replaced on Nov 10.** `LevelTemplate` and its tests were removed. Level 1 is now built from `ConeTest` with Ben's death sequence, and new levels start as a copy of it. See [new-level.md](../new-level.md). This plan is kept as a record.
+
 **Goal:** A `LevelTemplate` scene that level builders duplicate to get a playable, lit, dressed empty level with real pixel art, for #28.
 
 **Approach:** Everything every level shares goes in one `LevelRig` prefab: Nicholas, the camera, the darkness, the HUD and the camera bounds. A fix to the rig then reaches every level. The template scene holds the rig plus the parts each level changes: a tilemap painted with real tiles, a three-layer parallax background and empty groups for the M1 and M3 pieces. Art comes from the packs picked on Nov 3 (#17), so the template doubles as the first real use of them.

@@ -61,11 +61,10 @@ Assets/
     Art/                    Sprites by subject: Player, Enemies, Environment, Tiles, UI
     Audio/                  Music and sound effects
     Fonts/                  TextMesh Pro font assets
-    Input/                  Player controls
-    Physics/                Physics materials
+    Physics/                Physics materials and player controls (Input)
     Prefabs/                Reusable objects: Player, Level, UI
     Scenes/Menus/           IntroScreen (first in build), LevelSelect
-    Scenes/Levels/          Playable levels and LevelTemplate
+    Scenes/Levels/          Playable levels (start new ones from Level1_BigTop)
     Scenes/Dev/             Test scenes: ConeTest, Game
     Scripts/Runtime/        Game code (TunnelVision.Runtime), one folder per namespace
     Scripts/Editor/         Editor tools
