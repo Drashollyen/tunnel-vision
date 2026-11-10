@@ -81,13 +81,10 @@ namespace TunnelVision.Player
             lookInput = context.ReadValue<Vector2>();
         }
 
+        // Improved the bool checks since we was returning both true and false in the if statement
         private bool IsGrounded()
         {
-            if (Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0, groundLayer))
-            {
-                return true;
-            }
-            return false;
+            return Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0f, groundLayer) != null;
         }
 
         private void UpdateFacing()

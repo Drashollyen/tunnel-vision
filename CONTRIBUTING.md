@@ -75,7 +75,9 @@ More detail is in [Unity rules](#unity-rules).
 
 1. In GitHub Desktop, open the **Changes** tab.
 2. **Tick only the files you meant to change.**
-3. Right-click any scene, prefab or `ProjectSettings` file you didn't mean to change and choose **Discard changes**.
+3. Right-click any scene, prefab or `ProjectSettings` file you didn't mean to change and choose **Discard changes**. Unity also changes these by itself, especially when you build, so discard them unless you changed them on purpose:
+   - `Assets/Settings/UniversalRP.asset`
+   - `Assets/Settings/UniversalRenderPipelineGlobalSettings.asset`
 4. Write the summary as `type: what changed`, in lower case. For example: `feat: add pause menu`.
 5. Click **Commit to your-branch**.
 
@@ -142,7 +144,10 @@ Paused during ConeTest, changed the volume in Options, then resumed. Quit to men
 - [ ] New third-party assets are listed in `CREDITS.md` (no new assets in this PR)
 ```
 
-## 7. Merge
+## 7. Review and merge
+
+> [!IMPORTANT]
+> **Don't merge your own PR.** kemuri reviews each PR and clicks **Squash and merge**. Tell the group when yours is ready.
 
 The PR can merge when:
 
@@ -150,10 +155,12 @@ The PR can merge when:
 - your branch has the latest `revamp`. If it doesn't, click **Update branch** on the PR page and wait for the checks to run again
 - all review comments are resolved
 
-Then click **Squash and merge**. Your branch is deleted automatically.
+GitHub doesn't stop you clicking the merge button, so check who should be merging first. Your branch is deleted automatically when the PR merges.
 
 > [!IMPORTANT]
 > **Open the game after your PR merges.** If something broke, tell the group and fix it first.
+
+If the PR made a big change to a scene, tell the group once it merges, especially anyone working in that scene. They should do [step 5](#5-get-the-latest-revamp) before they carry on.
 
 ## 8. Finish the card
 
@@ -254,6 +261,10 @@ The game uses pixel art. Import sprites with these settings so they stay crisp a
 - **Pixels Per Unit:** 16
 - **Filter Mode:** Point (no filter)
 - **Compression:** None
+
+### New levels
+
+Follow [docs/new-level.md](docs/new-level.md) to start a level from the template.
 
 ### Scene and prefab conflicts
 

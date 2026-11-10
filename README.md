@@ -58,29 +58,26 @@ Go to **Unity Hub > Add > Add project from disk** and select `tunnel-vision`. **
 ```
 Assets/
   _Project/                 Game content. All new work goes here.
-    Art/                    Sprites and physics materials
+    Art/                    Sprites by subject: Player, Enemies, Environment, Tiles, UI
     Audio/                  Music and sound effects
+    Fonts/                  TextMesh Pro font assets
     Input/                  Player controls
-    Prefabs/                Reusable objects, including Player
-    Scenes/                 IntroScreen (first in build), ConeTest, UITest, Game
-    Scripts/Runtime/        Game code (TunnelVision.Runtime)
+    Physics/                Physics materials
+    Prefabs/                Reusable objects: Player, Level, UI
+    Scenes/Menus/           IntroScreen (first in build), LevelSelect
+    Scenes/Levels/          Playable levels and LevelTemplate
+    Scenes/Dev/             Test scenes: ConeTest, Game
+    Scripts/Runtime/        Game code (TunnelVision.Runtime), one folder per namespace
+    Scripts/Editor/         Editor tools
     Tests/EditMode/         Unit tests
     Tests/PlayMode/         Scene tests
-    UI/                     Fonts and interface textures
+    Tiles/                  Tile assets and palettes
   ThirdParty/               Downloaded assets. Don't edit (see CREDITS.md)
   Settings/                 URP and Input System settings
   TextMesh Pro/             TMP resources
 .github/                    CI workflows, templates, main ruleset
 .githooks/                  Checks that run when you commit and push
 ```
-
-## Main menu
-
-`IntroScreen` is built by hand in the Editor and driven by `IntroScreenController`.
-
-- **Play** loads the scene set in `IntroScreenController > Next Scene Name` (currently `ConeTest`).
-- **Options** opens a "Coming soon" page with a Back button.
-- **Quit** closes the game.
 
 ## CI
 
