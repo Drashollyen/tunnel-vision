@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -13,18 +14,24 @@ namespace TunnelVision.Level
         private bool platformWaiting;
         [SerializeField] private float waitDuration;
 
+        private Rigidbody2D rb;
+
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
+            Debug.Log("abdcaadef");
+            rb = GetComponent<Rigidbody2D>();
             nextPosition = pointB.position;
+
         }
 
         // Update is called once per frame
         void Update()
         {
-            transform.position = Vector3.MoveTowards(transform.position, nextPosition, moveSpeed * Time.deltaTime);
+            Vector2 newPosition = Vector2.MoveTowards(rb.position, nextPosition, moveSpeed * Time.fixedDeltaTime);
+            rb.MovePosition(newPosition);
 
-            if (transform.position == nextPosition && !platformWaiting)
+            if (Vector2.Distance(rb.position, nextPosition) < 0.01f && !platformWaiting)
             {
                 // Wait for a few seconds
                 platformWaiting = true;
@@ -42,8 +49,10 @@ namespace TunnelVision.Level
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
+            Debug.Log("enter 2d");
             if (collision.gameObject.CompareTag("Player"))
             {
+                Debug.Log("parenting");
                 collision.gameObject.transform.parent = transform;
             }
         }
@@ -52,6 +61,7 @@ namespace TunnelVision.Level
         {
             if (collision.gameObject.CompareTag("Player"))
             {
+                Debug.Log("unparenting");
                 collision.gameObject.transform.parent = null;
             }
         }

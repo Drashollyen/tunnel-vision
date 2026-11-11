@@ -17,7 +17,7 @@ namespace TunnelVision.Player
 
         [Header("GroundCheck")]
         public Transform groundCheckPos;
-        public Vector2 groundCheckSize = new Vector2(0.5f, 0.05f);
+        public Vector2 groundCheckSize = new Vector2(0.5f, 0.5f);
         public LayerMask groundLayer;
 
         [Header("Facing")]
@@ -32,15 +32,8 @@ namespace TunnelVision.Player
         private Vector2 lookInput;
         private bool controlsEnabled = true;
 
-
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
-        {
-
-        }
-
         // Update is called once per frame
-        void Update()
+        void FixedUpdate()
         {
             if (!controlsEnabled)
             { return; }
@@ -140,6 +133,7 @@ namespace TunnelVision.Player
 
             horizontalMovement = 0f;
             lookInput = Vector2.zero;
+            Debug.Log($"controls {controlsEnabled}");
         }
 
     }
