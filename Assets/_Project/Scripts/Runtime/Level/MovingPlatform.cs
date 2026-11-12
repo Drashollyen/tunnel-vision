@@ -19,7 +19,6 @@ namespace TunnelVision.Level
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-            Debug.Log("abdcaadef");
             rb = GetComponent<Rigidbody2D>();
             nextPosition = pointB.position;
 
@@ -49,10 +48,8 @@ namespace TunnelVision.Level
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            Debug.Log("enter 2d");
             if (collision.gameObject.CompareTag("Player"))
             {
-                Debug.Log("parenting");
                 collision.gameObject.transform.parent = transform;
             }
         }
@@ -61,7 +58,6 @@ namespace TunnelVision.Level
         {
             if (collision.gameObject.CompareTag("Player"))
             {
-                Debug.Log("unparenting");
                 collision.gameObject.transform.parent = null;
             }
         }
