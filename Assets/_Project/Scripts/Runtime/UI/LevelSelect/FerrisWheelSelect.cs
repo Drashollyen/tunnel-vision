@@ -45,6 +45,12 @@ namespace TunnelVision.UI
             }
         }
 
+        public static int NextStep(int steps, float angle, float stepAngle, int direction)
+        {
+            var showing = Mathf.RoundToInt(angle / stepAngle);
+            return Mathf.Clamp(steps + direction, showing - 1, showing + 1);
+        }
+
         private void OnValidate()
         {
             if (cabins != null && levelScenes != null && levelScenes.Length != cabins.Length)
@@ -89,13 +95,11 @@ namespace TunnelVision.UI
                     return;
                 }
 
-                if (keyboard.rightArrowKey.wasPressedThisFrame)
+                var direction = keyboard.rightArrowKey.wasPressedThisFrame ? 1
+                    : keyboard.leftArrowKey.wasPressedThisFrame ? -1 : 0;
+                if (direction != 0)
                 {
-                    _steps++;
-                }
-                else if (keyboard.leftArrowKey.wasPressedThisFrame)
-                {
-                    _steps--;
+                    _steps = NextStep(_steps, _angle, StepAngle, direction);
                 }
             }
 

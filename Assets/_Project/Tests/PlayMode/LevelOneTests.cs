@@ -10,7 +10,7 @@ namespace TunnelVision.Tests
     public class LevelOneTests
     {
         private const string LevelPath = "Assets/_Project/Scenes/Levels/Level1_BigTop.unity";
-        private const float StartX = -6f;
+        private const float StartX = -32f;
         private const float GroundTop = -2.5f;
 
         // The cotton candy checkpoint, and where it puts the player back.
