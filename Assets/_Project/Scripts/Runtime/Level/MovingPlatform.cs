@@ -13,18 +13,23 @@ namespace TunnelVision.Level
         private bool platformWaiting;
         [SerializeField] private float waitDuration;
 
+        private Rigidbody2D rb;
+
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
+            rb = GetComponent<Rigidbody2D>();
             nextPosition = pointB.position;
+
         }
 
         // Update is called once per frame
-        void Update()
+        void FixedUpdate()
         {
-            transform.position = Vector3.MoveTowards(transform.position, nextPosition, moveSpeed * Time.deltaTime);
+            Vector2 newPosition = Vector2.MoveTowards(rb.position, nextPosition, moveSpeed * Time.fixedDeltaTime);
+            rb.MovePosition(newPosition);
 
-            if (transform.position == nextPosition && !platformWaiting)
+            if (Vector2.Distance(rb.position, nextPosition) < 0.01f && !platformWaiting)
             {
                 // Wait for a few seconds
                 platformWaiting = true;

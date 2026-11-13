@@ -10,16 +10,17 @@ namespace TunnelVision.Tests
     public class LevelOneTests
     {
         private const string LevelPath = "Assets/_Project/Scenes/Levels/Level1_BigTop.unity";
-        private const float StartX = -32f;
-        private const float GroundTop = -2.5f;
+        private const float StartX = 6.8f;
+        private const float GroundTop = -3f;
 
         // The cotton candy checkpoint, and where it puts the player back.
-        private const float CheckpointX = 29.5f;
-        private const float CheckpointRespawnX = 23.93f;
+        private const float CheckpointX = 207.5f;
+        private const float CheckpointY = 2.9f;
+        private const float CheckpointRespawnX = 202.5f;
 
         // Gaps between platforms, over the kill plane.
         private const float FirstPitX = 20.2f;
-        private const float PitAfterCheckpointX = 32.75f;
+        private const float PitAfterCheckpointX = 220f;
         // Falling into the pit, then the death sequence (about 5 seconds).
         private const float DeathTimeout = 12f;
 
@@ -71,7 +72,7 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator AfterCheckpoint_PitReturnsToCheckpoint()
         {
-            PutPlayerAt(CheckpointX, 0f);
+            PutPlayerAt(CheckpointX, CheckpointY);
             yield return new WaitForSeconds(0.5f);
 
             PutPlayerAt(PitAfterCheckpointX, 2f);
