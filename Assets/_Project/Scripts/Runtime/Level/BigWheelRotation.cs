@@ -4,7 +4,7 @@ namespace TunnelVision.Level
 {
     public class BigWheelRotation : MonoBehaviour
     {
-        private float fRotationSpeed = 20f;
+        [SerializeField] private float fRotationSpeed = 20f;
         public Transform transRotationPoint;
         private Rigidbody2D rb;
 
