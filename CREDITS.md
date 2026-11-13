@@ -11,6 +11,7 @@ Add every third-party asset here in the same PR that adds it. Keep downloaded as
 | Liberation Sans (TextMesh Pro default), Red Hat / Unity | Bundled with TextMesh Pro | SIL OFL 1.1 |
 | Free 2D Mega Pack, Brackeys | [assetstore.unity.com/packages/2d/free-2d-mega-pack-177430](https://assetstore.unity.com/packages/2d/free-2d-mega-pack-177430) | Standard Unity Asset Store EULA |
 | 2D Pixel Clown Spritesheet, IamZacard | [iamzacard.itch.io/2d-pixel-clown-spritesheet](https://iamzacard.itch.io/2d-pixel-clown-spritesheet) | CC0 1.0 |
+| Balloon dog pixel art (background removed and rebuilt at 33x31 for `Assets/_Project/Art/Enemies/BalloonDog/balloon-dog.png`), original artist unknown, found on Pinterest | [uk.pinterest.com/pin/385128205659955019](https://uk.pinterest.com/pin/385128205659955019/) | Unknown |
 | Circus tents photo (cropped, mirrored and pixelated for the level select backdrop), Breno Cardoso on Pexels | [pexels.com/photo/8419827](https://www.pexels.com/photo/woman-in-hat-on-carnival-8419827/) | Pexels License |
 
 ## Made by the team
