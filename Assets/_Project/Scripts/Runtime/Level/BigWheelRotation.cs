@@ -6,13 +6,6 @@ namespace TunnelVision.Level
     {
         [SerializeField] private float fRotationSpeed = 20f;
         public Transform transRotationPoint;
-        private Rigidbody2D rb;
-
-        void Start()
-        {
-            rb = GetComponent<Rigidbody2D>();
-        }
-
         void Update()
         {
             transform.Rotate(Vector3.back, -fRotationSpeed * Time.deltaTime);
