@@ -25,7 +25,7 @@ namespace TunnelVision.Level
         }
 
         // Update is called once per frame
-        void Update()
+        void FixedUpdate()
         {
             Vector2 newPosition = Vector2.MoveTowards(rb.position, nextPosition, moveSpeed * Time.fixedDeltaTime);
             rb.MovePosition(newPosition);
