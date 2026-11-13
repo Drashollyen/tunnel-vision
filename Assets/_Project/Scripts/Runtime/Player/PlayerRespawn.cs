@@ -253,7 +253,7 @@ namespace TunnelVision.Player
 
         private static Light2D FindGlobalLight()
         {
-            foreach (var candidate in FindObjectsByType<Light2D>(FindObjectsSortMode.None))
+            foreach (var candidate in FindObjectsByType<Light2D>())
             {
                 if (candidate.lightType == Light2D.LightType.Global)
                 {
