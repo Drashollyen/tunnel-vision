@@ -173,5 +173,24 @@ namespace TunnelVision.Tests
 
             Assert.AreEqual(1f, Time.timeScale);
         }
+
+        [UnityTest]
+        public IEnumerator WithoutAButton_GameOverAsksForEnterInstead()
+        {
+            // The HUD prefab has no Level Select button until it's built.
+            Set("levelSelectButton", null);
+            yield return null;
+            LoseAllLives();
+            yield return null;
+
+            Assert.IsFalse(_message.IsWaitingForKey, "The prompt should wait for the delay too.");
+
+            yield return new WaitForSecondsRealtime(ButtonDelay + 0.25f);
+
+            Assert.IsTrue(_message.IsWaitingForKey);
+            Assert.IsTrue(_subtitle.gameObject.activeSelf);
+            Assert.AreEqual(RoundOverMessage.PressEnterPrompt, _subtitle.text);
+            Assert.AreEqual(0f, Time.timeScale, "Still paused until Enter is pressed.");
+        }
     }
 }

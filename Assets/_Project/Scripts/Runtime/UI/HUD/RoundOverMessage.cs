@@ -2,6 +2,7 @@ using TMPro;
 using TunnelVision.Player;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace TunnelVision.UI
@@ -19,7 +20,8 @@ namespace TunnelVision.UI
         [SerializeField] private float showSeconds = 2f;
 
         [Header("Game Over")]
-        [Tooltip("Optional. Shown after the delay on Game Over, and selected so Enter works.")]
+        [Tooltip("Optional. Shown after the delay on Game Over, and selected so Enter works. " +
+                 "Left empty, the subtitle says to press Enter instead.")]
         [SerializeField] private Button levelSelectButton;
         [SerializeField] private float buttonDelay = 1.5f;
         [SerializeField] private string levelSelectScene = "LevelSelect";
@@ -30,8 +32,13 @@ namespace TunnelVision.UI
         private float _showButtonAt = float.PositiveInfinity;
         private bool _pausedTheGame;
 
+        public const string PressEnterPrompt = "Press Enter For Level Select";
+
         /// <summary>True once the last life has gone.</summary>
         public bool IsGameOver { get; private set; }
+
+        /// <summary>True when Game Over has no button and is showing the Press Enter prompt instead.</summary>
+        public bool IsWaitingForKey { get; private set; }
 
         private void Awake()
         {
@@ -96,6 +103,15 @@ namespace TunnelVision.UI
                 _showButtonAt = float.PositiveInfinity;
                 ShowLevelSelectButton();
             }
+
+            // Without a button, Enter does the button's job so the player is never stuck.
+            var keyboard = Keyboard.current;
+            if (IsWaitingForKey && keyboard != null
+                && (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame))
+            {
+                IsWaitingForKey = false;
+                GoToLevelSelect();
+            }
         }
 
         private void OnLivesChanged(int lives)
@@ -139,6 +155,9 @@ namespace TunnelVision.UI
         {
             if (levelSelectButton == null)
             {
+                subtitle.text = PressEnterPrompt;
+                subtitle.gameObject.SetActive(true);
+                IsWaitingForKey = true;
                 return;
             }
 
