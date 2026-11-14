@@ -9,11 +9,26 @@ namespace TunnelVision.UI
     /// <summary>
     /// The level select wheel. Left and right arrows turn it, the top cabin is selected,
     /// Enter starts that level if it's unlocked, and Escape goes back to the menu.
+    /// Cabins past the prototype's levels show "?" and open a notice instead.
     /// Goes on the Wheel object. Cabins are listed clockwise, starting from the top.
     /// </summary>
     public class FerrisWheelSelect : MonoBehaviour
     {
+        public enum CabinState
+        {
+            Playable,
+            Locked,
+            NotInPrototype,
+        }
+
+        public const string NotInPrototypeMessage = "This Level Is Not Available In The Prototype";
+        private const string UnknownLevelName = "?";
+
         [SerializeField] private RectTransform[] cabins;
+        [Tooltip("How many cabins, from the first, have levels in this prototype. The rest show \"?\".")]
+        [SerializeField] private int prototypeLevelCount = 3;
+        [Tooltip("Optional. Shown when a \"?\" cabin is picked.")]
+        [SerializeField] private NoticeDialog prototypeNotice;
         [SerializeField] private float turnSpeed = 240f;
         [SerializeField] private string[] levelScenes;
         [SerializeField] private string menuScene = "IntroScreen";
@@ -45,6 +60,38 @@ namespace TunnelVision.UI
             }
         }
 
+        /// <summary>Whether a cabin can be played, is locked by progress, or has no level in the prototype.</summary>
+        public static CabinState GetCabinState(int index, int prototypeLevelCount, int highestUnlocked)
+        {
+            if (index >= prototypeLevelCount)
+            {
+                return CabinState.NotInPrototype;
+            }
+
+            return index <= highestUnlocked ? CabinState.Playable : CabinState.Locked;
+        }
+
+        /// <summary>The text on the plate under the wheel for a cabin.</summary>
+        public static string PlateText(int index, CabinState state, string levelName)
+        {
+            switch (state)
+            {
+                case CabinState.Playable:
+                    return $"Level {index + 1}: {levelName}";
+                case CabinState.NotInPrototype:
+                    return $"Level {index + 1}: {UnknownLevelName}";
+                default:
+                    return "Locked";
+            }
+        }
+
+        public CabinState StateOf(int index) =>
+            GetCabinState(index, prototypeLevelCount, LevelProgress.HighestUnlocked);
+
+        /// <summary>
+        /// The new target step after a press. Allows at most one step beyond the cabin
+        /// the wheel is nearest to now, so spamming can't queue up a long spin.
+        /// </summary>
         public static int NextStep(int steps, float angle, float stepAngle, int direction)
         {
             var showing = Mathf.RoundToInt(angle / stepAngle);
@@ -61,7 +108,7 @@ namespace TunnelVision.UI
 
         private void Start()
         {
-            _steps = Mathf.Min(LevelProgress.HighestUnlocked, cabins.Length - 1);
+            _steps = Mathf.Min(LevelProgress.HighestUnlocked, prototypeLevelCount - 1, cabins.Length - 1);
             _angle = _steps * StepAngle;
             ApplyRotation();
 
@@ -72,9 +119,23 @@ namespace TunnelVision.UI
 
             for (var i = 0; i < cabins.Length; i++)
             {
-                if (!LevelProgress.IsUnlocked(i))
+                var state = StateOf(i);
+                if (state != CabinState.Playable)
                 {
-                    cabins[i].Find("Body").GetComponent<Image>().color = lockedColor;
+                    var body = cabins[i].Find("Body");
+                    if (body != null)
+                    {
+                        body.GetComponent<Image>().color = lockedColor;
+                    }
+                }
+
+                if (state == CabinState.NotInPrototype)
+                {
+                    var label = cabins[i].Find("Label");
+                    if (label != null)
+                    {
+                        label.GetComponent<TMP_Text>().text = UnknownLevelName;
+                    }
                 }
             }
         }
@@ -82,6 +143,13 @@ namespace TunnelVision.UI
         private void Update()
         {
             if (SceneFader.IsFading)
+            {
+                return;
+            }
+
+            // While the notice is up, or on the frame it closed, keys belong to the notice.
+            if (prototypeNotice != null
+                && (prototypeNotice.IsOpen || prototypeNotice.ClosedOnFrame == Time.frameCount))
             {
                 return;
             }
@@ -141,9 +209,10 @@ namespace TunnelVision.UI
             if (selectedLabel != null && _labelledIndex != SelectedIndex)
             {
                 _labelledIndex = SelectedIndex;
-                selectedLabel.text = LevelProgress.IsUnlocked(SelectedIndex)
-                    ? $"Level {SelectedIndex + 1}: {levelNames[SelectedIndex]}"
-                    : "Locked";
+                var levelName = levelNames != null && SelectedIndex < levelNames.Length
+                    ? levelNames[SelectedIndex]
+                    : string.Empty;
+                selectedLabel.text = PlateText(SelectedIndex, StateOf(SelectedIndex), levelName);
             }
         }
 
@@ -156,9 +225,26 @@ namespace TunnelVision.UI
             }
         }
 
-        private void StartSelectedLevel()
+        /// <summary>What Enter does: starts the level, shows the prototype notice, or nothing if locked.</summary>
+        public void StartSelectedLevel()
         {
-            if (!LevelProgress.IsUnlocked(SelectedIndex))
+            var state = StateOf(SelectedIndex);
+
+            if (state == CabinState.NotInPrototype)
+            {
+                if (prototypeNotice != null)
+                {
+                    prototypeNotice.Show(NotInPrototypeMessage);
+                }
+                else
+                {
+                    Debug.LogWarning("FerrisWheelSelect: no Prototype Notice set, so the \"?\" cabin does nothing.", this);
+                }
+
+                return;
+            }
+
+            if (state != CabinState.Playable || levelScenes == null || SelectedIndex >= levelScenes.Length)
             {
                 return;
             }
