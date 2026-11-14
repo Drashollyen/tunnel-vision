@@ -107,7 +107,7 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator LastLife_RestartsLevelWithFullLivesAndNoCheckpoint()
+        public IEnumerator LastLife_StopsOnGameOverWithoutRespawning()
         {
             _respawn.ReachCheckpoint(MakeCheckpoint(new Vector3(200f, 50f, 0f)));
 
@@ -117,12 +117,36 @@ namespace TunnelVision.Tests
                 yield return WaitForRespawn();
             }
 
+            _player.transform.position = new Vector3(150f, 100f, 0f);
             _respawn.Kill();
             Assert.IsTrue(_lives.IsDead);
-            yield return WaitForRespawn();
 
-            Assert.AreEqual(3, _lives.CurrentLives);
-            Assert.AreEqual(100f, _player.transform.position.x, 0.01f);
+            // Longer than a whole death sequence.
+            yield return new WaitForSecondsRealtime(RespawnTimeout * 0.6f);
+
+            Assert.IsTrue(_respawn.IsRespawning, "The player should stay out of play on Game Over.");
+            Assert.AreEqual(0, _lives.CurrentLives, "Game Over shouldn't give the lives back.");
+            Assert.AreEqual(150f, _player.transform.position.x, 0.01f, "The player shouldn't be moved anywhere.");
+        }
+
+        [UnityTest]
+        public IEnumerator AfterGameOver_KillDoesNothing()
+        {
+            for (var i = 0; i < 3; i++)
+            {
+                _respawn.Kill();
+                if (i < 2)
+                {
+                    yield return WaitForRespawn();
+                }
+            }
+
+            yield return new WaitForSecondsRealtime(RespawnTimeout * 0.6f);
+            _respawn.Kill();
+            yield return null;
+
+            Assert.AreEqual(0, _lives.CurrentLives);
+            Assert.IsTrue(_respawn.IsRespawning);
         }
 
         [UnityTest]

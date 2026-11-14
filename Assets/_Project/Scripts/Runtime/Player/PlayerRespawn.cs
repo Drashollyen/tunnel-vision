@@ -1,10 +1,8 @@
 using System.Collections;
 using TunnelVision.Level;
-using TunnelVision.UI;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace TunnelVision.Player
@@ -12,7 +10,7 @@ namespace TunnelVision.Player
     /// <summary>
     /// Handles the player dying. Controls stop, the level lights up so the player can see
     /// what got them, the screen fades to black, and the player comes back at the last
-    /// checkpoint. With no lives left, the level reloads.
+    /// checkpoint. With no lives left it stops on Game Over (see RoundOverMessage).
     /// </summary>
     [RequireComponent(typeof(PlayerLives), typeof(Rigidbody2D))]
     public class PlayerRespawn : MonoBehaviour
@@ -156,19 +154,10 @@ namespace TunnelVision.Player
 
             if (_lives.IsDead)
             {
-                if (TryReloadLevel())
-                {
-                    yield break;
-                }
-
-                // The scene can't be reloaded (it isn't in the build), so start over in place.
-                if (_checkpoint != null)
-                {
-                    _checkpoint.SetLit(false);
-                    _checkpoint = null;
-                }
-
-                _lives.Restart();
+                // Game Over: stay on the black screen. RoundOverMessage pauses the game and
+                // offers the way back to Level Select. IsRespawning stays true, so nothing
+                // can kill the player again.
+                yield break;
             }
 
             // Move while the screen is fully black.
@@ -197,18 +186,6 @@ namespace TunnelVision.Player
             }
 
             _isDying = false;
-        }
-
-        private static bool TryReloadLevel()
-        {
-            var scene = SceneManager.GetActiveScene().name;
-            if (!Application.CanStreamedLevelBeLoaded(scene))
-            {
-                return false;
-            }
-
-            SceneFader.Load(scene);
-            return true;
         }
 
         private void MoveTo(Vector3 position)

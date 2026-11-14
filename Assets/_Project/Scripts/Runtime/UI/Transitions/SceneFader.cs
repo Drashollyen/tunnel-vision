@@ -74,6 +74,7 @@ namespace TunnelVision.UI
 
             yield return Fade(0f, 1f);
             yield return SceneManager.LoadSceneAsync(sceneName);
+            Time.timeScale = 1f; // A paused scene (Game Over) must never carry its pause into the next one.
             yield return Fade(1f, 0f);
 
             _overlay.raycastTarget = false;
