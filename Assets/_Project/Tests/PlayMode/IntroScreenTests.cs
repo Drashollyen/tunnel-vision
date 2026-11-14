@@ -236,6 +236,48 @@ namespace TunnelVision.Tests
             Assert.That(GameObject.Find(InterfaceSounds.PlayerName), Is.Not.Null);
         }
 
+        private static GameObject Selected() => UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+
+        [Test]
+        public void IntroScreen_StartsWithPlaySelected()
+        {
+            Assert.That(Selected(), Is.Not.Null, "Nothing is selected, so the arrow keys do nothing.");
+            Assert.That(Selected().name, Is.EqualTo("Play Button"));
+        }
+
+        [UnityTest]
+        public IEnumerator OpeningOptions_SelectsItsFirstControl_AndBackReselectsPlay()
+        {
+            FindButton("Options Button").onClick.Invoke();
+            yield return WaitForPanelSwitch();
+
+            Assert.That(Selected(), Is.Not.Null);
+            Assert.That(Selected().name, Is.EqualTo("Master Volume Slider"));
+
+            FindButton("Back Button").onClick.Invoke();
+            yield return WaitForPanelSwitch();
+
+            Assert.That(Selected().name, Is.EqualTo("Play Button"));
+        }
+
+        [UnityTest]
+        public IEnumerator OpeningInfo_SelectsClose()
+        {
+            FindButton("Info Button").onClick.Invoke();
+            yield return WaitForPanelSwitch();
+
+            Assert.That(Selected(), Is.Not.Null);
+            Assert.That(Selected().name, Is.EqualTo("Close Button"));
+        }
+
+        [Test]
+        public void EveryPanel_HasSomethingToSelect()
+        {
+            Assert.That(IntroScreenController.FirstUsable(Find("Main Panel")), Is.Not.Null);
+            Assert.That(Find("Options Panel").GetComponentsInChildren<Selectable>(true), Is.Not.Empty);
+            Assert.That(Find("Info Panel").GetComponentsInChildren<Selectable>(true), Is.Not.Empty);
+        }
+
         private static IEnumerator WaitForPanelSwitch()
         {
             var switcher = Object.FindAnyObjectByType<PanelSwitcher>();
