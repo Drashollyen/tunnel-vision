@@ -5,7 +5,6 @@ using TMPro;
 using TunnelVision.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
@@ -19,18 +18,16 @@ namespace TunnelVision.Tests
     {
         private const int CabinCount = 5;
 
-        private Scene _scene;
         private NoticeDialog _dialog;
         private TMP_Text _message;
         private Button _close;
         private FerrisWheelSelect _wheel;
         private RectTransform[] _cabins;
 
-        [SetUp]
-        public void Build()
+        [UnitySetUp]
+        public IEnumerator Build()
         {
-            _scene = SceneManager.CreateScene("PrototypeNoticeTest " + System.Guid.NewGuid());
-            SceneManager.SetActiveScene(_scene);
+            yield return IsolatedScene.Create("PrototypeNoticeTest");
 
             new GameObject("EventSystem", typeof(EventSystem));
             var canvas = new GameObject("Canvas", typeof(Canvas)).transform;
@@ -79,7 +76,7 @@ namespace TunnelVision.Tests
         [TearDown]
         public void Clean()
         {
-            SceneManager.UnloadSceneAsync(_scene);
+            IsolatedScene.Close();
         }
 
         private static void Set(object target, string field, object value)

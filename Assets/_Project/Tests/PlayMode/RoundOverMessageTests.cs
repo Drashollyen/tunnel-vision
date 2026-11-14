@@ -6,7 +6,6 @@ using TunnelVision.Player;
 using TunnelVision.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
@@ -20,7 +19,6 @@ namespace TunnelVision.Tests
     {
         private const float ButtonDelay = 0.5f;
 
-        private Scene _scene;
         private PlayerLives _lives;
         private RoundOverMessage _message;
         private GameObject _panel;
@@ -28,11 +26,10 @@ namespace TunnelVision.Tests
         private TMP_Text _subtitle;
         private Button _button;
 
-        [SetUp]
-        public void Build()
+        [UnitySetUp]
+        public IEnumerator Build()
         {
-            _scene = SceneManager.CreateScene("RoundOverTest " + System.Guid.NewGuid());
-            SceneManager.SetActiveScene(_scene);
+            yield return IsolatedScene.Create("RoundOverTest");
 
             new GameObject("EventSystem", typeof(EventSystem));
 
@@ -65,7 +62,7 @@ namespace TunnelVision.Tests
         public void Clean()
         {
             Time.timeScale = 1f;
-            SceneManager.UnloadSceneAsync(_scene);
+            IsolatedScene.Close();
         }
 
         private TMP_Text MakeText(string name)
