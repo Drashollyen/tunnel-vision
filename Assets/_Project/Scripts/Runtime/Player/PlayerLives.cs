@@ -10,6 +10,7 @@ namespace TunnelVision.Player
         public int CurrentLives { get; private set; }
         public int MaxLives => maxLives;
         public bool IsDead => CurrentLives <= 0;
+        [SerializeField] private AudioSource deathSound;
 
         private void Awake()
         {
@@ -23,6 +24,7 @@ namespace TunnelVision.Player
                 return;
             }
 
+            deathSound.Play();
             CurrentLives--;
             LivesChanged?.Invoke(CurrentLives);
         }

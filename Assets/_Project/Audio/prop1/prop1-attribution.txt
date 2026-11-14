@@ -1,0 +1,41 @@
+movingplat made locally
+
+track1
+https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100291
+Licensed under Creative Commons: By Attribution 4.0 License
+The track has been altered to be loopable
+
+track2
+"Center Ring"
+Music by Eric Matyas
+www.soundimage.org
+https://soundimage.org/chiptunes-2/
+
+The below audios are licensed under the Pixabay Content License and do not require attribution (however a simple "SFX from Pixabay" in the credits would be good)
+
+player-jump
+https://pixabay.com/sound-effects/film-special-effects-jumplanding-398256/
+
+player-death
+https://pixabay.com/sound-effects/film-special-effects-cartoon-slide-whistle-down-1-176647/
+
+player-hit
+https://pixabay.com/sound-effects/musical-kick-bright-medium-504170/
+
+clown-step
+https://pixabay.com/sound-effects/film-special-effects-baby-squeak-toy-2-183912/
+
+thrower-alert
+https://pixabay.com/sound-effects/city-clown-horn-44595/
+
+thrower-ballbounce
+https://pixabay.com/sound-effects/film-special-effects-bounce-357067/
+
+swallower-alert
+https://pixabay.com/sound-effects/film-special-effects-sword-unsheathe-1-143938/
+
+projectile-throw
+https://pixabay.com/sound-effects/film-special-effects-bamboo-whoosh-429156/
+
+wheel-platform
+https://pixabay.com/sound-effects/technology-slow-mouse-wheel-movement-204710/

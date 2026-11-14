@@ -14,6 +14,7 @@ namespace TunnelVision.Player
 
         [Header("Jumping")]
         public float jumpPower = 10f;
+        [SerializeField] private AudioSource jumpSound;
 
         [Header("GroundCheck")]
         public Transform groundCheckPos;
@@ -31,6 +32,11 @@ namespace TunnelVision.Player
         private bool facingRight = true;
         private Vector2 lookInput;
         private bool controlsEnabled = true;
+
+        void Start()
+        {
+
+        }
 
         // Update is called once per frame
         void FixedUpdate()
@@ -54,9 +60,13 @@ namespace TunnelVision.Player
         {
             if (!controlsEnabled)
             { return; }
+
+
+
             // If the player is on the ground when the jump button is pressed
             if (context.performed && IsGrounded())
             {
+                jumpSound.Play();
                 rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpPower);
             }
 

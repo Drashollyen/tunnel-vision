@@ -12,15 +12,17 @@ namespace TunnelVision.Level
         private Vector3 nextPosition;
         private bool platformWaiting;
         [SerializeField] private float waitDuration;
+        [SerializeField] public AudioSource movingSound;
 
         private Rigidbody2D rb;
+
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();
             nextPosition = pointB.position;
-
+            movingSound.Play();
         }
 
         // Update is called once per frame
@@ -31,6 +33,7 @@ namespace TunnelVision.Level
 
             if (Vector2.Distance(rb.position, nextPosition) < 0.01f && !platformWaiting)
             {
+                movingSound.Stop();
                 // Wait for a few seconds
                 platformWaiting = true;
                 StartCoroutine(PlatformWait(waitDuration));
@@ -43,6 +46,7 @@ namespace TunnelVision.Level
             platformWaiting = false;
             // Set the new target position
             nextPosition = (nextPosition == pointA.position) ? pointB.position : pointA.position;
+            movingSound.Play();
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
