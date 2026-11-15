@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 2626089749843973736}
   - component: {fileID: 5721717250127869858}
   - component: {fileID: 3064590687269172359}
+  - component: {fileID: 566521333328377801}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -242,6 +243,7 @@ GameObject:
   - component: {fileID: 2455840714700114200}
   - component: {fileID: 724751943374205470}
   - component: {fileID: 6234226477848420901}
+  - component: {fileID: 699415812117603330}
   m_Layer: 5
   m_Name: Subtitle
   m_TagString: Untagged
@@ -626,3 +628,31 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &566521333328377801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3035377886151827145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a57fea435a49118af4af04ba000885, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.TextOutline
+  width: 0.2
+  color: {r: 0, g: 0, b: 0, a: 1}
+--- !u!114 &699415812117603330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8957755110775050676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a57fea435a49118af4af04ba000885, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.TextOutline
+  width: 0.25
+  color: {r: 0, g: 0, b: 0, a: 1}
