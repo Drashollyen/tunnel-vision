@@ -5,11 +5,32 @@ using UnityEngine;
 namespace TunnelVision.Level
 {
     /// <summary>
-    /// Becomes the player's respawn point when touched. It doesn't restore lives.
+    /// Becomes the player's respawn point when touched. The first time, it also gives back up
+    /// to <see cref="LivesGranted"/> lives (never past the maximum).
     /// Place the object's origin on top of the ground.
     /// </summary>
     public class Checkpoint : MonoBehaviour
     {
+        public const int DefaultLivesGranted = 2;
+
+        [Tooltip("Lives given back the first time the player reaches this checkpoint.")]
+        [SerializeField] private int livesGranted = DefaultLivesGranted;
+        private bool _livesTaken;
+
+        public int LivesGranted => livesGranted;
+
+        /// <summary>The lives this checkpoint gives: its full amount the first time, then none.</summary>
+        public int TakeLives()
+        {
+            if (_livesTaken)
+            {
+                return 0;
+            }
+
+            _livesTaken = true;
+            return livesGranted;
+        }
+
         [SerializeField] private Vector2 respawnOffset = new Vector2(0f, 1.42f);
         [SerializeField] private SpriteRenderer sprite;
         [SerializeField] private Color waitingColor = new Color(0.55f, 0.55f, 0.55f);

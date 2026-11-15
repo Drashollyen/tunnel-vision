@@ -61,7 +61,7 @@ namespace TunnelVision.Level
 
             // And this playthrough's result, for the demo's ending.
             var lives = FindAnyObjectByType<PlayerLives>();
-            var livesLost = lives != null ? lives.MaxLives - lives.CurrentLives : 0;
+            var livesLost = lives != null ? lives.LivesLost : 0;
             RunStats.Record(new RunStats.LevelResult(levelIndex, Time.timeSinceLevelLoad, teddies, livesLost));
 
             var screen = FindAnyObjectByType<LevelCompleteScreen>();

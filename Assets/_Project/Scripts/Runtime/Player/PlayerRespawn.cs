@@ -139,6 +139,11 @@ namespace TunnelVision.Player
 
             _checkpoint = checkpoint;
             _checkpoint.SetLit(true);
+            if (_lives != null)
+            {
+                _lives.GainLives(checkpoint.TakeLives()); // Only the first visit pays out.
+            }
+
             CheckpointReached?.Invoke(checkpoint);
         }
 
