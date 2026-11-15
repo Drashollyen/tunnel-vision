@@ -69,7 +69,7 @@ namespace TunnelVision.Audio
 
             NotEffects.RemoveWhere(source => source == null);
 
-            foreach (var source in Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (var source in Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Include))
             {
                 if (NotEffects.Contains(source))
                 {
