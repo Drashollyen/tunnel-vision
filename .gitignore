@@ -104,3 +104,6 @@ $RECYCLE.BIN/
 # CI scratch files
 # ---------------------------------------------------------------------------
 .lfs-assets-id
+
+# Planning notes stay on each person's machine, not in the repo.
+/docs/
