@@ -29,15 +29,3 @@ Add every third-party asset here in the same PR that adds it. Keep downloaded as
 | SFX from Pixabay: Drop tower crush (`droptower-crush.wav`) | [pixabay.com/sound-effects/film-special-effects-sound-effect-car-crash-394903](https://pixabay.com/sound-effects/film-special-effects-sound-effect-car-crash-394903/) | Pixabay Content License |
 | SFX from Pixabay: Checkpoint bell (`bell.mp3`) | [pixabay.com/sound-effects/film-special-effects-bell-98033](https://pixabay.com/sound-effects/film-special-effects-bell-98033/) | Pixabay Content License |
 | SFX from Pixabay: Level complete (`level-complete.mp3`), Universfield | [pixabay.com/sound-effects/film-special-effects-level-complete-143022](https://pixabay.com/sound-effects/film-special-effects-level-complete-143022/) | Pixabay Content License |
-
-## Made by the team
-
-- `Assets/_Project/Art/Player/caution-sign.png`
-- `Assets/_Project/Art/Player/eyeball.png`
-- `Assets/_Project/Art/Player/tent.png`
-- `Assets/_Project/Art/Tiles/stripe.png` (cropped from `tent.png`)
-- `Assets/_Project/Art/Player/gradient.jpg`
-- `Assets/_Project/Art/Collectibles/TeddyBear.png` (the collectible)
-- `Assets/_Project/Audio/prop1/ihyn.mp3`
-- `Assets/_Project/Audio/prop1/swordaudio.mp3`
-- `Assets/_Project/Audio/prop1/movingplat.mp3`
