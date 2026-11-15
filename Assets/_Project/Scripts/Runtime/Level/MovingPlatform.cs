@@ -1,4 +1,5 @@
 using System.Collections;
+using TunnelVision.Audio;
 using UnityEngine;
 
 namespace TunnelVision.Level
@@ -22,7 +23,7 @@ namespace TunnelVision.Level
         {
             rb = GetComponent<Rigidbody2D>();
             nextPosition = pointB.position;
-            movingSound.Play();
+            movingSound.PlayIfSet();
         }
 
         // Update is called once per frame
@@ -33,7 +34,7 @@ namespace TunnelVision.Level
 
             if (Vector2.Distance(rb.position, nextPosition) < 0.01f && !platformWaiting)
             {
-                movingSound.Stop();
+                movingSound.StopIfSet();
                 // Wait for a few seconds
                 platformWaiting = true;
                 StartCoroutine(PlatformWait(waitDuration));
@@ -46,7 +47,7 @@ namespace TunnelVision.Level
             platformWaiting = false;
             // Set the new target position
             nextPosition = (nextPosition == pointA.position) ? pointB.position : pointA.position;
-            movingSound.Play();
+            movingSound.PlayIfSet();
         }
 
         private void OnCollisionEnter2D(Collision2D collision)

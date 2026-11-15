@@ -1,4 +1,5 @@
 using System.Collections;
+using TunnelVision.Audio;
 using UnityEngine;
 
 namespace TunnelVision.Level
@@ -46,7 +47,7 @@ namespace TunnelVision.Level
                 if (seatPlatform.transform.position == bottomPoint.position)
                 {
                     currentState = TowerState.Waiting;
-                    crushSound.Play();
+                    crushSound.PlayIfSet();
                     StartCoroutine(WaitAtBottom());
                 }
             }
@@ -61,7 +62,7 @@ namespace TunnelVision.Level
                 if (seatPlatform.transform.position == topPosition)
                 {
                     currentState = TowerState.Idle;
-                    riseSound.Stop();
+                    riseSound.StopIfSet();
                 }
             }
         }
@@ -70,7 +71,7 @@ namespace TunnelVision.Level
         {
             yield return new WaitForSeconds(waitDuration);
             currentState = TowerState.Rising;
-            riseSound.Play();
+            riseSound.PlayIfSet();
         }
 
         // Using OnTriggerStay2D ensures it also triggers if the player is still standing
@@ -80,7 +81,7 @@ namespace TunnelVision.Level
             if (currentState == TowerState.Idle && !playerOnPlatform && collision.CompareTag("Player"))
             {
                 currentState = TowerState.Falling;
-                fallSound.Play();
+                fallSound.PlayIfSet();
             }
         }
 

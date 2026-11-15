@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TunnelVision.Audio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -66,7 +67,7 @@ namespace TunnelVision.Player
             // If the player is on the ground when the jump button is pressed
             if (context.performed && IsGrounded())
             {
-                jumpSound.Play();
+                jumpSound.PlayIfSet();
                 rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpPower);
             }
 

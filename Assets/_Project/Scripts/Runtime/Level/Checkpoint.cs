@@ -1,4 +1,5 @@
 using TunnelVision.Player;
+using TunnelVision.Audio;
 using UnityEngine;
 
 namespace TunnelVision.Level
@@ -57,7 +58,7 @@ namespace TunnelVision.Level
                 player.ReachCheckpoint(this);
                 if (!bellPlayed)
                 {
-                    bellSound.Play();
+                    bellSound.PlayIfSet();
                     bellPlayed = true;
                 }
 

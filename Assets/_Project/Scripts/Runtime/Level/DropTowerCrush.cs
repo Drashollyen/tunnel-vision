@@ -1,4 +1,5 @@
 using TunnelVision.Player;
+using TunnelVision.Audio;
 using UnityEngine;
 
 namespace TunnelVision.Level
@@ -21,7 +22,7 @@ namespace TunnelVision.Level
             var player = other.GetComponentInParent<PlayerRespawn>();
             if (player != null && dropTower.IsFalling)
             {
-                hitSound.Play();
+                hitSound.PlayIfSet();
                 player.Kill();
             }
         }

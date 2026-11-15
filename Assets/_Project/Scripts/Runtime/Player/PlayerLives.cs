@@ -1,4 +1,5 @@
 using System;
+using TunnelVision.Audio;
 using UnityEngine;
 
 namespace TunnelVision.Player
@@ -24,7 +25,7 @@ namespace TunnelVision.Player
                 return;
             }
 
-            deathSound.Play();
+            deathSound.PlayIfSet();
             CurrentLives--;
             LivesChanged?.Invoke(CurrentLives);
         }
