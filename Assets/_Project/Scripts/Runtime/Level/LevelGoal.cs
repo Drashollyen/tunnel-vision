@@ -20,6 +20,16 @@ namespace TunnelVision.Level
 
         public bool Reached => _reached;
 
+        /// <summary>Where along the level the player crosses into the goal: the left edge of its trigger.</summary>
+        public float CrossingX
+        {
+            get
+            {
+                var trigger = GetComponent<Collider2D>();
+                return trigger != null ? trigger.bounds.min.x : transform.position.x;
+            }
+        }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (_reached || other.GetComponentInParent<PlayerRespawn>() == null)

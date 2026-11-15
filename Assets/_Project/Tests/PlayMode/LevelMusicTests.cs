@@ -2,6 +2,7 @@ using System.Collections;
 using System.Reflection;
 using NUnit.Framework;
 using TunnelVision.Audio;
+using TunnelVision.Level;
 using TunnelVision.Player;
 using TunnelVision.Settings;
 using UnityEngine;
@@ -125,6 +126,54 @@ namespace TunnelVision.Tests
             Assert.IsTrue(_music.IsSilenced);
             Assert.AreEqual(0f, _source.volume, 0.001f);
             Assert.IsFalse(_source.isPlaying);
+        }
+
+
+        [Test]
+        public void Approach_EasesFromFullToSilentAtTheGoal()
+        {
+            Assert.AreEqual(1f, LevelMusic.ApproachLevel(30f, 30f), 0.001f);
+            Assert.AreEqual(1f, LevelMusic.ApproachLevel(100f, 30f), 0.001f, "Far away, untouched.");
+            Assert.AreEqual(0.5f, LevelMusic.ApproachLevel(15f, 30f), 0.001f);
+            Assert.AreEqual(0f, LevelMusic.ApproachLevel(0f, 30f), 0.001f, "Silent at the goal.");
+            Assert.AreEqual(0f, LevelMusic.ApproachLevel(-5f, 30f), 0.001f, "And past it.");
+            Assert.Greater(LevelMusic.ApproachLevel(3f, 30f), 0f, "Still easing just before.");
+        }
+
+        private IEnumerator SettleApproach()
+        {
+            // The approach fade moves at a limited speed, so give it time to arrive.
+            yield return new WaitForSecondsRealtime(1f / LevelMusic.ApproachChangePerSecond + 0.2f);
+        }
+
+        [UnityTest]
+        public IEnumerator NearingTheGoal_FadesTheMusicDown_AndLeavingBringsItBack()
+        {
+            // A goal whose trigger starts 15 units ahead of the player: halfway into the fade.
+            var goal = new GameObject("Goal");
+            goal.transform.position = new Vector3(_respawn.transform.position.x + 15f, 100f, 0f);
+            var trigger = goal.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.size = new Vector2(0.01f, 30f);
+            goal.AddComponent<LevelGoal>();
+
+            // LevelMusic finds the goal when it wakes, so make a fresh one now the goal exists.
+            Object.DestroyImmediate(_music);
+            _source.volume = 0.25f;
+            _music = _source.gameObject.AddComponent<LevelMusic>();
+            yield return SettleApproach();
+
+            Assert.AreEqual(0.5f, _music.Approach, 0.02f, "Halfway into the fade.");
+            Assert.AreEqual(0.125f, _source.volume, 0.01f);
+
+            // Level with the goal, but well above its trigger so it doesn't actually fire.
+            _respawn.transform.position = new Vector3(goal.transform.position.x, 400f, 0f);
+            yield return SettleApproach();
+            Assert.AreEqual(0f, _source.volume, 0.001f, "Silent at the goal, ready for the jingle.");
+
+            _respawn.transform.position = new Vector3(goal.transform.position.x - 100f, 400f, 0f);
+            yield return SettleApproach();
+            Assert.AreEqual(0.25f, _source.volume, 0.001f, "Back to full away from it.");
         }
     }
 }
