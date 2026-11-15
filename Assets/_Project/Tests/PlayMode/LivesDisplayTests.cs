@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace TunnelVision.Tests
 {
-    /// <summary>Builds a bare player and three eyes in a scene of their own.</summary>
+    /// <summary>Builds a bare player and four eyes (one per life) in a scene of their own.</summary>
     public class LivesDisplayTests
     {
         private PlayerLives _lives;
@@ -27,7 +27,7 @@ namespace TunnelVision.Tests
             holder.transform.SetParent(canvas.transform, false);
             holder.SetActive(false); // So Awake waits until the eyes are filled in.
 
-            _eyes = new Image[3];
+            _eyes = new Image[4];
             for (var i = 0; i < _eyes.Length; i++)
             {
                 _eyes[i] = new GameObject("Eye " + (i + 1), typeof(RectTransform), typeof(Image)).GetComponent<Image>();
@@ -65,14 +65,15 @@ namespace TunnelVision.Tests
             _lives.LoseLife();
             yield return new WaitForSecondsRealtime(LivesDisplay.SwellSeconds * 0.8f);
 
-            Assert.Greater(_eyes[2].rectTransform.localScale.x, 1.05f, "The eye should swell first.");
+            Assert.Greater(_eyes[3].rectTransform.localScale.x, 1.05f, "The eye should swell first.");
 
             yield return new WaitForSecondsRealtime(LivesDisplay.LoseSeconds);
 
-            Assert.AreEqual(0f, _eyes[2].rectTransform.localScale.x, 0.001f, "The eye should be gone.");
-            Assert.AreEqual(0f, _eyes[2].color.a, 0.001f);
+            Assert.AreEqual(0f, _eyes[3].rectTransform.localScale.x, 0.001f, "The eye should be gone.");
+            Assert.AreEqual(0f, _eyes[3].color.a, 0.001f);
             Assert.AreEqual(1f, _eyes[0].rectTransform.localScale.x, 0.001f, "The other eyes stay.");
             Assert.AreEqual(1f, _eyes[1].rectTransform.localScale.x, 0.001f);
+            Assert.AreEqual(1f, _eyes[2].rectTransform.localScale.x, 0.001f);
         }
 
         [UnityTest]
@@ -84,7 +85,7 @@ namespace TunnelVision.Tests
                 _lives.LoseLife();
                 yield return new WaitForSecondsRealtime(LivesDisplay.LoseSeconds + 0.1f);
 
-                Assert.AreEqual(0f, _eyes[2].rectTransform.localScale.x, 0.001f);
+                Assert.AreEqual(0f, _eyes[3].rectTransform.localScale.x, 0.001f);
             }
             finally
             {
