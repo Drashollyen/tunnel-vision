@@ -8271,6 +8271,8 @@ MonoBehaviour:
   levelIndex: 1
   levelSelectScene: LevelSelect
   nextLevelScene: 
+  endsDemo: 1
+  demoEndScene: DemoComplete
 --- !u!1 &734508836932261369
 GameObject:
   m_ObjectHideFlags: 0
