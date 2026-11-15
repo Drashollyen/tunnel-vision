@@ -12,7 +12,8 @@ namespace TunnelVision.UI
     /// same page (the OptionsPanel prefab) as on the main menu. Escape on the options page goes
     /// back, and on the pause page resumes. It won't open on Out Of Lives, during the death
     /// sequence, or while a scene fades in or out. Level Select and Main Menu ask first, since
-    /// leaving loses the level's progress.
+    /// leaving loses the level's progress. Like the main menu, it's used with the mouse: nothing
+    /// is selected for the keyboard, so no button stays highlighted on its own.
     /// Goes on an always-on object. The overlay (a full-screen dim image holding both pages)
     /// is a child that starts hidden.
     /// </summary>
@@ -44,7 +45,6 @@ namespace TunnelVision.UI
         private PlayerRespawn _respawn;
         private RoundOverMessage _roundOver;
         private string _leavingTo;
-        private Button _askedFrom;
 
         public bool IsPaused { get; private set; }
 
@@ -72,9 +72,9 @@ namespace TunnelVision.UI
             if (optionsButton != null)
                 optionsButton.onClick.AddListener(OpenOptions);
             if (levelSelectButton != null)
-                levelSelectButton.onClick.AddListener(() => AskToLeave(levelSelectScene, LevelSelectQuestion, levelSelectButton));
+                levelSelectButton.onClick.AddListener(() => AskToLeave(levelSelectScene, LevelSelectQuestion));
             if (mainMenuButton != null)
-                mainMenuButton.onClick.AddListener(() => AskToLeave(mainMenuScene, MainMenuQuestion, mainMenuButton));
+                mainMenuButton.onClick.AddListener(() => AskToLeave(mainMenuScene, MainMenuQuestion));
             if (leaveButton != null)
                 leaveButton.onClick.AddListener(ConfirmLeave);
             if (stayButton != null)
@@ -135,7 +135,7 @@ namespace TunnelVision.UI
                 optionsPanel.gameObject.SetActive(false);
             if (confirmPanel != null)
                 confirmPanel.SetActive(false);
-            Select(resumeButton);
+            ClearSelection();
         }
 
         public void Resume()
@@ -165,12 +165,12 @@ namespace TunnelVision.UI
             if (IsPaused && IsOnOptions)
             {
                 _panels.Switch(optionsPanel.gameObject, pausePanel);
-                Select(optionsButton);
+                ClearSelection();
             }
         }
 
         /// <summary>Asks before leaving the level. Without a confirmation panel it just leaves.</summary>
-        public void AskToLeave(string scene, string question, Button askedFrom = null)
+        public void AskToLeave(string scene, string question)
         {
             if (!IsPaused || IsConfirmingLeave)
             {
@@ -184,13 +184,10 @@ namespace TunnelVision.UI
             }
 
             _leavingTo = scene;
-            _askedFrom = askedFrom;
             if (confirmTitle != null)
                 confirmTitle.text = question;
             _panels.Switch(pausePanel, confirmPanel);
-
-            // Stay is the safe choice, so a stray Enter doesn't throw the level away.
-            Select(stayButton);
+            ClearSelection();
         }
 
         public void ConfirmLeave()
@@ -210,7 +207,7 @@ namespace TunnelVision.UI
 
             _leavingTo = null;
             _panels.Switch(confirmPanel, pausePanel);
-            Select(_askedFrom);
+            ClearSelection();
         }
 
         private void Leave(string scene)
@@ -230,11 +227,12 @@ namespace TunnelVision.UI
             }
         }
 
-        private static void Select(Selectable selectable)
+        // A clicked button stays selected, and its highlight would carry over to the next page.
+        private static void ClearSelection()
         {
-            if (selectable != null && EventSystem.current != null)
+            if (EventSystem.current != null)
             {
-                EventSystem.current.SetSelectedGameObject(selectable.gameObject);
+                EventSystem.current.SetSelectedGameObject(null);
             }
         }
     }

@@ -114,7 +114,8 @@ namespace TunnelVision.Tests
             Assert.AreEqual(0f, Time.timeScale);
             Assert.IsTrue(_overlay.activeSelf);
             Assert.IsTrue(_pausePanel.activeSelf);
-            Assert.AreEqual(_resume.gameObject, EventSystem.current.currentSelectedGameObject);
+            Assert.IsNull(EventSystem.current.currentSelectedGameObject,
+                "Mouse-only, like the main menu: nothing should be highlighted on its own.");
         }
 
         [UnityTest]
@@ -187,7 +188,7 @@ namespace TunnelVision.Tests
 
 
         [UnityTest]
-        public IEnumerator LevelSelect_AsksFirst_WithStaySelected()
+        public IEnumerator LevelSelect_AsksFirst()
         {
             _menu.Pause();
             yield return null;
@@ -199,8 +200,8 @@ namespace TunnelVision.Tests
             Assert.IsTrue(_menu.IsPaused, "Asking shouldn't leave or resume yet.");
             Assert.AreEqual(0f, Time.timeScale);
             Assert.AreEqual(PauseMenu.LevelSelectQuestion, _question.text);
-            Assert.AreEqual(_stay.gameObject, EventSystem.current.currentSelectedGameObject,
-                "Stay should be selected so a stray Enter is safe.");
+            Assert.IsNull(EventSystem.current.currentSelectedGameObject,
+                "Nothing should stay highlighted from the button that was clicked.");
         }
 
         [UnityTest]
