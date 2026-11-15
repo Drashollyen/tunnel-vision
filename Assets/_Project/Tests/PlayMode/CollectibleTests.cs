@@ -51,15 +51,20 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator Teddy_Bobs()
         {
-            var start = _teddy.transform.position.y;
-            var moved = false;
-            for (var i = 0; i < 60 && !moved; i++)
+            // The bob is slow (about 3 s a cycle), so watch for a real second rather than a few
+            // frames: wherever it starts in its swing, it moves well within that.
+            var lowest = float.MaxValue;
+            var highest = float.MinValue;
+            var until = Time.time + 1f;
+            while (Time.time < until)
             {
+                var y = _teddy.transform.position.y;
+                lowest = Mathf.Min(lowest, y);
+                highest = Mathf.Max(highest, y);
                 yield return null;
-                moved = Mathf.Abs(_teddy.transform.position.y - start) > 0.01f;
             }
 
-            Assert.IsTrue(moved, "It should bob so it stands out.");
+            Assert.Greater(highest - lowest, 0.05f, "It should bob so it stands out.");
         }
 
         [UnityTest]
