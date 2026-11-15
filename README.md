@@ -65,7 +65,7 @@ Assets/
     Prefabs/                Reusable objects: Player, Level, UI
     Scenes/Menus/           IntroScreen (first in build), LevelSelect
     Scenes/Levels/          Playable levels (start new ones from Level1)
-    Scenes/Dev/             Test scenes: ConeTest, Game
+    Scenes/Dev/             Throwaway test scenes (keep them out of the build list)
     Scripts/Runtime/        Game code (TunnelVision.Runtime), one folder per namespace
     Scripts/Editor/         Editor tools
     Tests/EditMode/         Unit tests

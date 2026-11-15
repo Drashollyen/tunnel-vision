@@ -28,7 +28,7 @@ Already done: lives display and Round Over message (#77), options page, info not
 1. Close Unity, then make a new branch from `revamp` in GitHub Desktop. Reopen Unity.
 2. Build the element as its own prefab in `Assets/_Project/Prefabs/UI/`.
 3. Add it to `HUD` if it's part of the in-game UI.
-4. Try it in Play mode in a scene with `HUD` and `Player`. Don't save shared scenes like `ConeTest`. Use a temporary test key on your branch if you need one.
+4. Try it in Play mode in a scene with `HUD` and `Player`. Don't save shared scenes like the levels or menus. Use a temporary test key on your branch if you need one.
 5. Work through the task's checks in Play mode. Fix anything that fails.
 6. Remove any temporary test scenes or test keys.
 7. Open a PR into `revamp`, and say what you tried.
