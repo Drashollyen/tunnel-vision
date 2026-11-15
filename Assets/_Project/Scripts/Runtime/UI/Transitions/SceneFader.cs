@@ -11,7 +11,7 @@ namespace TunnelVision.UI
     /// </summary>
     public class SceneFader : MonoBehaviour
     {
-        private const float FadeSeconds = 0.25f;
+        public const float FadeSeconds = 0.25f;
         private const int SortOrderAboveEverything = short.MaxValue;
 
         private static SceneFader _instance;
@@ -20,6 +20,9 @@ namespace TunnelVision.UI
         private bool _fading;
 
         public static bool IsFading => _instance != null && _instance._fading;
+
+        /// <summary>Raised as a fade to another scene begins, with that scene's name.</summary>
+        public static event System.Action<string> LoadStarted;
 
         public static void Load(string sceneName)
         {
@@ -40,6 +43,7 @@ namespace TunnelVision.UI
             }
 
             _instance.StartCoroutine(_instance.FadeAndLoad(sceneName));
+            LoadStarted?.Invoke(sceneName);
         }
 
         private static SceneFader Create()
