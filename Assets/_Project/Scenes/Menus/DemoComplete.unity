@@ -2499,7 +2499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cfa01f253534bc7b43a686bab5eea07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Audio.MusicPlayer
-  music: {fileID: 8300000, guid: e09b497320f9acd468b521a9ed94a425, type: 3}
+  music: {fileID: 8300000, guid: 8245d3c6111c48358eb06e43af780bd3, type: 3}
   musicScenes:
   - DemoComplete
   fadeInSeconds: 1

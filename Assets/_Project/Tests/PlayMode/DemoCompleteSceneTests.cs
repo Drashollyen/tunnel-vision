@@ -116,6 +116,7 @@ namespace TunnelVision.Tests
             Assert.IsNotNull(MusicPlayer.Current);
             Assert.IsTrue(MusicPlayer.Current.GetComponent<AudioSource>().isPlaying);
             Assert.IsTrue(MusicPlayer.Current.PlaysIn("DemoComplete"));
+            Assert.AreEqual("demo-complete-music", MusicPlayer.Current.Music.name, "The ending has its own track.");
         }
 
         [UnityTest]
