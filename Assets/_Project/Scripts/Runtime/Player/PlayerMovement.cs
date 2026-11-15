@@ -45,12 +45,43 @@ namespace TunnelVision.Player
         /// <summary>True while the body faces right.</summary>
         public bool FacingRight => facingRight;
 
+        /// <summary>
+        /// The smoothing the player's Rigidbody should use. On their own, Interpolate, so they glide
+        /// between physics steps like the camera does instead of shuddering. While riding something
+        /// (a wheel seat or moving platform makes the player its child) it's off, since the ride
+        /// already moves them smoothly and the two would fight.
+        /// </summary>
+        public static RigidbodyInterpolation2D SmoothingFor(bool riding) =>
+            riding ? RigidbodyInterpolation2D.None : RigidbodyInterpolation2D.Interpolate;
+
         void Awake()
         {
             // How the player faces at the start of the level, to come back to on every respawn.
             if (eyeball != null)
             {
                 _startEyeRotation = eyeball.localRotation;
+            }
+
+            UpdateSmoothing();
+        }
+
+        void Update()
+        {
+            UpdateSmoothing();
+        }
+
+        // Rides parent the player to the moving thing, and stepping off unparents them.
+        private void UpdateSmoothing()
+        {
+            if (rb == null)
+            {
+                return;
+            }
+
+            var wanted = SmoothingFor(transform.parent != null);
+            if (rb.interpolation != wanted)
+            {
+                rb.interpolation = wanted;
             }
         }
 
