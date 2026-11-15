@@ -1,6 +1,7 @@
-movingplat made locally
+movingplat was made locally and does not require attribution.
 
 track1
+"Circus Waltz" by Kevin MacLeod
 https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100291
 Licensed under Creative Commons: By Attribution 4.0 License
 The track has been altered to be loopable
@@ -39,3 +40,15 @@ https://pixabay.com/sound-effects/film-special-effects-bamboo-whoosh-429156/
 
 wheel-platform
 https://pixabay.com/sound-effects/technology-slow-mouse-wheel-movement-204710/
+
+punch
+https://pixabay.com/sound-effects/film-special-effects-punch-04-383965/
+
+droptower-creak
+https://pixabay.com/sound-effects/abandoned-facility-creaking-463197/
+
+droptower-crush
+https://pixabay.com/sound-effects/film-special-effects-sound-effect-car-crash-394903/
+
+bell
+https://pixabay.com/sound-effects/film-special-effects-bell-98033/

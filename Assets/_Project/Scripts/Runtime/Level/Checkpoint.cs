@@ -19,10 +19,17 @@ namespace TunnelVision.Level
         [SerializeField] private Sprite activeSprite;
 
         public Vector3 RespawnPosition => transform.position + (Vector3)respawnOffset;
+        private AudioSource bellSound;
+        private bool bellPlayed = false;
 
         private void Awake()
         {
             SetLit(false);
+        }
+
+        void Start()
+        {
+            bellSound = GetComponent<AudioSource>();
         }
 
         public void SetLit(bool lit)
@@ -48,6 +55,12 @@ namespace TunnelVision.Level
             if (player != null)
             {
                 player.ReachCheckpoint(this);
+                if (!bellPlayed)
+                {
+                    bellSound.Play();
+                    bellPlayed = true;
+                }
+
             }
         }
     }
