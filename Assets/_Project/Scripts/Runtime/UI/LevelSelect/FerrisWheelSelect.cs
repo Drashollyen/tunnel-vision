@@ -39,6 +39,18 @@ namespace TunnelVision.UI
         [Tooltip("The soft outline behind each cabin, in the same order as Cabins.")]
         [SerializeField] private Image[] cabinOutlines;
 
+        [Header("Sounds")]
+        [Tooltip("Each turn of one cabin.")]
+        [SerializeField] private AudioClip turnSound;
+        [Tooltip("Enter on a playable cabin, as the level starts loading.")]
+        [SerializeField] private AudioClip startSound;
+        [Tooltip("Enter on a cabin the player hasn't unlocked yet.")]
+        [SerializeField] private AudioClip lockedSound;
+        [Tooltip("Enter on a \"?\" cabin, as the notice opens.")]
+        [SerializeField] private AudioClip notInPrototypeSound;
+        [Tooltip("Escape, going back to the main menu.")]
+        [SerializeField] private AudioClip backSound;
+
         private const float SelectedCabinScale = 1.15f;
         private const float CabinEaseSpeed = 12f;
         private const float ArrowBobHeight = 10f;
@@ -159,6 +171,7 @@ namespace TunnelVision.UI
             {
                 if (keyboard.escapeKey.wasPressedThisFrame)
                 {
+                    InterfaceSounds.Play(backSound);
                     SceneFader.Load(menuScene);
                     return;
                 }
@@ -167,7 +180,7 @@ namespace TunnelVision.UI
                     : keyboard.leftArrowKey.wasPressedThisFrame ? -1 : 0;
                 if (direction != 0)
                 {
-                    _steps = NextStep(_steps, _angle, StepAngle, direction);
+                    Turn(direction);
                 }
             }
 
@@ -225,13 +238,29 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>What Enter does: starts the level, shows the prototype notice, or nothing if locked.</summary>
+        /// <summary>
+        /// What an arrow key does: one cabin left (-1) or right (1). Clicks only when the wheel
+        /// actually takes another step, so a press that spamming has used up stays silent.
+        /// </summary>
+        public void Turn(int direction)
+        {
+            var next = NextStep(_steps, _angle, StepAngle, direction);
+            if (next != _steps)
+            {
+                _steps = next;
+                InterfaceSounds.Play(turnSound);
+            }
+        }
+
+        /// <summary>What Enter does: starts the level, shows the prototype notice, or buzzes if locked.</summary>
         public void StartSelectedLevel()
         {
             var state = StateOf(SelectedIndex);
 
             if (state == CabinState.NotInPrototype)
             {
+                InterfaceSounds.Play(notInPrototypeSound);
+
                 if (prototypeNotice != null)
                 {
                     prototypeNotice.Show(NotInPrototypeMessage);
@@ -244,7 +273,13 @@ namespace TunnelVision.UI
                 return;
             }
 
-            if (state != CabinState.Playable || levelScenes == null || SelectedIndex >= levelScenes.Length)
+            if (state == CabinState.Locked)
+            {
+                InterfaceSounds.Play(lockedSound);
+                return;
+            }
+
+            if (levelScenes == null || SelectedIndex >= levelScenes.Length)
             {
                 return;
             }
@@ -255,6 +290,7 @@ namespace TunnelVision.UI
                 return;
             }
 
+            InterfaceSounds.Play(startSound);
             SceneFader.Load(scene);
         }
     }

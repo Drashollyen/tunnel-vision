@@ -17,6 +17,8 @@ namespace TunnelVision.UI
         [SerializeField] private TMP_Text message;
         [Tooltip("Optional. Closes the dialog, and is selected while it's open so Enter works.")]
         [SerializeField] private Button closeButton;
+        [Tooltip("Optional. Played when the dialog closes, however it's closed.")]
+        [SerializeField] private AudioClip closeSound;
 
         private int _openedOnFrame = -1;
 
@@ -64,6 +66,7 @@ namespace TunnelVision.UI
 
             IsOpen = false;
             ClosedOnFrame = Time.frameCount;
+            InterfaceSounds.Play(closeSound);
             gameObject.SetActive(false);
         }
 
