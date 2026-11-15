@@ -17,7 +17,9 @@ namespace TunnelVision.UI
         public float Width => width;
         public Color Color => color;
 
-        private void Awake()
+        // Start, not Awake: TextMeshPro sets up its material in its own Awake, and an outline
+        // set before that throws and never shows.
+        private void Start()
         {
             Apply();
         }
@@ -34,6 +36,11 @@ namespace TunnelVision.UI
         private void Apply()
         {
             var text = GetComponent<TMP_Text>();
+            if (text.font == null)
+            {
+                return;
+            }
+
             text.outlineWidth = width;
             text.outlineColor = color;
         }

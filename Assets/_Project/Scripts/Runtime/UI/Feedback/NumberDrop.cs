@@ -130,8 +130,17 @@ namespace TunnelVision.UI
             number.textWrappingMode = Text.textWrappingMode;
             number.color = Text.color;
             number.raycastTarget = false;
-            number.outlineWidth = Text.outlineWidth;
-            number.outlineColor = Text.outlineColor;
+            // From TextOutline if there is one, since its outline may not be on the line yet.
+            if (TryGetComponent(out TextOutline outline))
+            {
+                number.outlineWidth = outline.Width;
+                number.outlineColor = outline.Color;
+            }
+            else
+            {
+                number.outlineWidth = Text.outlineWidth;
+                number.outlineColor = Text.outlineColor;
+            }
             return number;
         }
     }
