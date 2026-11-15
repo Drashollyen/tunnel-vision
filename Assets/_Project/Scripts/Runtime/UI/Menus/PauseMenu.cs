@@ -61,6 +61,7 @@ namespace TunnelVision.UI
         public bool CanPause =>
             !SceneFader.IsFading
             && (_roundOver == null || !_roundOver.IsGameOver)
+            && !LevelCompleteScreen.IsAnyShowing
             && (_respawn == null || !_respawn.IsRespawning)
             && Time.timeScale > 0f;
 

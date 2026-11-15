@@ -31,6 +31,7 @@ namespace TunnelVision.Tests
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Checkpoint Message")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Pause Menu/Overlay/Pause Panel/Header/Title")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Pause Menu/Overlay/Confirm Panel/Header/Title")]
+        [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Level Complete/Overlay/Level Complete Panel/Header/Title")]
         public void Text_UsesTheOutlineMaterial(string prefabPath, string textPath)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);

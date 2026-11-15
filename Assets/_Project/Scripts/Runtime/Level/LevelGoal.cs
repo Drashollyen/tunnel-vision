@@ -4,22 +4,52 @@ using UnityEngine;
 
 namespace TunnelVision.Level
 {
-    /// <summary>The end of a level. Unlocks the next level and returns to the wheel.</summary>
+    /// <summary>
+    /// The end of a level. Unlocks the next level, then shows the HUD's Level Complete screen,
+    /// or goes straight back to the wheel if the scene has no such screen. Only fires once.
+    /// </summary>
     public class LevelGoal : MonoBehaviour
     {
         [Tooltip("This level's position on the wheel, counting from 0.")]
         [SerializeField] private int levelIndex;
         [SerializeField] private string levelSelectScene = "LevelSelect";
+        [Tooltip("The scene Next Level loads. Leave empty on the last level to offer only Level Select.")]
+        [SerializeField] private string nextLevelScene;
+
+        private bool _reached;
+
+        public bool Reached => _reached;
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.GetComponentInParent<PlayerRespawn>() == null)
+            if (_reached || other.GetComponentInParent<PlayerRespawn>() == null)
             {
                 return;
             }
 
+            Reach();
+        }
+
+        /// <summary>What touching the goal does. Public so tests can call it.</summary>
+        public void Reach()
+        {
+            if (_reached)
+            {
+                return;
+            }
+
+            _reached = true;
             LevelProgress.CompleteLevel(levelIndex);
-            SceneFader.Load(levelSelectScene);
+
+            var screen = FindAnyObjectByType<LevelCompleteScreen>();
+            if (screen != null)
+            {
+                screen.Show(nextLevelScene);
+            }
+            else
+            {
+                SceneFader.Load(levelSelectScene);
+            }
         }
     }
 }

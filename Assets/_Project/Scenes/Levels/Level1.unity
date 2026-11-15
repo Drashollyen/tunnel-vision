@@ -6007,6 +6007,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.LevelGoal
   levelIndex: 0
   levelSelectScene: LevelSelect
+  nextLevelScene: Level2
 --- !u!1 &1730000020
 GameObject:
   m_ObjectHideFlags: 0
