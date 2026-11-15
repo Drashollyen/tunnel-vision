@@ -18,6 +18,8 @@ namespace TunnelVision.UI
         [SerializeField] private GameObject panel;
         [SerializeField] private TMP_Text title;
         [SerializeField] private TMP_Text subtitle;
+        [Tooltip("How long a lost life's message stays up when there's no death sequence to follow. " +
+                 "With one, it fades out as the screen goes black instead.")]
         [SerializeField] private float showSeconds = 2f;
 
         [Header("Game Over")]
@@ -33,6 +35,10 @@ namespace TunnelVision.UI
         private float _showButtonAt = float.PositiveInfinity;
         private bool _pausedTheGame;
         private NumberDrop _numberDrop;
+        private CanvasGroup _panelGroup;
+        private PlayerRespawn _respawn;
+        private float _fadeStartsAt = float.PositiveInfinity;
+        private float _fadeSeconds;
 
         public const string PressEnterPrompt = "Press Enter For Level Select";
         public const string LifeLostTitle = "Game Over";
@@ -46,6 +52,9 @@ namespace TunnelVision.UI
         /// <summary>True once the last life has gone.</summary>
         public bool IsGameOver { get; private set; }
 
+        /// <summary>How visible the message is, from 0 to 1. It fades out as the screen goes black.</summary>
+        public float Visibility => _panelGroup != null && panel.activeSelf ? _panelGroup.alpha : 0f;
+
         /// <summary>True when Game Over has no button and is showing the Press Enter prompt instead.</summary>
         public bool IsWaitingForKey { get; private set; }
 
@@ -55,6 +64,7 @@ namespace TunnelVision.UI
         private void Awake()
         {
             panel.SetActive(false);
+            _panelGroup = panel.TryGetComponent(out CanvasGroup group) ? group : panel.AddComponent<CanvasGroup>();
 
             _numberDrop = subtitle.GetComponent<NumberDrop>();
             if (_numberDrop == null)
@@ -69,6 +79,7 @@ namespace TunnelVision.UI
             }
 
             _playerLives = FindAnyObjectByType<PlayerLives>();
+            _respawn = _playerLives != null ? _playerLives.GetComponent<PlayerRespawn>() : null;
 
             if (_playerLives == null)
             {
@@ -116,6 +127,17 @@ namespace TunnelVision.UI
                 Hide();
             }
 
+            // Fading out with the screen as it goes black.
+            if (Time.unscaledTime >= _fadeStartsAt)
+            {
+                var faded = _fadeSeconds > 0f ? (Time.unscaledTime - _fadeStartsAt) / _fadeSeconds : 1f;
+                _panelGroup.alpha = 1f - Mathf.Clamp01(faded);
+                if (faded >= 1f)
+                {
+                    Hide();
+                }
+            }
+
             if (Time.unscaledTime >= _showButtonAt)
             {
                 _showButtonAt = float.PositiveInfinity;
@@ -145,6 +167,8 @@ namespace TunnelVision.UI
             }
 
             panel.SetActive(true);
+            _panelGroup.alpha = 1f;
+            _fadeStartsAt = float.PositiveInfinity;
 
             if (lives <= 0)
             {
@@ -155,7 +179,18 @@ namespace TunnelVision.UI
             title.text = LifeLostTitle;
             subtitle.gameObject.SetActive(true);
             _numberDrop.Play(LivesLine(livesBefore), LivesLine(lives));
-            _hideAt = Time.unscaledTime + showSeconds;
+
+            if (_respawn != null)
+            {
+                // Stay up through the reveal, then fade out alongside the screen going black.
+                _hideAt = float.PositiveInfinity;
+                _fadeSeconds = _respawn.FadeToBlackSeconds;
+                _fadeStartsAt = Time.unscaledTime + _respawn.SecondsUntilBlack - _fadeSeconds;
+            }
+            else
+            {
+                _hideAt = Time.unscaledTime + showSeconds;
+            }
         }
 
         private void ShowGameOver()
@@ -210,6 +245,8 @@ namespace TunnelVision.UI
         {
             panel.SetActive(false);
             _hideAt = float.PositiveInfinity;
+            _fadeStartsAt = float.PositiveInfinity;
+            _panelGroup.alpha = 1f;
         }
     }
 }

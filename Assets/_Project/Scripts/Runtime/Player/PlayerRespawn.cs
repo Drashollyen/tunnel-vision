@@ -60,6 +60,9 @@ namespace TunnelVision.Player
         /// <summary>How long the screen takes to fade back in after a respawn.</summary>
         public float FadeInSeconds => fadeDuration;
 
+        /// <summary>How long the screen takes to fade to black, ending at <see cref="SecondsUntilBlack"/>.</summary>
+        public float FadeToBlackSeconds => fadeDuration;
+
         private void Awake()
         {
             _lives = GetComponent<PlayerLives>();
