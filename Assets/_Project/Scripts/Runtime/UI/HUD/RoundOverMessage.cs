@@ -31,6 +31,7 @@ namespace TunnelVision.UI
         private float _hideAt = float.PositiveInfinity;
         private float _showButtonAt = float.PositiveInfinity;
         private bool _pausedTheGame;
+        private NumberDrop _numberDrop;
 
         public const string PressEnterPrompt = "Press Enter For Level Select";
         public const string LifeLostTitle = "Game Over";
@@ -42,9 +43,18 @@ namespace TunnelVision.UI
         /// <summary>True when Game Over has no button and is showing the Press Enter prompt instead.</summary>
         public bool IsWaitingForKey { get; private set; }
 
+        /// <summary>The lives line, such as "2 Lives Remaining" or "1 Life Remaining".</summary>
+        public static string LivesLine(int lives) => lives == 1 ? "1 Life Remaining" : $"{lives} Lives Remaining";
+
         private void Awake()
         {
             panel.SetActive(false);
+
+            _numberDrop = subtitle.GetComponent<NumberDrop>();
+            if (_numberDrop == null)
+            {
+                _numberDrop = subtitle.gameObject.AddComponent<NumberDrop>();
+            }
 
             if (levelSelectButton != null)
             {
@@ -118,7 +128,8 @@ namespace TunnelVision.UI
 
         private void OnLivesChanged(int lives)
         {
-            bool lostALife = lives < _lastLives;
+            var livesBefore = _lastLives;
+            bool lostALife = lives < livesBefore;
             _lastLives = lives;
 
             if (!lostALife)
@@ -136,8 +147,8 @@ namespace TunnelVision.UI
             }
 
             title.text = LifeLostTitle;
-            subtitle.text = lives == 1 ? "1 Life Remaining" : $"{lives} Lives Remaining";
             subtitle.gameObject.SetActive(true);
+            _numberDrop.Play(LivesLine(livesBefore), LivesLine(lives));
             _hideAt = Time.unscaledTime + showSeconds;
         }
 
@@ -157,8 +168,8 @@ namespace TunnelVision.UI
         {
             if (levelSelectButton == null)
             {
-                subtitle.text = PressEnterPrompt;
                 subtitle.gameObject.SetActive(true);
+                _numberDrop.ShowPlain(PressEnterPrompt);
                 IsWaitingForKey = true;
                 return;
             }

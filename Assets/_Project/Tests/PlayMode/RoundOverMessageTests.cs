@@ -107,7 +107,7 @@ namespace TunnelVision.Tests
             Assert.IsTrue(_panel.activeSelf);
             Assert.AreEqual(RoundOverMessage.LifeLostTitle, _title.text);
             Assert.AreEqual("Game Over", _title.text);
-            Assert.AreEqual("2 Lives Remaining", _subtitle.text);
+            Assert.AreEqual("2 Lives Remaining", _subtitle.GetParsedText(), "The line reads the same while its number animates.");
             Assert.AreEqual(1f, Time.timeScale);
             Assert.IsFalse(_button.gameObject.activeSelf);
         }
