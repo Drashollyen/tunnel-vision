@@ -33,10 +33,18 @@ namespace TunnelVision.Player
         private bool facingRight = true;
         private Vector2 lookInput;
         private bool controlsEnabled = true;
+        private Quaternion _startEyeRotation = Quaternion.identity;
 
-        void Start()
+        /// <summary>True while the body faces right.</summary>
+        public bool FacingRight => facingRight;
+
+        void Awake()
         {
-
+            // How the player faces at the start of the level, to come back to on every respawn.
+            if (eyeball != null)
+            {
+                _startEyeRotation = eyeball.localRotation;
+            }
         }
 
         // Update is called once per frame
@@ -136,6 +144,28 @@ namespace TunnelVision.Player
         {
             Gizmos.color = Color.white;
             Gizmos.DrawWireCube(groundCheckPos.position, groundCheckSize);
+        }
+
+        /// <summary>
+        /// Turns the body and the eye back to how they faced at the start of the level (the body
+        /// facing right), and forgets any held direction. Used on every respawn.
+        /// </summary>
+        public void FaceStartDirection()
+        {
+            facingRight = true;
+            horizontalMovement = 0f;
+            lookInput = Vector2.zero;
+
+            if (bodySprite != null)
+            {
+                bodySprite.flipX = false;
+            }
+
+            if (eyeball != null)
+            {
+                eyeball.localRotation = _startEyeRotation;
+                targetAngle = _startEyeRotation.eulerAngles.z;
+            }
         }
 
         public void EnableControls(bool value)

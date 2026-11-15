@@ -176,8 +176,13 @@ namespace TunnelVision.Player
                 yield break;
             }
 
-            // Move while the screen is fully black.
+            // Move while the screen is fully black, facing the way the level starts (to the right),
+            // whichever way the player was facing when they died.
             MoveTo(_checkpoint != null ? _checkpoint.RespawnPosition : _levelStart);
+            if (movement != null)
+            {
+                movement.FaceStartDirection();
+            }
 
             if (globalLight != null)
             {
