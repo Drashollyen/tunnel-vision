@@ -215,13 +215,13 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator PlayableCabinWithoutAScene_StaysSilent()
+        public IEnumerator PlayableCabinWithoutAScene_PlaysTheNotAvailableSound()
         {
-            // Cabin 1 is playable, but nothing would load, so there's nothing to confirm.
+            // Cabin 1 is playable, but its level isn't made yet, so it's treated like "???".
             SelectCabin(0);
             _wheel.StartSelectedLevel();
 
-            CollectionAssert.IsEmpty(_played);
+            CollectionAssert.AreEqual(new[] { _notInPrototype }, _played);
             yield break;
         }
     }

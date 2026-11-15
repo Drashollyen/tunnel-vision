@@ -61,7 +61,8 @@ namespace TunnelVision.Tests
                 label.transform.SetParent(cabin.transform, false);
                 label.text = "Level " + (i + 1);
                 _cabins[i] = cabin.GetComponent<RectTransform>();
-                scenes[i] = string.Empty; // Nothing loads, even for a playable cabin.
+                // Not in the build, so SceneFader only warns and nothing loads.
+                scenes[i] = "NoSuchSceneForTests";
             }
 
             _wheel = wheelObject.AddComponent<FerrisWheelSelect>();
@@ -176,6 +177,22 @@ namespace TunnelVision.Tests
 
             LogAssert.Expect(LogType.Warning, "FerrisWheelSelect: no Prototype Notice set, so the \"???\" cabin does nothing.");
             _wheel.StartSelectedLevel();
+        }
+
+
+        [UnityTest]
+        public IEnumerator UnlockedCabinWithNoLevelYet_OpensTheNotice()
+        {
+            yield return null;
+            var scenes = (string[])typeof(FerrisWheelSelect)
+                .GetField("levelScenes", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(_wheel);
+            scenes[0] = string.Empty; // Cabin 1 is always unlocked; pretend its level isn't made yet.
+            SelectCabin(0);
+            _wheel.StartSelectedLevel();
+            yield return null;
+
+            Assert.IsTrue(_dialog.IsOpen);
+            Assert.AreEqual(FerrisWheelSelect.NotInPrototypeMessage, _message.text);
         }
     }
 }

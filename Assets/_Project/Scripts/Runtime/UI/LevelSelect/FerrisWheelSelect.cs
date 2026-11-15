@@ -293,6 +293,20 @@ namespace TunnelVision.UI
             }
         }
 
+        private void ShowNotInPrototype()
+        {
+            InterfaceSounds.Play(notInPrototypeSound, ErrorVolume);
+
+            if (prototypeNotice != null)
+            {
+                prototypeNotice.Show(NotInPrototypeMessage);
+            }
+            else
+            {
+                Debug.LogWarning("FerrisWheelSelect: no Prototype Notice set, so the \"???\" cabin does nothing.", this);
+            }
+        }
+
         /// <summary>What Enter does: starts the level, shows the prototype notice, or buzzes if locked.</summary>
         public void StartSelectedLevel()
         {
@@ -300,17 +314,7 @@ namespace TunnelVision.UI
 
             if (state == CabinState.NotInPrototype)
             {
-                InterfaceSounds.Play(notInPrototypeSound, ErrorVolume);
-
-                if (prototypeNotice != null)
-                {
-                    prototypeNotice.Show(NotInPrototypeMessage);
-                }
-                else
-                {
-                    Debug.LogWarning("FerrisWheelSelect: no Prototype Notice set, so the \"???\" cabin does nothing.", this);
-                }
-
+                ShowNotInPrototype();
                 return;
             }
 
@@ -322,14 +326,11 @@ namespace TunnelVision.UI
                 return;
             }
 
-            if (levelScenes == null || SelectedIndex >= levelScenes.Length)
-            {
-                return;
-            }
-
-            var scene = levelScenes[SelectedIndex];
+            // Unlocked, but its level hasn't been made yet: treated like a "???" cabin.
+            var scene = levelScenes != null && SelectedIndex < levelScenes.Length ? levelScenes[SelectedIndex] : null;
             if (string.IsNullOrEmpty(scene))
             {
+                ShowNotInPrototype();
                 return;
             }
 
