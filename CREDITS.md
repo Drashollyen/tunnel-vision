@@ -37,6 +37,7 @@ Add every third-party asset here in the same PR that adds it. Keep downloaded as
 - `Assets/_Project/Art/Player/tent.png`
 - `Assets/_Project/Art/Tiles/stripe.png` (cropped from `tent.png`)
 - `Assets/_Project/Art/Player/gradient.jpg`
+- `Assets/_Project/Art/Collectibles/TeddyBear.png` (the collectible)
 - `Assets/_Project/Audio/prop1/ihyn.mp3`
 - `Assets/_Project/Audio/prop1/swordaudio.mp3`
 - `Assets/_Project/Audio/prop1/movingplat.mp3`
