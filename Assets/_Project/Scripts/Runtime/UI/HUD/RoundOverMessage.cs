@@ -21,7 +21,7 @@ namespace TunnelVision.UI
         [SerializeField] private float showSeconds = 2f;
 
         [Header("Game Over")]
-        [Tooltip("Optional. Shown after the delay on Game Over, and selected so Enter works. " +
+        [Tooltip("Optional. Shown after the delay on Out Of Lives, for the mouse like the menus. " +
                  "Left empty, the subtitle says to press Enter instead.")]
         [SerializeField] private Button levelSelectButton;
         [SerializeField] private float buttonDelay = 1.5f;
@@ -183,10 +183,11 @@ namespace TunnelVision.UI
 
             levelSelectButton.gameObject.SetActive(true);
 
-            // Selected straight away so Enter works without touching the mouse.
+            // Not selected for the keyboard: a selected button stays highlighted and enlarged, so
+            // hovering and clicking wouldn't show. Clear anything left selected for the same reason.
             if (EventSystem.current != null)
             {
-                EventSystem.current.SetSelectedGameObject(levelSelectButton.gameObject);
+                EventSystem.current.SetSelectedGameObject(null);
             }
         }
 

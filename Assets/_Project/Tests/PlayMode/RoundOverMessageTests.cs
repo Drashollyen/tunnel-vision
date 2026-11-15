@@ -127,15 +127,15 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator GameOver_ShowsAndSelectsTheButtonAfterTheDelay()
+        public IEnumerator GameOver_ShowsTheButtonAfterTheDelay_WithoutSelectingIt()
         {
             yield return null;
             LoseAllLives();
             yield return new WaitForSecondsRealtime(ButtonDelay + 0.25f);
 
             Assert.IsTrue(_button.gameObject.activeInHierarchy);
-            Assert.AreEqual(_button.gameObject, EventSystem.current.currentSelectedGameObject,
-                "The button should be selected so Enter works.");
+            Assert.IsNull(EventSystem.current.currentSelectedGameObject,
+                "Selected, it would stay highlighted and hide the hover and click states.");
         }
 
         [UnityTest]
