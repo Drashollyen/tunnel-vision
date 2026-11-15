@@ -23,7 +23,7 @@ namespace TunnelVision.Tests
         private FerrisWheelSelect _wheel;
         private NoticeDialog _dialog;
         private Button _close;
-        private AudioClip _turn, _start, _locked, _notInPrototype, _back, _closeNotice;
+        private AudioClip _turn, _start, _locked, _notInPrototype, _back, _menuClick;
         private readonly List<AudioClip> _played = new List<AudioClip>();
         private bool _hadProgress;
         private int _savedProgress;
@@ -43,7 +43,7 @@ namespace TunnelVision.Tests
             _locked = Clip("Locked");
             _notInPrototype = Clip("NotInPrototype");
             _back = Clip("Back");
-            _closeNotice = Clip("CloseNotice");
+            _menuClick = Clip("MenuClick");
 
             new GameObject("EventSystem", typeof(EventSystem));
             var canvas = new GameObject("Canvas", typeof(Canvas)).transform;
@@ -56,7 +56,9 @@ namespace TunnelVision.Tests
             _close.transform.SetParent(dialogObject.transform, false);
             _dialog = dialogObject.AddComponent<NoticeDialog>();
             Set(_dialog, "closeButton", _close);
-            Set(_dialog, "closeSound", _closeNotice);
+            // The menu's button sounds, which also give the OK button its click.
+            var sounds = canvas.gameObject.AddComponent<InterfaceSounds>();
+            Set(sounds, "clickClip", _menuClick);
 
             var wheelObject = new GameObject("Wheel", typeof(RectTransform));
             wheelObject.transform.SetParent(canvas, false);
@@ -198,15 +200,17 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator ClosingTheNotice_PlaysTheCloseSound()
+        public IEnumerator ClosingTheNotice_PlaysTheMenuClick()
         {
             SelectCabin(3);
             _wheel.StartSelectedLevel();
             _played.Clear();
 
-            _close.onClick.Invoke();
+            // What Escape does: press OK, with the same click as the menu's buttons.
+            _dialog.PressClose();
 
-            CollectionAssert.AreEqual(new[] { _closeNotice }, _played);
+            CollectionAssert.AreEqual(new[] { _menuClick }, _played);
+            Assert.IsFalse(_dialog.IsOpen);
             yield break;
         }
 

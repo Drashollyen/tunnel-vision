@@ -17,8 +17,6 @@ namespace TunnelVision.UI
         [SerializeField] private TMP_Text message;
         [Tooltip("Optional. Closes the dialog, and is selected while it's open so Enter works.")]
         [SerializeField] private Button closeButton;
-        [Tooltip("Optional. Played when the dialog closes, however it's closed.")]
-        [SerializeField] private AudioClip closeSound;
 
         private int _openedOnFrame = -1;
 
@@ -66,7 +64,6 @@ namespace TunnelVision.UI
 
             IsOpen = false;
             ClosedOnFrame = Time.frameCount;
-            InterfaceSounds.Play(closeSound);
             gameObject.SetActive(false);
         }
 
@@ -87,8 +84,24 @@ namespace TunnelVision.UI
                 || (!enterHandledByButton
                     && (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)))
             {
-                Hide();
+                PressClose();
             }
+        }
+
+        /// <summary>
+        /// Closes the dialog as if its button were pressed, so a key gets the same click sound
+        /// and effects as the button. Without a button it just hides.
+        /// </summary>
+        public void PressClose()
+        {
+            if (closeButton != null && closeButton.isActiveAndEnabled && EventSystem.current != null)
+            {
+                ExecuteEvents.Execute(closeButton.gameObject, new BaseEventData(EventSystem.current),
+                    ExecuteEvents.submitHandler);
+            }
+
+            // Covers a greyed out button, or one with nothing listening.
+            Hide();
         }
     }
 }
