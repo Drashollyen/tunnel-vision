@@ -1,4 +1,5 @@
 using TMPro;
+using TunnelVision.Audio;
 using TunnelVision.Player;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -39,6 +40,9 @@ namespace TunnelVision.UI
         public const string LevelSelectQuestion = "Go To Level Select?";
         public const string MainMenuQuestion = "Go To The Main Menu?";
         public const string ProgressWarning = "Any Progress In This Level Will Be Lost";
+
+        // Game sounds (wheels, platforms) quiet down while paused and come back on Resume.
+        public const float SoundFadeSeconds = 0.15f;
 
         private PanelSwitcher _panels;
         private PlayerMovement _movement;
@@ -126,6 +130,7 @@ namespace TunnelVision.UI
 
             IsPaused = true;
             Time.timeScale = 0f;
+            SoundEffectsVolume.FadeOutGameplay(SoundFadeSeconds);
             if (_movement != null)
                 _movement.EnableControls(false);
 
@@ -147,6 +152,7 @@ namespace TunnelVision.UI
 
             IsPaused = false;
             Time.timeScale = 1f;
+            SoundEffectsVolume.ResumeGameplay(SoundFadeSeconds);
             if (_movement != null)
                 _movement.EnableControls(true);
             overlay.SetActive(false);

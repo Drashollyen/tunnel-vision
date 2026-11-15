@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TunnelVision.Audio;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +11,8 @@ namespace TunnelVision.Tests
     /// earlier test loaded, say) are switched off until Close, so FindAnyObjectByType can't find
     /// them. Scenes are never unloaded, and the Test Runner's own objects are left alone, since
     /// stopping those stops the test run. The test scene has its own Audio Listener, so sounds a
-    /// test plays don't warn that nothing is listening.
+    /// test plays don't warn that nothing is listening. Each test also starts with gameplay
+    /// sound on, in case an earlier one ended on Out Of Lives or in the pause menu.
     /// </summary>
     public static class IsolatedScene
     {
@@ -22,6 +24,7 @@ namespace TunnelVision.Tests
         {
             Current = SceneManager.CreateScene(name + " " + System.Guid.NewGuid());
             SceneManager.SetActiveScene(Current);
+            SoundEffectsVolume.RestoreGameplayNow();
 
             SwitchedOff.Clear();
             for (var i = 0; i < SceneManager.sceneCount; i++)

@@ -248,5 +248,18 @@ namespace TunnelVision.Tests
             Assert.IsFalse(_menu.IsPaused);
             Assert.AreEqual(1f, Time.timeScale);
         }
+
+
+        [UnityTest]
+        public IEnumerator Pausing_QuietsGameSounds_AndResumingBringsThemBack()
+        {
+            _menu.Pause();
+            yield return new WaitForSecondsRealtime(PauseMenu.SoundFadeSeconds + 0.15f);
+            Assert.IsTrue(Audio.SoundEffectsVolume.IsGameplaySilenced);
+
+            _menu.Resume();
+            yield return new WaitForSecondsRealtime(PauseMenu.SoundFadeSeconds + 0.15f);
+            Assert.AreEqual(1f, Audio.SoundEffectsVolume.GameplayLevel, 0.001f);
+        }
     }
 }

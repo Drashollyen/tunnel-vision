@@ -1,4 +1,5 @@
 using TMPro;
+using TunnelVision.Audio;
 using TunnelVision.Player;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -36,6 +37,11 @@ namespace TunnelVision.UI
         public const string PressEnterPrompt = "Press Enter For Level Select";
         public const string LifeLostTitle = "Game Over";
         public const string OutOfLivesTitle = "Out Of Lives";
+
+        // Out of lives, the game stops but looping sounds (the wheels) would play on, so they fade
+        // out, after long enough for the death sound to be heard.
+        public const float SoundsHoldSeconds = 0.8f;
+        public const float SoundsFadeSeconds = 1f;
 
         /// <summary>True once the last life has gone.</summary>
         public bool IsGameOver { get; private set; }
@@ -162,6 +168,7 @@ namespace TunnelVision.UI
 
             Time.timeScale = 0f;
             _pausedTheGame = true;
+            SoundEffectsVolume.FadeOutGameplay(SoundsFadeSeconds, SoundsHoldSeconds);
         }
 
         private void ShowLevelSelectButton()

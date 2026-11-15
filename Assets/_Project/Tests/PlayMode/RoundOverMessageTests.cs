@@ -193,5 +193,30 @@ namespace TunnelVision.Tests
             Assert.AreEqual(RoundOverMessage.PressEnterPrompt, _subtitle.text);
             Assert.AreEqual(0f, Time.timeScale, "Still paused until Enter is pressed.");
         }
+
+
+        [UnityTest]
+        public IEnumerator OutOfLives_FadesOutGameSoundsAfterTheDeathSound()
+        {
+            yield return null;
+            LoseAllLives();
+            yield return null;
+
+            Assert.AreEqual(1f, Audio.SoundEffectsVolume.GameplayLevel, 0.001f,
+                "Sounds should hold long enough for the death sound.");
+
+            yield return new WaitForSecondsRealtime(RoundOverMessage.SoundsHoldSeconds + RoundOverMessage.SoundsFadeSeconds + 0.2f);
+            Assert.IsTrue(Audio.SoundEffectsVolume.IsGameplaySilenced);
+        }
+
+        [UnityTest]
+        public IEnumerator LosingOneLife_KeepsGameSounds()
+        {
+            yield return null;
+            _lives.LoseLife();
+            yield return new WaitForSecondsRealtime(RoundOverMessage.SoundsHoldSeconds + RoundOverMessage.SoundsFadeSeconds + 0.2f);
+
+            Assert.AreEqual(1f, Audio.SoundEffectsVolume.GameplayLevel, 0.001f);
+        }
     }
 }

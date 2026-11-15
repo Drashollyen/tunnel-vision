@@ -35,6 +35,7 @@ namespace TunnelVision.Tests
             SettingsService.Current.MusicVolume = _savedMusic;
             SettingsService.Current.EffectsVolume = _savedEffects;
             SettingsService.Current.ApplyAudio();
+            SoundEffectsVolume.RestoreGameplayNow();
             IsolatedScene.Close();
         }
 
@@ -141,6 +142,82 @@ namespace TunnelVision.Tests
 
             yield return null;
             Assert.AreEqual(1f, music.volume, 0.001f, "The music has its own setting.");
+        }
+
+
+        private static AudioSource MakeLoopingSound(string name)
+        {
+            var sound = new GameObject(name).AddComponent<AudioSource>();
+            sound.clip = AudioClip.Create(name, 44100 * 4, 1, 44100, false);
+            sound.loop = true;
+            sound.volume = 0.5f;
+            sound.Play();
+            return sound;
+        }
+
+        [UnityTest]
+        public IEnumerator FadingOutGameplay_FadesThenPausesLoopingSounds()
+        {
+            var wheel = MakeLoopingSound("Wheel Sound");
+            SettingsService.Current.EffectsVolume = 1f;
+            SettingsService.Current.ApplyAudio();
+            Assert.AreEqual(0.5f, wheel.volume, 0.001f);
+
+            SoundEffectsVolume.FadeOutGameplay(0.3f);
+            yield return new WaitForSecondsRealtime(0.15f);
+            Assert.Less(wheel.volume, 0.5f, "It should be fading.");
+            Assert.Greater(wheel.volume, 0f, "It should fade, not cut out.");
+
+            yield return new WaitForSecondsRealtime(0.3f);
+            Assert.AreEqual(0f, wheel.volume, 0.001f);
+            Assert.IsFalse(wheel.isPlaying, "Once silent it should be paused, not just quiet.");
+            Assert.IsTrue(SoundEffectsVolume.IsGameplaySilenced);
+        }
+
+        [UnityTest]
+        public IEnumerator FadingOutGameplay_WaitsForTheDelayFirst()
+        {
+            var wheel = MakeLoopingSound("Wheel Sound");
+            SettingsService.Current.EffectsVolume = 1f;
+            SettingsService.Current.ApplyAudio();
+
+            SoundEffectsVolume.FadeOutGameplay(0.2f, 0.3f);
+            yield return new WaitForSecondsRealtime(0.2f);
+            Assert.AreEqual(0.5f, wheel.volume, 0.001f, "Nothing should change during the delay.");
+
+            yield return new WaitForSecondsRealtime(0.45f);
+            Assert.IsFalse(wheel.isPlaying);
+        }
+
+        [UnityTest]
+        public IEnumerator ResumingGameplay_BringsTheSoundsBack()
+        {
+            var wheel = MakeLoopingSound("Wheel Sound");
+            SettingsService.Current.EffectsVolume = 1f;
+            SettingsService.Current.ApplyAudio();
+            SoundEffectsVolume.FadeOutGameplay(0.1f);
+            yield return new WaitForSecondsRealtime(0.25f);
+            Assert.IsFalse(wheel.isPlaying);
+
+            SoundEffectsVolume.ResumeGameplay(0.1f);
+            yield return new WaitForSecondsRealtime(0.25f);
+
+            Assert.IsTrue(wheel.isPlaying);
+            Assert.AreEqual(0.5f, wheel.volume, 0.001f);
+        }
+
+        [UnityTest]
+        public IEnumerator FadingOutGameplay_LeavesTheMusicAlone()
+        {
+            SettingsService.Current.MusicVolume = 1f;
+            var music = MakeMusic().GetComponent<AudioSource>();
+            yield return new WaitForSecondsRealtime(0.3f);
+
+            SoundEffectsVolume.FadeOutGameplay(0.1f);
+            yield return new WaitForSecondsRealtime(0.25f);
+
+            Assert.IsTrue(music.isPlaying);
+            Assert.AreEqual(1f, music.volume, 0.001f);
         }
     }
 }
