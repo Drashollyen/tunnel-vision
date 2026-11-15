@@ -48,6 +48,18 @@ namespace TunnelVision.Player
         /// <summary>True from a death until the player can move again.</summary>
         public bool IsRespawning => _isDying;
 
+        /// <summary>Raised as a death sequence starts.</summary>
+        public event System.Action Died;
+
+        /// <summary>Raised as the screen starts fading back in on the respawned player.</summary>
+        public event System.Action Respawning;
+
+        /// <summary>How long from a death until the screen is fully black.</summary>
+        public float SecondsUntilBlack => revealDuration + revealHoldDuration + fadeDuration;
+
+        /// <summary>How long the screen takes to fade back in after a respawn.</summary>
+        public float FadeInSeconds => fadeDuration;
+
         private void Awake()
         {
             _lives = GetComponent<PlayerLives>();
@@ -102,6 +114,7 @@ namespace TunnelVision.Player
             }
 
             _isDying = true;
+            Died?.Invoke();
             StartCoroutine(DeathSequence());
         }
 
@@ -175,6 +188,7 @@ namespace TunnelVision.Player
 
             // Give the camera time to catch up, then show the player before handing back control.
             yield return new WaitForSecondsRealtime(blackHoldDuration);
+            Respawning?.Invoke();
             yield return FadeBlack(0f, fadeDuration);
 
             _body.simulated = true;
