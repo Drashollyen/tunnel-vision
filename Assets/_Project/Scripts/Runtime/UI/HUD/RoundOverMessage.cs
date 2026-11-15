@@ -26,6 +26,7 @@ namespace TunnelVision.UI
         [Tooltip("Optional. Shown after the delay on Out Of Lives, for the mouse like the menus. " +
                  "Left empty, the subtitle says to press Enter instead.")]
         [SerializeField] private Button levelSelectButton;
+        [Tooltip("When there's no death sequence to follow. With one, the button fades in as the screen goes black.")]
         [SerializeField] private float buttonDelay = 1.5f;
         [SerializeField] private string levelSelectScene = "LevelSelect";
 
@@ -33,6 +34,12 @@ namespace TunnelVision.UI
         private int _lastLives;
         private float _hideAt = float.PositiveInfinity;
         private float _showButtonAt = float.PositiveInfinity;
+        private CanvasGroup _buttonGroup;
+        private float _buttonFadeSeconds = DefaultButtonFadeSeconds;
+        private float _buttonFadeStartedAt = float.PositiveInfinity;
+
+        /// <summary>How long the button takes to fade in when there's no death sequence to match.</summary>
+        public const float DefaultButtonFadeSeconds = 0.25f;
         private bool _pausedTheGame;
         private NumberDrop _numberDrop;
         private CanvasGroup _panelGroup;
@@ -51,6 +58,10 @@ namespace TunnelVision.UI
 
         /// <summary>True once the last life has gone.</summary>
         public bool IsGameOver { get; private set; }
+
+        /// <summary>How visible the Back To Level Select button is, from 0 to 1.</summary>
+        public float ButtonVisibility =>
+            levelSelectButton != null && levelSelectButton.gameObject.activeSelf && _buttonGroup != null ? _buttonGroup.alpha : 0f;
 
         /// <summary>How visible the message is, from 0 to 1. It fades out as the screen goes black.</summary>
         public float Visibility => _panelGroup != null && panel.activeSelf ? _panelGroup.alpha : 0f;
@@ -76,6 +87,9 @@ namespace TunnelVision.UI
             {
                 levelSelectButton.gameObject.SetActive(false);
                 levelSelectButton.onClick.AddListener(GoToLevelSelect);
+                _buttonGroup = levelSelectButton.TryGetComponent(out CanvasGroup buttonGroup)
+                    ? buttonGroup
+                    : levelSelectButton.gameObject.AddComponent<CanvasGroup>();
             }
 
             _playerLives = FindAnyObjectByType<PlayerLives>();
@@ -144,6 +158,16 @@ namespace TunnelVision.UI
                 ShowLevelSelectButton();
             }
 
+            if (_buttonGroup != null && Time.unscaledTime >= _buttonFadeStartedAt)
+            {
+                var shown = _buttonFadeSeconds > 0f ? (Time.unscaledTime - _buttonFadeStartedAt) / _buttonFadeSeconds : 1f;
+                _buttonGroup.alpha = Mathf.Clamp01(shown);
+                if (shown >= 1f)
+                {
+                    _buttonFadeStartedAt = float.PositiveInfinity;
+                }
+            }
+
             // Without a button, Enter does the button's job so the player is never stuck.
             var keyboard = Keyboard.current;
             if (IsWaitingForKey && keyboard != null
@@ -199,7 +223,17 @@ namespace TunnelVision.UI
             title.text = OutOfLivesTitle;
             subtitle.gameObject.SetActive(false);
             _hideAt = float.PositiveInfinity;
-            _showButtonAt = Time.unscaledTime + buttonDelay;
+            if (_respawn != null)
+            {
+                // Fades in while the screen goes black, so it's fully there on the black screen.
+                _buttonFadeSeconds = _respawn.FadeToBlackSeconds;
+                _showButtonAt = Time.unscaledTime + _respawn.SecondsUntilBlack - _buttonFadeSeconds;
+            }
+            else
+            {
+                _buttonFadeSeconds = DefaultButtonFadeSeconds;
+                _showButtonAt = Time.unscaledTime + buttonDelay;
+            }
 
             Time.timeScale = 0f;
             _pausedTheGame = true;
@@ -217,6 +251,8 @@ namespace TunnelVision.UI
             }
 
             levelSelectButton.gameObject.SetActive(true);
+            _buttonGroup.alpha = 0f;
+            _buttonFadeStartedAt = Time.unscaledTime;
 
             // Not selected for the keyboard: a selected button stays highlighted and enlarged, so
             // hovering and clicking wouldn't show. Clear anything left selected for the same reason.

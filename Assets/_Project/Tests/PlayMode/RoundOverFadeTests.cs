@@ -6,6 +6,7 @@ using TunnelVision.Player;
 using TunnelVision.UI;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 namespace TunnelVision.Tests
 {
@@ -20,6 +21,7 @@ namespace TunnelVision.Tests
         private PlayerRespawn _respawn;
         private RoundOverMessage _message;
         private GameObject _panel;
+        private Button _button;
 
         [UnitySetUp]
         public IEnumerator Build()
@@ -48,6 +50,11 @@ namespace TunnelVision.Tests
             Set("panel", _panel);
             Set("title", MakeText("Title"));
             Set("subtitle", MakeText("Subtitle"));
+            _button = new GameObject("Level Select Button", typeof(RectTransform), typeof(Image), typeof(Button))
+                .GetComponent<Button>();
+            _button.transform.SetParent(_panel.transform, false);
+            Set("levelSelectButton", _button);
+            Set("levelSelectScene", "NoSuchSceneForTests");
             holder.SetActive(true);
             yield return null;
         }
@@ -109,6 +116,43 @@ namespace TunnelVision.Tests
 
             Assert.IsTrue(_panel.activeSelf, "Out Of Lives stays on screen with its button.");
             Assert.AreEqual(1f, _message.Visibility, 0.001f);
+        }
+
+
+        private void LoseAllButOneLife()
+        {
+            var lives = _respawn.GetComponent<PlayerLives>();
+            while (lives.CurrentLives > 1)
+            {
+                lives.LoseLife();
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator OutOfLivesButton_WaitsForTheScreenToStartGoingBlack()
+        {
+            LoseAllButOneLife();
+            yield return new WaitForSecondsRealtime(0.1f);
+            _respawn.Kill(); // The last life.
+            yield return new WaitForSecondsRealtime(_respawn.SecondsUntilBlack - _respawn.FadeToBlackSeconds - 0.1f);
+
+            Assert.IsFalse(_button.gameObject.activeSelf);
+        }
+
+        [UnityTest]
+        public IEnumerator OutOfLivesButton_FadesInAsTheScreenGoesBlack()
+        {
+            LoseAllButOneLife();
+            yield return new WaitForSecondsRealtime(0.1f);
+            _respawn.Kill(); // The last life.
+            yield return new WaitForSecondsRealtime(_respawn.SecondsUntilBlack - _respawn.FadeToBlackSeconds * 0.5f);
+
+            Assert.IsTrue(_button.gameObject.activeSelf);
+            Assert.Greater(_message.ButtonVisibility, 0f, "It should be fading in.");
+            Assert.Less(_message.ButtonVisibility, 1f, "It should fade in, not pop.");
+
+            yield return new WaitForSecondsRealtime(_respawn.FadeToBlackSeconds * 0.5f + 0.1f);
+            Assert.AreEqual(1f, _message.ButtonVisibility, 0.001f, "Fully there once the screen is black.");
         }
     }
 }
