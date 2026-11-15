@@ -24,6 +24,9 @@ namespace TunnelVision.UI
 
         public void Play()
         {
+            // A new playthrough: the demo's ending only counts levels cleared from here.
+            Level.RunStats.Reset();
+
             SceneFader.Load(nextSceneName);
         }
 

@@ -53,7 +53,13 @@ namespace TunnelVision.Level
 
             // Teddies found this run are only kept now the level is cleared.
             var collectibles = FindAnyObjectByType<PlayerCollectibles>();
-            LevelProgress.RecordCollectibles(levelIndex, collectibles != null ? collectibles.Count : 0);
+            var teddies = collectibles != null ? collectibles.Count : 0;
+            LevelProgress.RecordCollectibles(levelIndex, teddies);
+
+            // And this playthrough's result, for the demo's ending.
+            var lives = FindAnyObjectByType<PlayerLives>();
+            var livesLost = lives != null ? lives.MaxLives - lives.CurrentLives : 0;
+            RunStats.Record(new RunStats.LevelResult(levelIndex, Time.timeSinceLevelLoad, teddies, livesLost));
 
             var screen = FindAnyObjectByType<LevelCompleteScreen>();
             if (screen != null)
