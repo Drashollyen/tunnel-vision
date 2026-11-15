@@ -125,5 +125,39 @@ namespace TunnelVision.Tests
             Assert.AreEqual("not set", text.text);
             Assert.IsFalse(text.GetComponentInParent<CollectibleCounter>().enabled);
         }
+
+
+        [UnityTest]
+        public IEnumerator OutOfLives_FadesTheCounterAway()
+        {
+            var lives = MakePlayer(withCollectibles: true).GetComponent<PlayerLives>();
+            var counter = MakeCounter().GetComponentInParent<CollectibleCounter>();
+            yield return null;
+            Assert.AreEqual(1f, counter.Visibility, 0.001f);
+
+            while (lives.CurrentLives > 0)
+            {
+                lives.LoseLife();
+            }
+
+            yield return null;
+            Assert.AreEqual(1f, counter.Visibility, 0.001f, "It should wait for the last eye to pop.");
+
+            yield return new WaitForSecondsRealtime(LivesDisplay.LoseSeconds + CollectibleCounter.FadeSeconds + 0.1f);
+            Assert.AreEqual(0f, counter.Visibility, 0.001f);
+        }
+
+        [UnityTest]
+        public IEnumerator LosingOneLife_KeepsTheCounter()
+        {
+            var lives = MakePlayer(withCollectibles: true).GetComponent<PlayerLives>();
+            var counter = MakeCounter().GetComponentInParent<CollectibleCounter>();
+            yield return null;
+
+            lives.LoseLife();
+            yield return new WaitForSecondsRealtime(LivesDisplay.LoseSeconds + CollectibleCounter.FadeSeconds + 0.1f);
+
+            Assert.AreEqual(1f, counter.Visibility, 0.001f);
+        }
     }
 }
