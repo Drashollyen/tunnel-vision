@@ -6888,7 +6888,7 @@ MonoBehaviour:
   - {fileID: 2022800000}
   turnSound: {fileID: 8300000, guid: c492647955de4f8fb5c64a3e74e21a90, type: 3}
   startSound: {fileID: 8300000, guid: 434a7e8767b74b2f9cfcf763d9620de8, type: 3}
-  lockedSound: {fileID: 8300000, guid: d1d0166eab8149aeaa43333d5f13dc67, type: 3}
+  lockedSound: {fileID: 8300000, guid: e5bec3f302004348b34af1837d675fa6, type: 3}
   notInPrototypeSound: {fileID: 8300000, guid: e5bec3f302004348b34af1837d675fa6, type: 3}
   backSound: {fileID: 8300000, guid: 83d9285029414a61bf7e84c6fb49046c, type: 3}
 --- !u!114 &1656220259
