@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using NUnit.Framework;
+using TMPro;
 using TunnelVision.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -21,6 +22,11 @@ namespace TunnelVision.Tests
         private GameObject _pausePanel;
         private OptionsMenu _options;
         private Button _resume;
+        private Button _levelSelect;
+        private GameObject _confirm;
+        private TMP_Text _question;
+        private Button _leave;
+        private Button _stay;
 
         [UnitySetUp]
         public IEnumerator Build()
@@ -41,6 +47,14 @@ namespace TunnelVision.Tests
             _pausePanel.transform.SetParent(_overlay.transform, false);
             _resume = MakeButton("Resume Button");
             var optionsButton = MakeButton("Options Button");
+            _levelSelect = MakeButton("Level Select Button");
+
+            _confirm = new GameObject("Confirm Panel", typeof(RectTransform));
+            _confirm.transform.SetParent(_overlay.transform, false);
+            _question = new GameObject("Title", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
+            _question.transform.SetParent(_confirm.transform, false);
+            _leave = MakeButton("Leave Button", _confirm.transform);
+            _stay = MakeButton("Stay Button", _confirm.transform);
 
             var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(OptionsPrefab);
             Assert.IsNotNull(prefab, "The shared options page should exist.");
@@ -52,6 +66,12 @@ namespace TunnelVision.Tests
             Set("optionsPanel", _options);
             Set("resumeButton", _resume);
             Set("optionsButton", optionsButton);
+            Set("levelSelectButton", _levelSelect);
+            Set("levelSelectScene", "NoSuchSceneForTests"); // SceneFader only warns, so no scene change.
+            Set("confirmPanel", _confirm);
+            Set("confirmTitle", _question);
+            Set("leaveButton", _leave);
+            Set("stayButton", _stay);
             holder.SetActive(true);
             yield return null;
         }
@@ -63,10 +83,10 @@ namespace TunnelVision.Tests
             IsolatedScene.Close();
         }
 
-        private Button MakeButton(string name)
+        private Button MakeButton(string name, Transform parent = null)
         {
             var button = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button)).GetComponent<Button>();
-            button.transform.SetParent(_pausePanel.transform, false);
+            button.transform.SetParent(parent != null ? parent : _pausePanel.transform, false);
             return button;
         }
 
@@ -163,6 +183,69 @@ namespace TunnelVision.Tests
 
             Assert.IsFalse(_menu.IsPaused);
             Assert.IsFalse(_overlay.activeSelf);
+        }
+
+
+        [UnityTest]
+        public IEnumerator LevelSelect_AsksFirst_WithStaySelected()
+        {
+            _menu.Pause();
+            yield return null;
+
+            _levelSelect.onClick.Invoke();
+            yield return new WaitForSecondsRealtime(0.4f);
+
+            Assert.IsTrue(_menu.IsConfirmingLeave);
+            Assert.IsTrue(_menu.IsPaused, "Asking shouldn't leave or resume yet.");
+            Assert.AreEqual(0f, Time.timeScale);
+            Assert.AreEqual(PauseMenu.LevelSelectQuestion, _question.text);
+            Assert.AreEqual(_stay.gameObject, EventSystem.current.currentSelectedGameObject,
+                "Stay should be selected so a stray Enter is safe.");
+        }
+
+        [UnityTest]
+        public IEnumerator Stay_GoesBackToThePausePage()
+        {
+            _menu.Pause();
+            yield return null;
+            _levelSelect.onClick.Invoke();
+            yield return new WaitForSecondsRealtime(0.4f);
+
+            _stay.onClick.Invoke();
+            yield return new WaitForSecondsRealtime(0.4f);
+
+            Assert.IsFalse(_menu.IsConfirmingLeave);
+            Assert.IsTrue(_pausePanel.activeSelf);
+            Assert.IsTrue(_menu.IsPaused);
+        }
+
+        [UnityTest]
+        public IEnumerator EscapeOnTheQuestion_Stays()
+        {
+            _menu.Pause();
+            yield return null;
+            _levelSelect.onClick.Invoke();
+            yield return new WaitForSecondsRealtime(0.4f);
+
+            _menu.PressEscape();
+            yield return new WaitForSecondsRealtime(0.4f);
+
+            Assert.IsFalse(_menu.IsConfirmingLeave);
+            Assert.IsTrue(_menu.IsPaused);
+        }
+
+        [UnityTest]
+        public IEnumerator Leave_UnpausesAndLeaves()
+        {
+            _menu.Pause();
+            yield return null;
+            _levelSelect.onClick.Invoke();
+            yield return new WaitForSecondsRealtime(0.4f);
+
+            _leave.onClick.Invoke();
+
+            Assert.IsFalse(_menu.IsPaused);
+            Assert.AreEqual(1f, Time.timeScale);
         }
     }
 }
