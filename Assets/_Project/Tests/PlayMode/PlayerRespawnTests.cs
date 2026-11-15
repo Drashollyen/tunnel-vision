@@ -74,7 +74,7 @@ namespace TunnelVision.Tests
             _respawn.Kill();
             yield return WaitForRespawn();
 
-            Assert.AreEqual(2, _lives.CurrentLives);
+            Assert.AreEqual(_lives.MaxLives - 1, _lives.CurrentLives);
             Assert.AreEqual(100f, _player.transform.position.x, 0.01f);
         }
 
@@ -85,23 +85,23 @@ namespace TunnelVision.Tests
             _respawn.Kill();
             yield return WaitForRespawn();
 
-            Assert.AreEqual(2, _lives.CurrentLives);
+            Assert.AreEqual(_lives.MaxLives - 1, _lives.CurrentLives);
         }
 
         [UnityTest]
-        public IEnumerator Checkpoint_BecomesRespawnPointAndDoesNotRestoreLives()
+        public IEnumerator Checkpoint_BecomesRespawnPointAndGivesLivesBack()
         {
             _respawn.Kill();
             yield return WaitForRespawn();
 
             var checkpoint = MakeCheckpoint(new Vector3(200f, 50f, 0f));
             _respawn.ReachCheckpoint(checkpoint);
-            Assert.AreEqual(2, _lives.CurrentLives);
+            Assert.AreEqual(_lives.MaxLives, _lives.CurrentLives, "Up to 2 back, never past the maximum.");
 
             _respawn.Kill();
             yield return WaitForRespawn();
 
-            Assert.AreEqual(1, _lives.CurrentLives);
+            Assert.AreEqual(_lives.MaxLives - 1, _lives.CurrentLives);
             Assert.AreEqual(checkpoint.RespawnPosition.x, _player.transform.position.x, 0.01f);
             Assert.AreEqual(checkpoint.RespawnPosition.y, _player.transform.position.y, 0.01f);
         }
@@ -111,7 +111,7 @@ namespace TunnelVision.Tests
         {
             _respawn.ReachCheckpoint(MakeCheckpoint(new Vector3(200f, 50f, 0f)));
 
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i < _lives.MaxLives - 1; i++)
             {
                 _respawn.Kill();
                 yield return WaitForRespawn();
@@ -132,10 +132,10 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator AfterGameOver_KillDoesNothing()
         {
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < _lives.MaxLives; i++)
             {
                 _respawn.Kill();
-                if (i < 2)
+                if (i < _lives.MaxLives - 1)
                 {
                     yield return WaitForRespawn();
                 }
@@ -160,7 +160,7 @@ namespace TunnelVision.Tests
             yield return new WaitForFixedUpdate();
             yield return new WaitForFixedUpdate();
 
-            Assert.AreEqual(2, _lives.CurrentLives);
+            Assert.AreEqual(_lives.MaxLives - 1, _lives.CurrentLives);
         }
     }
 }

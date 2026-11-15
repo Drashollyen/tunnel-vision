@@ -64,7 +64,7 @@ namespace TunnelVision.Tests
             PutPlayerAt(FirstPitX, 2f);
             yield return WaitForDeathAndRespawn();
 
-            Assert.AreEqual(2, _lives.CurrentLives);
+            Assert.AreEqual(_lives.MaxLives - 1, _lives.CurrentLives);
             Assert.AreEqual(StartX, _lives.transform.position.x, 0.2f);
             Assert.That(_lives.transform.position.y, Is.GreaterThan(GroundTop - 0.5f));
         }
@@ -78,7 +78,7 @@ namespace TunnelVision.Tests
             PutPlayerAt(PitAfterCheckpointX, 2f);
             yield return WaitForDeathAndRespawn();
 
-            Assert.AreEqual(2, _lives.CurrentLives);
+            Assert.AreEqual(_lives.MaxLives - 1, _lives.CurrentLives);
             Assert.AreEqual(CheckpointRespawnX, _lives.transform.position.x, 0.2f);
             Assert.That(_lives.transform.position.y, Is.GreaterThan(GroundTop - 0.5f));
         }
