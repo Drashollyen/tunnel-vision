@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Reflection;
 using NUnit.Framework;
 using TunnelVision.Player;
 using UnityEngine;
@@ -25,8 +26,17 @@ namespace TunnelVision.Tests
             _rb.gravityScale = 0f;
             _rb.interpolation = RigidbodyInterpolation2D.None; // As both levels' scenes set it.
 
+            // The real player always has a body sprite and an eye, and movement uses both.
+            var body = new GameObject("BodySprite").AddComponent<SpriteRenderer>();
+            body.transform.SetParent(_player.transform, false);
+            var eye = new GameObject("Eyeball").transform;
+            eye.SetParent(_player.transform, false);
+
             _player.SetActive(false);
-            _player.AddComponent<PlayerMovement>().rb = _rb;
+            var movement = _player.AddComponent<PlayerMovement>();
+            movement.rb = _rb;
+            typeof(PlayerMovement).GetField("bodySprite", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(movement, body);
+            typeof(PlayerMovement).GetField("eyeball", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(movement, eye);
             _player.SetActive(true);
             yield return null;
         }

@@ -154,11 +154,18 @@ namespace TunnelVision.Player
                 facingRight = false;
             }
 
-            bodySprite.flipX = !facingRight;
+            if (bodySprite != null)
+            {
+                bodySprite.flipX = !facingRight;
+            }
         }
 
         private void UpdateLooking()
         {
+            if (eyeball == null)
+            {
+                return;
+            }
 
             if (lookInput.sqrMagnitude > 0.01f)
             {
