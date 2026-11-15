@@ -15,6 +15,9 @@ namespace TunnelVision.Level
         [SerializeField] private string levelSelectScene = "LevelSelect";
         [Tooltip("The scene Next Level loads. Leave empty on the last level to offer only Level Select.")]
         [SerializeField] private string nextLevelScene;
+        [Tooltip("Tick on the demo's last level: Level Complete then offers only Continue, to the ending.")]
+        [SerializeField] private bool endsDemo;
+        [SerializeField] private string demoEndScene = "DemoComplete";
 
         private bool _reached;
 
@@ -64,7 +67,7 @@ namespace TunnelVision.Level
             var screen = FindAnyObjectByType<LevelCompleteScreen>();
             if (screen != null)
             {
-                screen.Show(nextLevelScene);
+                screen.Show(endsDemo ? demoEndScene : nextLevelScene, endsDemo);
             }
             else
             {

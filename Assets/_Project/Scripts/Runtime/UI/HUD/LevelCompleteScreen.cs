@@ -18,6 +18,8 @@ namespace TunnelVision.UI
     public class LevelCompleteScreen : MonoBehaviour
     {
         public const string Title = "Level Complete";
+        public const string NextLevelLabel = "Next Level";
+        public const string ContinueLabel = "Continue";
         /// <summary>How long the screen takes to go black, the same as the death sequence's fade.</summary>
         public const float BlackFadeSeconds = 0.75f;
         /// <summary>How long the panel then takes to appear on the black.</summary>
@@ -60,6 +62,9 @@ namespace TunnelVision.UI
         public static (float black, float panel) FadeAt(float elapsed) => (
             Mathf.Clamp01(elapsed / BlackFadeSeconds),
             Mathf.Clamp01((elapsed - BlackFadeSeconds) / FadeInSeconds));
+
+        /// <summary>True when this is the demo's last level, so the only way on is Continue.</summary>
+        public bool EndsDemo { get; private set; }
 
         /// <summary>The scene Next Level loads, or null when there isn't one.</summary>
         public string NextScene => _nextScene;
@@ -107,12 +112,20 @@ namespace TunnelVision.UI
         /// Shows the screen. <paramref name="nextScene"/> is the level Next Level loads; leave it
         /// empty, or name a scene that isn't in the build, and only Level Select is offered.
         /// </summary>
-        public void Show(string nextScene)
+        public void Show(string nextScene) => Show(nextScene, false);
+
+        /// <summary>
+        /// Shows the screen. On the demo's last level (<paramref name="endsDemo"/>), the only button
+        /// is Continue, leading to <paramref name="nextScene"/>, the demo's ending.
+        /// </summary>
+        public void Show(string nextScene, bool endsDemo)
         {
             if (IsShowing)
             {
                 return;
             }
+
+            EndsDemo = endsDemo;
 
             IsShowing = true;
             IsAnyShowing = true;
@@ -146,6 +159,12 @@ namespace TunnelVision.UI
                 stats.text = StatsText(seconds, collectibles != null ? collectibles.Count : 0);
             if (nextLevelButton != null)
                 nextLevelButton.gameObject.SetActive(_nextScene != null);
+            SetNextLabel(EndsDemo ? ContinueLabel : NextLevelLabel);
+
+            // The last level only goes on to the ending. If the ending can't load, Level Select
+            // stays, so the player is never stuck.
+            if (levelSelectButton != null)
+                levelSelectButton.gameObject.SetActive(!EndsDemo || _nextScene == null);
 
             overlay.SetActive(true);
             _shownAt = Time.unscaledTime;
@@ -194,6 +213,20 @@ namespace TunnelVision.UI
 
             _panelGroup.alpha = shown;
             _panelGroup.blocksRaycasts = shown > 0f; // No clicking buttons that can't be seen yet.
+        }
+
+        private void SetNextLabel(string label)
+        {
+            if (nextLevelButton == null)
+            {
+                return;
+            }
+
+            var text = nextLevelButton.GetComponentInChildren<TMP_Text>(true);
+            if (text != null)
+            {
+                text.text = label;
+            }
         }
 
         private void GoToNextLevel()

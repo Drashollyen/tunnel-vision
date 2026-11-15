@@ -243,5 +243,54 @@ namespace TunnelVision.Tests
             Assert.AreEqual(2, LevelProgress.BestCollectibles(0));
             StringAssert.Contains("Collectibles: 2", _stats.text);
         }
+
+
+        private TMP_Text LabelNextButton()
+        {
+            var label = new GameObject("Text (TMP)", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
+            label.transform.SetParent(_next.transform, false);
+            label.text = LevelCompleteScreen.NextLevelLabel;
+            return label;
+        }
+
+        [UnityTest]
+        public IEnumerator LastLevel_OffersOnlyContinue()
+        {
+            var label = LabelNextButton();
+            Set(_goal, "endsDemo", true);
+            Set(_goal, "demoEndScene", "Level2"); // Any scene in the build stands in for the ending.
+            _goal.Reach();
+            yield return null;
+
+            Assert.IsTrue(_screen.EndsDemo);
+            Assert.IsTrue(_next.gameObject.activeSelf);
+            Assert.AreEqual(LevelCompleteScreen.ContinueLabel, label.text);
+            Assert.IsFalse(_select.gameObject.activeSelf, "Continue is the only way on from the last level.");
+            Assert.AreEqual("Level2", _screen.NextScene);
+        }
+
+        [UnityTest]
+        public IEnumerator LastLevel_WithoutTheEnding_StillOffersLevelSelect()
+        {
+            Set(_goal, "endsDemo", true);
+            Set(_goal, "demoEndScene", "NoSuchSceneForTests");
+            _goal.Reach();
+            yield return null;
+
+            Assert.IsFalse(_next.gameObject.activeSelf);
+            Assert.IsTrue(_select.gameObject.activeSelf, "The player must never be stuck.");
+        }
+
+        [UnityTest]
+        public IEnumerator OtherLevels_SayNextLevel()
+        {
+            var label = LabelNextButton();
+            _goal.Reach();
+            yield return null;
+
+            Assert.IsFalse(_screen.EndsDemo);
+            Assert.AreEqual(LevelCompleteScreen.NextLevelLabel, label.text);
+            Assert.IsTrue(_select.gameObject.activeSelf);
+        }
     }
 }
