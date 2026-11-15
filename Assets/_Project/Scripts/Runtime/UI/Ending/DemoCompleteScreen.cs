@@ -29,6 +29,7 @@ namespace TunnelVision.UI
         [SerializeField] private string levelSelectScene = "LevelSelect";
 
         private float _startedAt;
+        private Vector3 _titleScale = Vector3.one;
 
         /// <summary>One line per cleared level, then the totals.</summary>
         public static string StatsText(IReadOnlyList<RunStats.LevelResult> results)
@@ -81,6 +82,8 @@ namespace TunnelVision.UI
         private void Start()
         {
             _startedAt = Time.unscaledTime;
+            if (title != null)
+                _titleScale = title.localScale; // The pop grows to whatever size it was set at.
             if (stats != null)
                 stats.text = StatsText(RunStats.All);
             if (title != null)
@@ -91,7 +94,7 @@ namespace TunnelVision.UI
         {
             if (title != null)
             {
-                title.localScale = Vector3.one * TitleScaleAt(Time.unscaledTime - _startedAt);
+                title.localScale = _titleScale * TitleScaleAt(Time.unscaledTime - _startedAt);
             }
 
             var keyboard = Keyboard.current;
