@@ -64,7 +64,7 @@ Assets/
     Physics/                Physics materials and player controls (Input)
     Prefabs/                Reusable objects: Player, Level, UI
     Scenes/Menus/           IntroScreen (first in build), LevelSelect
-    Scenes/Levels/          Playable levels (start new ones from Level1_BigTop)
+    Scenes/Levels/          Playable levels (start new ones from Level1)
     Scenes/Dev/             Test scenes: ConeTest, Game
     Scripts/Runtime/        Game code (TunnelVision.Runtime), one folder per namespace
     Scripts/Editor/         Editor tools

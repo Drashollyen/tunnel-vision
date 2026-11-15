@@ -2,7 +2,7 @@
 
 New levels start as a copy of Level 1, which already has the player, camera, death sequence and HUD set up.
 
-1. In the Project window, select `Assets/_Project/Scenes/Levels/Level1_BigTop` and press **Ctrl+D**. Rename the copy, for example `Level2_Stalls`, and open it.
+1. In the Project window, select `Assets/_Project/Scenes/Levels/Level1` and press **Ctrl+D**. Rename the copy, for example `Level3`, and open it.
 2. Delete what belongs to Level 1 only: the children of `Platforms`, `Enemy`, `DecoSign` and `Background`. Keep everything else (see [What Every Level Keeps](#what-every-level-keeps)).
 3. Build the ground under `Platforms`. Each platform is a Sprite Renderer with **Draw Mode** set to **Tiled**, plus a **Box Collider 2D** the same size. Set each platform's **Layer** to **Ground**, or Nicholas can't jump off it.
 4. Select `Confiner` and use **Edit Collider** to fit the new level. The camera stops at these edges.

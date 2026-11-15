@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/_Project/Scenes/Menus/LevelSelect.unity
     guid: 43e3c455bf1c2834098b769906b9942e
   - enabled: 0
-    path: Assets/_Project/Scenes/Levels/Level1_BigTop.unity
+    path: Assets/_Project/Scenes/Levels/Level1.unity
     guid: 0c26755169fe48bf8597218404f63bad
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
