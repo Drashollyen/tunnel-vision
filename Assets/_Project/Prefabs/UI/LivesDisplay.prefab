@@ -83,7 +83,6 @@ MonoBehaviour:
   - {fileID: 5268974274627424449}
   - {fileID: 5157056853060927043}
   aliveColor: {r: 1, g: 1, b: 1, a: 1}
-  lostColor: {r: 0.3, g: 0.3, b: 0.3, a: 0.4}
 --- !u!1 &3637864786158500900
 GameObject:
   m_ObjectHideFlags: 0
