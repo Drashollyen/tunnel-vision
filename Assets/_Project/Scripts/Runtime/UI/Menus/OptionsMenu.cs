@@ -31,6 +31,8 @@ namespace TunnelVision.UI
         };
 
         [SerializeField] private Slider masterVolumeSlider;
+        [SerializeField] private Slider musicVolumeSlider;
+        [SerializeField] private Slider effectsVolumeSlider;
         [SerializeField] private Toggle interfaceSoundsToggle;
         [SerializeField] private Slider interfaceVolumeSlider;
         [SerializeField] private TMP_Dropdown displayModeDropdown;
@@ -45,6 +47,10 @@ namespace TunnelVision.UI
         private void Awake()
         {
             masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
+            if (musicVolumeSlider != null)
+                musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
+            if (effectsVolumeSlider != null)
+                effectsVolumeSlider.onValueChanged.AddListener(SetEffectsVolume);
             interfaceSoundsToggle.onValueChanged.AddListener(SetInterfaceSounds);
             interfaceVolumeSlider.onValueChanged.AddListener(SetInterfaceVolume);
             displayModeDropdown.onValueChanged.AddListener(SetDisplayMode);
@@ -66,6 +72,10 @@ namespace TunnelVision.UI
         {
             GameSettings settings = SettingsService.Current;
             masterVolumeSlider.SetValueWithoutNotify(settings.MasterVolume);
+            if (musicVolumeSlider != null)
+                musicVolumeSlider.SetValueWithoutNotify(settings.MusicVolume);
+            if (effectsVolumeSlider != null)
+                effectsVolumeSlider.SetValueWithoutNotify(settings.EffectsVolume);
             interfaceSoundsToggle.SetIsOnWithoutNotify(settings.InterfaceSounds);
             interfaceVolumeSlider.SetValueWithoutNotify(settings.InterfaceVolume);
             interfaceVolumeSlider.interactable = settings.InterfaceSounds;
@@ -82,6 +92,18 @@ namespace TunnelVision.UI
         private void SetMasterVolume(float value)
         {
             SettingsService.Current.MasterVolume = value;
+            SettingsService.Current.ApplyAudio();
+        }
+
+        // Music follows its setting every frame. Effects are rescaled when audio is applied.
+        private void SetMusicVolume(float value)
+        {
+            SettingsService.Current.MusicVolume = value;
+        }
+
+        private void SetEffectsVolume(float value)
+        {
+            SettingsService.Current.EffectsVolume = value;
             SettingsService.Current.ApplyAudio();
         }
 

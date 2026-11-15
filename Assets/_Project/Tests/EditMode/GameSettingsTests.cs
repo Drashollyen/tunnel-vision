@@ -34,6 +34,8 @@ namespace TunnelVision.Tests
             settings.Load();
 
             Assert.That(settings.MasterVolume, Is.EqualTo(GameSettings.DefaultMasterVolume));
+            Assert.That(settings.MusicVolume, Is.EqualTo(GameSettings.DefaultMusicVolume));
+            Assert.That(settings.EffectsVolume, Is.EqualTo(GameSettings.DefaultEffectsVolume));
             Assert.That(settings.InterfaceVolume, Is.EqualTo(GameSettings.DefaultInterfaceVolume));
             Assert.That(settings.InterfaceSounds, Is.EqualTo(GameSettings.DefaultInterfaceSounds));
             Assert.That(settings.DisplayMode, Is.EqualTo(GameSettings.DefaultDisplayMode));
@@ -49,6 +51,8 @@ namespace TunnelVision.Tests
             {
                 MasterVolume = 0.25f,
                 InterfaceVolume = 0.5f,
+                MusicVolume = 0.3f,
+                EffectsVolume = 0.4f,
                 InterfaceSounds = false,
                 DisplayMode = FullScreenMode.Windowed,
                 ResolutionWidth = 1280,
@@ -61,6 +65,8 @@ namespace TunnelVision.Tests
 
             Assert.That(reloaded.MasterVolume, Is.EqualTo(0.25f));
             Assert.That(reloaded.InterfaceVolume, Is.EqualTo(0.5f));
+            Assert.That(reloaded.MusicVolume, Is.EqualTo(0.3f));
+            Assert.That(reloaded.EffectsVolume, Is.EqualTo(0.4f));
             Assert.That(reloaded.InterfaceSounds, Is.False);
             Assert.That(reloaded.DisplayMode, Is.EqualTo(FullScreenMode.Windowed));
             Assert.That(reloaded.ResolutionWidth, Is.EqualTo(1280));
@@ -158,6 +164,8 @@ namespace TunnelVision.Tests
             {
                 MasterVolume = 0.1f,
                 InterfaceVolume = 0.1f,
+                MusicVolume = 0.1f,
+                EffectsVolume = 0.1f,
                 InterfaceSounds = false,
                 DisplayMode = FullScreenMode.Windowed,
                 ResolutionWidth = 1280,
@@ -167,11 +175,24 @@ namespace TunnelVision.Tests
             settings.ResetToDefaults();
 
             Assert.That(settings.MasterVolume, Is.EqualTo(GameSettings.DefaultMasterVolume));
+            Assert.That(settings.MusicVolume, Is.EqualTo(GameSettings.DefaultMusicVolume));
+            Assert.That(settings.EffectsVolume, Is.EqualTo(GameSettings.DefaultEffectsVolume));
             Assert.That(settings.InterfaceVolume, Is.EqualTo(GameSettings.DefaultInterfaceVolume));
             Assert.That(settings.InterfaceSounds, Is.EqualTo(GameSettings.DefaultInterfaceSounds));
             Assert.That(settings.DisplayMode, Is.EqualTo(GameSettings.DefaultDisplayMode));
             Assert.That(settings.ResolutionWidth, Is.EqualTo(GameSettings.DefaultResolutionSize));
             Assert.That(settings.ResolutionHeight, Is.EqualTo(GameSettings.DefaultResolutionSize));
+        }
+
+
+        [TestCase(-1f, 0f)]
+        [TestCase(0.5f, 0.5f)]
+        [TestCase(2f, 1f)]
+        public void MusicAndEffectsVolume_AreClampedToZeroOne(float input, float expected)
+        {
+            var settings = new GameSettings(new MemoryStore()) { MusicVolume = input, EffectsVolume = input };
+            Assert.That(settings.MusicVolume, Is.EqualTo(expected));
+            Assert.That(settings.EffectsVolume, Is.EqualTo(expected));
         }
     }
 }

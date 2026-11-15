@@ -1,3 +1,4 @@
+using TunnelVision.Audio;
 using TunnelVision.Settings;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,6 +64,7 @@ namespace TunnelVision.UI
                 DontDestroyOnLoad(playerObject);
                 _player = playerObject.AddComponent<AudioSource>();
                 _player.playOnAwake = false;
+                SoundEffectsVolume.Exclude(_player); // Menu sounds have their own volume setting.
             }
 
             var settingsVolume = SettingsService.Current != null ? SettingsService.Current.EffectiveInterfaceVolume : 1f;
