@@ -69,6 +69,51 @@ namespace TunnelVision.Tests
         }
 
         [Test]
+        public void WobbleAngle_StartsAndEndsLevel()
+        {
+            Assert.AreEqual(0f, FerrisWheelSelect.WobbleAngle(0f), 0.001f);
+            Assert.AreEqual(0f, FerrisWheelSelect.WobbleAngle(FerrisWheelSelect.WobbleSeconds), 0.001f);
+            Assert.AreEqual(0f, FerrisWheelSelect.WobbleAngle(5f));
+            Assert.AreEqual(0f, FerrisWheelSelect.WobbleAngle(-1f));
+        }
+
+        [Test]
+        public void WobbleAngle_SwingsBothWaysAndStaysSubtle()
+        {
+            var most = 0f;
+            var least = 0f;
+            for (var t = 0f; t < FerrisWheelSelect.WobbleSeconds; t += 0.005f)
+            {
+                var angle = FerrisWheelSelect.WobbleAngle(t);
+                most = UnityEngine.Mathf.Max(most, angle);
+                least = UnityEngine.Mathf.Min(least, angle);
+            }
+
+            Assert.Greater(most, 2f, "It should tip far enough to see.");
+            Assert.Less(least, -2f, "It should swing back the other way too.");
+            Assert.LessOrEqual(most, 10f, "It should stay subtle.");
+        }
+
+        [Test]
+        public void WobbleAngle_FadesOut()
+        {
+            // Compare the biggest tip in the first and last quarter of the wobble.
+            float Peak(float from, float to)
+            {
+                var peak = 0f;
+                for (var t = from; t < to; t += 0.002f)
+                {
+                    peak = UnityEngine.Mathf.Max(peak, UnityEngine.Mathf.Abs(FerrisWheelSelect.WobbleAngle(t)));
+                }
+
+                return peak;
+            }
+
+            var length = FerrisWheelSelect.WobbleSeconds;
+            Assert.Less(Peak(length * 0.75f, length), Peak(0f, length * 0.25f));
+        }
+
+        [Test]
         public void NotInPrototypeMessage_IsTitleCase()
         {
             foreach (var word in FerrisWheelSelect.NotInPrototypeMessage.Split(' '))

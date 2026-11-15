@@ -56,10 +56,20 @@ namespace TunnelVision.UI
         private const float ArrowBobHeight = 10f;
         private const float ArrowBobSpeed = 4f;
 
+        // A locked cabin rocks on its hinge for a moment when picked.
+        public const float WobbleSeconds = 0.4f;
+        private const float WobbleDegrees = 6f;
+        private const float WobbleSwingsPerSecond = 9f;
+
         private int _steps;
         private float _angle;
         private Vector2 _arrowRestPosition;
         private int _labelledIndex = -1;
+        private int _wobbleIndex = -1;
+        private float _wobbleStartedAt;
+
+        /// <summary>The cabin that's rocking because it's locked, or -1 when none is.</summary>
+        public int WobblingCabin => _wobbleIndex;
 
         private float StepAngle => 360f / cabins.Length;
 
@@ -229,12 +239,40 @@ namespace TunnelVision.UI
             }
         }
 
+        /// <summary>
+        /// How far a locked cabin is tipped, in degrees, this long after it was picked: a quick
+        /// swing back and forth that fades out, and 0 once it has settled.
+        /// </summary>
+        public static float WobbleAngle(float elapsed)
+        {
+            if (elapsed < 0f || elapsed >= WobbleSeconds)
+            {
+                return 0f;
+            }
+
+            var fade = 1f - elapsed / WobbleSeconds;
+            return WobbleDegrees * fade * Mathf.Sin(elapsed * WobbleSwingsPerSecond * 2f * Mathf.PI);
+        }
+
         private void ApplyRotation()
         {
             transform.localRotation = Quaternion.Euler(0f, 0f, _angle);
-            foreach (var cabin in cabins)
+
+            var wobble = 0f;
+            if (_wobbleIndex >= 0)
             {
-                cabin.localRotation = Quaternion.Euler(0f, 0f, -_angle);
+                var elapsed = Time.unscaledTime - _wobbleStartedAt;
+                wobble = WobbleAngle(elapsed);
+                if (elapsed >= WobbleSeconds)
+                {
+                    _wobbleIndex = -1;
+                }
+            }
+
+            for (var i = 0; i < cabins.Length; i++)
+            {
+                var tip = i == _wobbleIndex ? wobble : 0f;
+                cabins[i].localRotation = Quaternion.Euler(0f, 0f, -_angle + tip);
             }
         }
 
@@ -276,6 +314,8 @@ namespace TunnelVision.UI
             if (state == CabinState.Locked)
             {
                 InterfaceSounds.Play(lockedSound);
+                _wobbleIndex = SelectedIndex;
+                _wobbleStartedAt = Time.unscaledTime;
                 return;
             }
 

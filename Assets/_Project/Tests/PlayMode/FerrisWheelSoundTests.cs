@@ -152,6 +152,41 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
+        public IEnumerator LockedCabin_RocksThenSettles()
+        {
+            SelectCabin(1);
+            var cabin = _wheel.transform.GetChild(1);
+            _wheel.StartSelectedLevel();
+            Assert.AreEqual(1, _wheel.WobblingCabin);
+
+            // Partway through, it's tipped away from the upright angle the wheel gives it.
+            var tipped = false;
+            var until = Time.unscaledTime + FerrisWheelSelect.WobbleSeconds;
+            while (Time.unscaledTime < until)
+            {
+                var upright = Quaternion.Euler(0f, 0f, -_wheel.transform.localEulerAngles.z);
+                tipped |= Quaternion.Angle(upright, cabin.localRotation) > 1f;
+                yield return null;
+            }
+
+            yield return null;
+            Assert.IsTrue(tipped, "The locked cabin should visibly rock.");
+            Assert.AreEqual(-1, _wheel.WobblingCabin);
+            var settled = Quaternion.Euler(0f, 0f, -_wheel.transform.localEulerAngles.z);
+            Assert.Less(Quaternion.Angle(settled, cabin.localRotation), 0.01f, "It should end upright.");
+        }
+
+        [UnityTest]
+        public IEnumerator QuestionMarkCabin_DoesNotRock()
+        {
+            SelectCabin(3);
+            _wheel.StartSelectedLevel();
+
+            Assert.AreEqual(-1, _wheel.WobblingCabin);
+            yield break;
+        }
+
+        [UnityTest]
         public IEnumerator QuestionMarkCabin_PlaysTheNoticeSound()
         {
             SelectCabin(3);
