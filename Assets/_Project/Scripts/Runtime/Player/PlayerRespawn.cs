@@ -114,7 +114,8 @@ namespace TunnelVision.Player
         /// <summary>Takes one life. Further calls do nothing until the player is back in play.</summary>
         public void Kill()
         {
-            if (_isDying)
+            // Nothing can kill the player once the level is complete and they're walking off.
+            if (_isDying || UI.LevelCompleteScreen.IsAnyShowing)
             {
                 return;
             }

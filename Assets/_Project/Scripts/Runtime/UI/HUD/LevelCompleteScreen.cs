@@ -8,10 +8,11 @@ using UnityEngine.UI;
 namespace TunnelVision.UI
 {
     /// <summary>
-    /// Shown when the player reaches a level's goal. The screen fades to black as they cross it,
+    /// Shown when the player reaches a level's goal. Nicholas walks on by himself (stopping at the
+    /// platform's edge) while the screen fades to black, the game freezes once it's black,
     /// then the panel fades in on the black: "Level Complete" with the time taken and the
     /// collectibles found, a Next Level button (when there is a next level) and Level Select.
-    /// The game freezes and its sounds and music fade out while it's up. Used with the mouse,
+    /// Game sounds and music fade out as it starts. Used with the mouse,
     /// like the other menus. Goes on an always-on object; the overlay is a child that starts hidden.
     /// </summary>
     public class LevelCompleteScreen : MonoBehaviour
@@ -38,6 +39,8 @@ namespace TunnelVision.UI
 
         private CanvasGroup _group;
         private CanvasGroup _panelGroup;
+        private PlayerMovement _movement;
+        private bool _freezeWhenBlack;
         private Image _backdrop;
         private string _nextScene;
         private float _shownAt = float.PositiveInfinity;
@@ -121,10 +124,15 @@ namespace TunnelVision.UI
             var seconds = Time.timeSinceLevelLoad;
             var collectibles = FindAnyObjectByType<PlayerCollectibles>();
 
-            Time.timeScale = 0f;
-            var movement = FindAnyObjectByType<PlayerMovement>();
-            if (movement != null)
-                movement.EnableControls(false);
+            // Walk on through the fade instead of stopping dead; freeze once the screen is black.
+            _movement = FindAnyObjectByType<PlayerMovement>();
+            if (_movement != null)
+            {
+                _movement.EnableControls(false);
+                _movement.AutoWalk(1f);
+            }
+
+            _freezeWhenBlack = true;
 
             SoundEffectsVolume.FadeOutGameplay(SoundsFadeSeconds);
             var music = FindAnyObjectByType<LevelMusic>();
@@ -161,6 +169,16 @@ namespace TunnelVision.UI
         private void Draw(float elapsed)
         {
             var (black, shown) = FadeAt(elapsed);
+
+            if (_freezeWhenBlack && black >= 1f)
+            {
+                _freezeWhenBlack = false;
+                Time.timeScale = 0f;
+                if (_movement != null)
+                {
+                    _movement.AutoWalk(0f);
+                }
+            }
 
             if (_panelGroup == null || _backdrop == null)
             {

@@ -34,6 +34,13 @@ namespace TunnelVision.Player
         private Vector2 lookInput;
         private bool controlsEnabled = true;
         private Quaternion _startEyeRotation = Quaternion.identity;
+        private float _autoWalk;
+
+        // How far ahead of the feet auto-walking checks for ground before taking a step.
+        private const float EdgeLookAhead = 0.6f;
+
+        /// <summary>True while the player is walking by themselves (at the end of a level).</summary>
+        public bool IsAutoWalking => _autoWalk != 0f;
 
         /// <summary>True while the body faces right.</summary>
         public bool FacingRight => facingRight;
@@ -50,6 +57,12 @@ namespace TunnelVision.Player
         // Update is called once per frame
         void FixedUpdate()
         {
+            if (_autoWalk != 0f)
+            {
+                StepAutoWalk();
+                return;
+            }
+
             if (!controlsEnabled)
             { return; }
 
@@ -166,6 +179,48 @@ namespace TunnelVision.Player
                 eyeball.localRotation = _startEyeRotation;
                 targetAngle = _startEyeRotation.eulerAngles.z;
             }
+        }
+
+        /// <summary>
+        /// Walks the player on by themselves in <paramref name="direction"/> (1 right, -1 left),
+        /// ignoring input, and stopping at the edge of whatever they're standing on so they never
+        /// walk off it. 0 stops. Used as the screen fades out at the end of a level.
+        /// </summary>
+        public void AutoWalk(float direction)
+        {
+            _autoWalk = Mathf.Sign(direction) * (direction == 0f ? 0f : 1f);
+            horizontalMovement = 0f;
+            lookInput = Vector2.zero;
+
+            if (_autoWalk == 0f && rb != null)
+            {
+                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            }
+        }
+
+        /// <summary>True if there's ground just ahead of the feet in the given direction.</summary>
+        public bool HasGroundAhead(float direction)
+        {
+            if (groundCheckPos == null)
+            {
+                return false;
+            }
+
+            var ahead = (Vector2)groundCheckPos.position + Vector2.right * Mathf.Sign(direction) * EdgeLookAhead;
+            return Physics2D.OverlapBox(ahead, groundCheckSize, 0f, groundLayer) != null;
+        }
+
+        private void StepAutoWalk()
+        {
+            facingRight = _autoWalk > 0f;
+            if (bodySprite != null)
+            {
+                bodySprite.flipX = !facingRight;
+            }
+
+            // At the edge, stand still rather than walk off.
+            var speed = HasGroundAhead(_autoWalk) ? _autoWalk * moveSpeed : 0f;
+            rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
         }
 
         public void EnableControls(bool value)

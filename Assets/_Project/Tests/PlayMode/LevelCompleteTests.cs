@@ -123,7 +123,7 @@ namespace TunnelVision.Tests
             Assert.IsTrue(_screen.IsShowing);
             Assert.IsTrue(LevelCompleteScreen.IsAnyShowing, "The pause menu checks this to stay shut.");
             Assert.IsTrue(_overlay.activeSelf);
-            Assert.AreEqual(0f, Time.timeScale, "The game should freeze.");
+            Assert.AreEqual(1f, Time.timeScale, "The game runs on while Nicholas walks off and the screen fades.");
             Assert.AreEqual(LevelCompleteScreen.Title, _title.text);
             StringAssert.Contains("Time: ", _stats.text);
             StringAssert.Contains("Collectibles: 0", _stats.text);
@@ -193,6 +193,30 @@ namespace TunnelVision.Tests
 
             Assert.IsTrue(_goal.Reached);
             Assert.AreEqual(firstStats, _stats.text, "A second touch shouldn't show it again.");
+        }
+
+
+        [UnityTest]
+        public IEnumerator Game_FreezesOnceTheScreenIsBlack()
+        {
+            _goal.Reach();
+            yield return new WaitForSecondsRealtime(LevelCompleteScreen.BlackFadeSeconds * 0.5f);
+            Assert.AreEqual(1f, Time.timeScale, "Still running partway through the fade.");
+
+            yield return new WaitForSecondsRealtime(LevelCompleteScreen.BlackFadeSeconds * 0.5f + 0.1f);
+            Assert.AreEqual(0f, Time.timeScale, "Frozen once black.");
+        }
+
+        [UnityTest]
+        public IEnumerator NothingCanKillThePlayer_AfterTheGoal()
+        {
+            _goal.Reach();
+            yield return null;
+
+            var respawn = Object.FindAnyObjectByType<PlayerRespawn>();
+            respawn.Kill();
+
+            Assert.IsFalse(respawn.IsRespawning, "A hazard during the walk-off shouldn't start a death.");
         }
     }
 }
