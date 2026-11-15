@@ -37,12 +37,20 @@ namespace TunnelVision.Tests
             feet.SetParent(_player.transform, false);
             feet.localPosition = new Vector3(0f, -0.5f, 0f);
 
+            // The real player always has a body sprite and an eye, and movement uses both.
+            var body = new GameObject("BodySprite").AddComponent<SpriteRenderer>();
+            body.transform.SetParent(_player.transform, false);
+            var eye = new GameObject("Eyeball").transform;
+            eye.SetParent(_player.transform, false);
+
             _player.SetActive(false);
             _movement = _player.AddComponent<PlayerMovement>();
             _movement.rb = rb;
             _movement.groundCheckPos = feet;
             _movement.groundCheckSize = new Vector2(0.5f, 0.1f);
             _movement.groundLayer = 1 << GroundLayer;
+            typeof(PlayerMovement).GetField("bodySprite", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_movement, body);
+            typeof(PlayerMovement).GetField("eyeball", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_movement, eye);
             _player.SetActive(true);
             yield return new WaitForFixedUpdate();
         }

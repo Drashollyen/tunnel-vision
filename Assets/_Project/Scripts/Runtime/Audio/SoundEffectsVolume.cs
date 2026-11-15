@@ -29,6 +29,9 @@ namespace TunnelVision.Audio
         private static float _fadeStartsAt;
         private static Fader _fader;
 
+        // The most a fade can move on in one frame, so a hitch (a slow frame) can't skip it.
+        private const float MaxStepSeconds = 0.1f;
+
         /// <summary>How loud gameplay sounds are allowed to be right now, from 0 (silenced) to 1.</summary>
         public static float GameplayLevel => _gameplayLevel;
 
@@ -137,7 +140,8 @@ namespace TunnelVision.Audio
 
             _gameplayLevel = float.IsPositiveInfinity(_gameplaySpeed)
                 ? _gameplayTarget
-                : Mathf.MoveTowards(_gameplayLevel, _gameplayTarget, _gameplaySpeed * Time.unscaledDeltaTime);
+                : Mathf.MoveTowards(_gameplayLevel, _gameplayTarget,
+                    _gameplaySpeed * Mathf.Min(Time.unscaledDeltaTime, MaxStepSeconds));
             Apply();
 
             if (_gameplayTarget <= 0f && _gameplayLevel <= 0f)

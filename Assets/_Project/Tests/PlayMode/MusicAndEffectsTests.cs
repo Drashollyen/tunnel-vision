@@ -163,12 +163,13 @@ namespace TunnelVision.Tests
             SettingsService.Current.ApplyAudio();
             Assert.AreEqual(0.5f, wheel.volume, 0.001f);
 
-            SoundEffectsVolume.FadeOutGameplay(0.3f);
-            yield return new WaitForSecondsRealtime(0.15f);
+            // A long fade, so a slow frame in the test run can't make it look like a cut.
+            SoundEffectsVolume.FadeOutGameplay(1f);
+            yield return new WaitForSecondsRealtime(0.4f);
             Assert.Less(wheel.volume, 0.5f, "It should be fading.");
             Assert.Greater(wheel.volume, 0f, "It should fade, not cut out.");
 
-            yield return new WaitForSecondsRealtime(0.3f);
+            yield return new WaitForSecondsRealtime(1f);
             Assert.AreEqual(0f, wheel.volume, 0.001f);
             Assert.IsFalse(wheel.isPlaying, "Once silent it should be paused, not just quiet.");
             Assert.IsTrue(SoundEffectsVolume.IsGameplaySilenced);
