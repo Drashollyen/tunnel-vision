@@ -56,6 +56,9 @@ namespace TunnelVision.UI
         private const float ArrowBobHeight = 10f;
         private const float ArrowBobSpeed = 4f;
 
+        // The menu plays its greyed-out click at this volume, so the wheel matches it.
+        private const float ErrorVolume = 0.6f;
+
         // A locked cabin rocks on its hinge for a moment when picked.
         public const float WobbleSeconds = 0.4f;
         private const float WobbleDegrees = 6f;
@@ -297,7 +300,7 @@ namespace TunnelVision.UI
 
             if (state == CabinState.NotInPrototype)
             {
-                InterfaceSounds.Play(notInPrototypeSound);
+                InterfaceSounds.Play(notInPrototypeSound, ErrorVolume);
 
                 if (prototypeNotice != null)
                 {
@@ -313,7 +316,7 @@ namespace TunnelVision.UI
 
             if (state == CabinState.Locked)
             {
-                InterfaceSounds.Play(lockedSound);
+                InterfaceSounds.Play(lockedSound, ErrorVolume);
                 _wobbleIndex = SelectedIndex;
                 _wobbleStartedAt = Time.unscaledTime;
                 return;
