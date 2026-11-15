@@ -20,8 +20,12 @@ namespace TunnelVision.UI
         public const string NoStats = "No Levels Cleared This Run";
         public const float TitleDelay = 0.3f;
         public const float TitlePopSeconds = 0.5f;
+        public const float SubtitlePulseSeconds = 2f;
+        public const float SubtitlePulseAmount = 0.05f;
 
         [SerializeField] private RectTransform title;
+        [Tooltip("Grows and shrinks gently, over and over.")]
+        [SerializeField] private RectTransform subtitle;
         [SerializeField] private TMP_Text stats;
         [SerializeField] private Button mainMenuButton;
         [SerializeField] private Button levelSelectButton;
@@ -71,6 +75,10 @@ namespace TunnelVision.UI
             return Mathf.Lerp(1.15f, 1f, (t - 0.7f) / 0.3f);
         }
 
+        /// <summary>The subtitle's size this long after the screen opens: a slow, smooth swell and back, forever.</summary>
+        public static float SubtitleScaleAt(float elapsed) =>
+            1f + SubtitlePulseAmount * 0.5f * (1f - Mathf.Cos(elapsed / SubtitlePulseSeconds * Mathf.PI * 2f));
+
         private void Awake()
         {
             if (mainMenuButton != null)
@@ -95,6 +103,11 @@ namespace TunnelVision.UI
             if (title != null)
             {
                 title.localScale = _titleScale * TitleScaleAt(Time.unscaledTime - _startedAt);
+            }
+
+            if (subtitle != null)
+            {
+                subtitle.localScale = Vector3.one * SubtitleScaleAt(Time.unscaledTime - _startedAt);
             }
 
             var keyboard = Keyboard.current;

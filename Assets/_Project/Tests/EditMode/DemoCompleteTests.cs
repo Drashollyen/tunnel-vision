@@ -60,6 +60,16 @@ namespace TunnelVision.Tests
         }
 
         [Test]
+        public void Subtitle_GrowsAndShrinks()
+        {
+            var period = DemoCompleteScreen.SubtitlePulseSeconds;
+            Assert.AreEqual(1f, DemoCompleteScreen.SubtitleScaleAt(0f), 0.001f, "Starts at its normal size.");
+            Assert.AreEqual(1f + DemoCompleteScreen.SubtitlePulseAmount, DemoCompleteScreen.SubtitleScaleAt(period * 0.5f), 0.001f, "Biggest halfway.");
+            Assert.AreEqual(1f, DemoCompleteScreen.SubtitleScaleAt(period), 0.001f, "Back again.");
+            Assert.AreEqual(1f, DemoCompleteScreen.SubtitleScaleAt(period * 7f), 0.001f, "And keeps going.");
+        }
+
+        [Test]
         public void Stats_ListEachLevelThenTheTotal()
         {
             var text = DemoCompleteScreen.StatsText(new[]
