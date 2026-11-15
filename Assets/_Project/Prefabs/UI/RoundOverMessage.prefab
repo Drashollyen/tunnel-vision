@@ -104,7 +104,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Round Over
+  m_text: Game Over
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}
   m_sharedMaterial: {fileID: -5904214737397361208, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}

@@ -8,9 +8,9 @@ using UnityEngine.UI;
 namespace TunnelVision.UI
 {
     /// <summary>
-    /// Shows "Round Over" with the lives left each time the player loses a life,
-    /// and "Game Over" when the last one goes. On Game Over the game pauses and,
-    /// after a short delay, a button offers the way back to Level Select.
+    /// Shows "Game Over" with the lives left each time the player loses a life, and
+    /// "Out Of Lives" when the last one goes. Out of lives (called Game Over in the code),
+    /// the game pauses and, after a short delay, a button offers the way back to Level Select.
     /// </summary>
     public class RoundOverMessage : MonoBehaviour
     {
@@ -33,6 +33,8 @@ namespace TunnelVision.UI
         private bool _pausedTheGame;
 
         public const string PressEnterPrompt = "Press Enter For Level Select";
+        public const string LifeLostTitle = "Game Over";
+        public const string OutOfLivesTitle = "Out Of Lives";
 
         /// <summary>True once the last life has gone.</summary>
         public bool IsGameOver { get; private set; }
@@ -133,7 +135,7 @@ namespace TunnelVision.UI
                 return;
             }
 
-            title.text = "Round Over";
+            title.text = LifeLostTitle;
             subtitle.text = lives == 1 ? "1 Life Remaining" : $"{lives} Lives Remaining";
             subtitle.gameObject.SetActive(true);
             _hideAt = Time.unscaledTime + showSeconds;
@@ -142,7 +144,7 @@ namespace TunnelVision.UI
         private void ShowGameOver()
         {
             IsGameOver = true;
-            title.text = "Game Over";
+            title.text = OutOfLivesTitle;
             subtitle.gameObject.SetActive(false);
             _hideAt = float.PositiveInfinity;
             _showButtonAt = Time.unscaledTime + buttonDelay;

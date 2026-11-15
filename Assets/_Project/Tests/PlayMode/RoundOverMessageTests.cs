@@ -105,7 +105,8 @@ namespace TunnelVision.Tests
             yield return new WaitForSecondsRealtime(ButtonDelay * 2f);
 
             Assert.IsTrue(_panel.activeSelf);
-            Assert.AreEqual("Round Over", _title.text);
+            Assert.AreEqual(RoundOverMessage.LifeLostTitle, _title.text);
+            Assert.AreEqual("Game Over", _title.text);
             Assert.AreEqual("2 Lives Remaining", _subtitle.text);
             Assert.AreEqual(1f, Time.timeScale);
             Assert.IsFalse(_button.gameObject.activeSelf);
@@ -119,7 +120,7 @@ namespace TunnelVision.Tests
             yield return null;
 
             Assert.IsTrue(_message.IsGameOver);
-            Assert.AreEqual("Game Over", _title.text);
+            Assert.AreEqual("Out Of Lives", _title.text);
             Assert.IsFalse(_subtitle.gameObject.activeSelf);
             Assert.AreEqual(0f, Time.timeScale, "Game Over should pause the game.");
             Assert.IsFalse(_button.gameObject.activeSelf, "The button should wait for the delay.");
