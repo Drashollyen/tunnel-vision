@@ -3375,7 +3375,7 @@ MonoBehaviour:
   nextLevelButton: {fileID: 706282016882422155}
   levelSelectButton: {fileID: 153133539952155126}
   levelSelectScene: LevelSelect
-  completeSound: {fileID: 8300000, guid: 434a7e8767b74b2f9cfcf763d9620de8, type: 3}
+  completeSound: {fileID: 8300000, guid: 183c61e1b6954722836479495cc49e02, type: 3}
 --- !u!1 &518325588840120662
 GameObject:
   m_ObjectHideFlags: 0

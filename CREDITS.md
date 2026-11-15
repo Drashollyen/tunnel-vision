@@ -28,6 +28,7 @@ Add every third-party asset here in the same PR that adds it. Keep downloaded as
 | SFX from Pixabay: Drop tower creak (`droptower-creak.mp3`) | [pixabay.com/sound-effects/abandoned-facility-creaking-463197](https://pixabay.com/sound-effects/abandoned-facility-creaking-463197/) | Pixabay Content License |
 | SFX from Pixabay: Drop tower crush (`droptower-crush.wav`) | [pixabay.com/sound-effects/film-special-effects-sound-effect-car-crash-394903](https://pixabay.com/sound-effects/film-special-effects-sound-effect-car-crash-394903/) | Pixabay Content License |
 | SFX from Pixabay: Checkpoint bell (`bell.mp3`) | [pixabay.com/sound-effects/film-special-effects-bell-98033](https://pixabay.com/sound-effects/film-special-effects-bell-98033/) | Pixabay Content License |
+| SFX from Pixabay: Level complete (`level-complete.mp3`), Universfield | [pixabay.com/sound-effects/film-special-effects-level-complete-143022](https://pixabay.com/sound-effects/film-special-effects-level-complete-143022/) | Pixabay Content License |
 
 ## Made by the team
 
