@@ -123,24 +123,13 @@ namespace TunnelVision.UI
 
             var number = go.AddComponent<TextMeshProUGUI>();
             number.font = Text.font;
-            number.fontSharedMaterial = Text.fontSharedMaterial;
+            number.fontSharedMaterial = Text.fontSharedMaterial; // Brings the line's outline with it.
             number.fontSize = Text.fontSize;
             number.fontStyle = Text.fontStyle;
             number.alignment = Text.alignment;
             number.textWrappingMode = Text.textWrappingMode;
             number.color = Text.color;
             number.raycastTarget = false;
-            // From TextOutline if there is one, since its outline may not be on the line yet.
-            if (TryGetComponent(out TextOutline outline))
-            {
-                number.outlineWidth = outline.Width;
-                number.outlineColor = outline.Color;
-            }
-            else
-            {
-                number.outlineWidth = Text.outlineWidth;
-                number.outlineColor = Text.outlineColor;
-            }
             return number;
         }
     }

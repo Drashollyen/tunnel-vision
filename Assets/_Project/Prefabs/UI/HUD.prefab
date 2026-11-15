@@ -661,7 +661,6 @@ GameObject:
   - component: {fileID: 781654822863147992}
   - component: {fileID: 100547987807547606}
   - component: {fileID: 354023995491694306}
-  - component: {fileID: 118723703424196530}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -719,7 +718,7 @@ MonoBehaviour:
   m_text: Paused
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}
-  m_sharedMaterial: {fileID: -5904214737397361208, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: cc76b11d4a91409197dcada50ebe2fd6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2070,7 +2069,6 @@ GameObject:
   - component: {fileID: 265324572747893674}
   - component: {fileID: 141458109634493161}
   - component: {fileID: 571984815893848936}
-  - component: {fileID: 758811423057483521}
   m_Layer: 5
   m_Name: Count
   m_TagString: Untagged
@@ -2128,7 +2126,7 @@ MonoBehaviour:
   m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}
-  m_sharedMaterial: {fileID: -5904214737397361208, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: cc76b11d4a91409197dcada50ebe2fd6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2197,34 +2195,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &758811423057483521
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 798287950762092192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3a57fea435a49118af4af04ba000885, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.TextOutline
-  width: 0.25
-  color: {r: 0, g: 0, b: 0, a: 1}
---- !u!114 &118723703424196530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 165360549864324723}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3a57fea435a49118af4af04ba000885, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.TextOutline
-  width: 0.2
-  color: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &405896468417834805
 GameObject:
   m_ObjectHideFlags: 0
@@ -2418,7 +2388,6 @@ GameObject:
   - component: {fileID: 630614298542479677}
   - component: {fileID: 805835473825480238}
   - component: {fileID: 118164189440635707}
-  - component: {fileID: 434358512134729421}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -2476,7 +2445,7 @@ MonoBehaviour:
   m_text: Go To Level Select?
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}
-  m_sharedMaterial: {fileID: -5904214737397361208, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: cc76b11d4a91409197dcada50ebe2fd6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3198,17 +3167,3 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &434358512134729421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156623323185261660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3a57fea435a49118af4af04ba000885, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.TextOutline
-  width: 0.2
-  color: {r: 0, g: 0, b: 0, a: 1}
