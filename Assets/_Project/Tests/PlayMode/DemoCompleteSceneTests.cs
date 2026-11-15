@@ -100,10 +100,12 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator Buttons_AreThere()
+        public IEnumerator OnlyTheMainMenuButton_IsThere()
         {
             Assert.IsNotNull(Find("Main Menu Button").GetComponent<Button>());
-            Assert.IsNotNull(Find("Level Select Button").GetComponent<Button>());
+            Assert.IsNull(Find("Level Select Button"), "The ending only leads back to the main menu.");
+            Assert.IsNull(Find("KeyHints"), "There are no keyboard shortcuts, so no key hints.");
+            Assert.AreEqual(1, Object.FindObjectsByType<Button>(FindObjectsInactive.Include).Length);
             yield break;
         }
 

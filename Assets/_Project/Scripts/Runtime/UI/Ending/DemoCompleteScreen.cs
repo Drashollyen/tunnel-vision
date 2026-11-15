@@ -3,15 +3,13 @@ using System.Text;
 using TMPro;
 using TunnelVision.Level;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
     /// <summary>
     /// The end of the demo: "Congratulations!" pops in over the cast celebrating together, with
-    /// this run's stats for each level and in total. Main Menu and Level Select buttons, plus
-    /// Escape and Enter, as the key hints say.
+    /// this run's stats for each level and in total. One way out: the Main Menu button (mouse only).
     /// </summary>
     public class DemoCompleteScreen : MonoBehaviour
     {
@@ -28,9 +26,7 @@ namespace TunnelVision.UI
         [SerializeField] private RectTransform subtitle;
         [SerializeField] private TMP_Text stats;
         [SerializeField] private Button mainMenuButton;
-        [SerializeField] private Button levelSelectButton;
         [SerializeField] private string mainMenuScene = "IntroScreen";
-        [SerializeField] private string levelSelectScene = "LevelSelect";
 
         private float _startedAt;
         private Vector3 _titleScale = Vector3.one;
@@ -83,8 +79,6 @@ namespace TunnelVision.UI
         {
             if (mainMenuButton != null)
                 mainMenuButton.onClick.AddListener(GoToMainMenu);
-            if (levelSelectButton != null)
-                levelSelectButton.onClick.AddListener(GoToLevelSelect);
         }
 
         private void Start()
@@ -109,25 +103,12 @@ namespace TunnelVision.UI
             {
                 subtitle.localScale = Vector3.one * SubtitleScaleAt(Time.unscaledTime - _startedAt);
             }
-
-            var keyboard = Keyboard.current;
-            if (keyboard == null || SceneFader.IsFading)
-            {
-                return;
-            }
-
-            if (keyboard.escapeKey.wasPressedThisFrame)
-            {
-                GoToMainMenu();
-            }
-            else if (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)
-            {
-                GoToLevelSelect();
-            }
         }
 
-        public void GoToMainMenu() => SceneFader.Load(mainMenuScene);
-
-        public void GoToLevelSelect() => SceneFader.Load(levelSelectScene);
+        public void GoToMainMenu()
+        {
+            if (!SceneFader.IsFading)
+                SceneFader.Load(mainMenuScene);
+        }
     }
 }
