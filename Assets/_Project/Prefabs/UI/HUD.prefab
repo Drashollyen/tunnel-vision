@@ -635,7 +635,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 8645894043717093507, guid: 896e3ec9ea49f894da2a360644356590, type: 3}
+  m_Sprite: {fileID: 8645894043717093507, guid: 26e7efa880704aabbd6794ec30d933bf, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -656,6 +656,7 @@ GameObject:
   - component: {fileID: 781654822863147992}
   - component: {fileID: 100547987807547606}
   - component: {fileID: 354023995491694306}
+  - component: {fileID: 118723703424196530}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -2204,4 +2205,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.TextOutline
   width: 0.25
+  color: {r: 0, g: 0, b: 0, a: 1}
+--- !u!114 &118723703424196530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165360549864324723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3a57fea435a49118af4af04ba000885, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.TextOutline
+  width: 0.2
   color: {r: 0, g: 0, b: 0, a: 1}
