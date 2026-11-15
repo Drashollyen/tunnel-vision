@@ -17,6 +17,7 @@ namespace TunnelVision.Tests
     public static class IsolatedScene
     {
         private static readonly List<GameObject> SwitchedOff = new List<GameObject>();
+        private static GameObject _listener;
 
         public static Scene Current { get; private set; }
 
@@ -46,14 +47,22 @@ namespace TunnelVision.Tests
             }
 
             // The camera that normally hears sounds was just switched off with its scene, so the
-            // test scene gets its own listener. It goes when the scene is unloaded in Close.
-            new GameObject("Test Audio Listener", typeof(AudioListener));
+            // test scene gets its own listener. Close removes it straight away.
+            _listener = new GameObject("Test Audio Listener", typeof(AudioListener));
 
             yield return null;
         }
 
         public static void Close()
         {
+            // Gone now, not when the scene finishes unloading in the background: otherwise the next
+            // test's listener, or the camera switched back on below, would overlap with it.
+            if (_listener != null)
+            {
+                Object.DestroyImmediate(_listener);
+                _listener = null;
+            }
+
             if (Current.IsValid() && Current.isLoaded && SceneManager.sceneCount > 1)
             {
                 SceneManager.UnloadSceneAsync(Current);
