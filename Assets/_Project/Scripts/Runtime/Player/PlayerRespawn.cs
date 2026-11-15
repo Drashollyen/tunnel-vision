@@ -1,10 +1,8 @@
 using System.Collections;
 using TunnelVision.Level;
-using TunnelVision.UI;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace TunnelVision.Player
@@ -12,7 +10,7 @@ namespace TunnelVision.Player
     /// <summary>
     /// Handles the player dying. Controls stop, the level lights up so the player can see
     /// what got them, the screen fades to black, and the player comes back at the last
-    /// checkpoint. With no lives left, the level reloads.
+    /// checkpoint. With no lives left it stops on Game Over (see RoundOverMessage).
     /// </summary>
     [RequireComponent(typeof(PlayerLives), typeof(Rigidbody2D))]
     public class PlayerRespawn : MonoBehaviour
@@ -49,6 +47,24 @@ namespace TunnelVision.Player
 
         /// <summary>True from a death until the player can move again.</summary>
         public bool IsRespawning => _isDying;
+
+        /// <summary>Raised when the player reaches a checkpoint that wasn't already their respawn point.</summary>
+        public event System.Action<Checkpoint> CheckpointReached;
+
+        /// <summary>Raised as a death sequence starts.</summary>
+        public event System.Action Died;
+
+        /// <summary>Raised as the screen starts fading back in on the respawned player.</summary>
+        public event System.Action Respawning;
+
+        /// <summary>How long from a death until the screen is fully black.</summary>
+        public float SecondsUntilBlack => revealDuration + revealHoldDuration + fadeDuration;
+
+        /// <summary>How long the screen takes to fade back in after a respawn.</summary>
+        public float FadeInSeconds => fadeDuration;
+
+        /// <summary>How long the screen takes to fade to black, ending at <see cref="SecondsUntilBlack"/>.</summary>
+        public float FadeToBlackSeconds => fadeDuration;
 
         private void Awake()
         {
@@ -98,12 +114,14 @@ namespace TunnelVision.Player
         /// <summary>Takes one life. Further calls do nothing until the player is back in play.</summary>
         public void Kill()
         {
-            if (_isDying)
+            // Nothing can kill the player once the level is complete and they're walking off.
+            if (_isDying || UI.LevelCompleteScreen.IsAnyShowing)
             {
                 return;
             }
 
             _isDying = true;
+            Died?.Invoke();
             StartCoroutine(DeathSequence());
         }
 
@@ -121,6 +139,12 @@ namespace TunnelVision.Player
 
             _checkpoint = checkpoint;
             _checkpoint.SetLit(true);
+            if (_lives != null)
+            {
+                _lives.GainLives(checkpoint.TakeLives()); // Only the first visit pays out.
+            }
+
+            CheckpointReached?.Invoke(checkpoint);
         }
 
         private IEnumerator DeathSequence()
@@ -156,23 +180,19 @@ namespace TunnelVision.Player
 
             if (_lives.IsDead)
             {
-                if (TryReloadLevel())
-                {
-                    yield break;
-                }
-
-                // The scene can't be reloaded (it isn't in the build), so start over in place.
-                if (_checkpoint != null)
-                {
-                    _checkpoint.SetLit(false);
-                    _checkpoint = null;
-                }
-
-                _lives.Restart();
+                // Game Over: stay on the black screen. RoundOverMessage pauses the game and
+                // offers the way back to Level Select. IsRespawning stays true, so nothing
+                // can kill the player again.
+                yield break;
             }
 
-            // Move while the screen is fully black.
+            // Move while the screen is fully black, facing the way the level starts (to the right),
+            // whichever way the player was facing when they died.
             MoveTo(_checkpoint != null ? _checkpoint.RespawnPosition : _levelStart);
+            if (movement != null)
+            {
+                movement.FaceStartDirection();
+            }
 
             if (globalLight != null)
             {
@@ -186,6 +206,7 @@ namespace TunnelVision.Player
 
             // Give the camera time to catch up, then show the player before handing back control.
             yield return new WaitForSecondsRealtime(blackHoldDuration);
+            Respawning?.Invoke();
             yield return FadeBlack(0f, fadeDuration);
 
             _body.simulated = true;
@@ -197,18 +218,6 @@ namespace TunnelVision.Player
             }
 
             _isDying = false;
-        }
-
-        private static bool TryReloadLevel()
-        {
-            var scene = SceneManager.GetActiveScene().name;
-            if (!Application.CanStreamedLevelBeLoaded(scene))
-            {
-                return false;
-            }
-
-            SceneFader.Load(scene);
-            return true;
         }
 
         private void MoveTo(Vector3 position)

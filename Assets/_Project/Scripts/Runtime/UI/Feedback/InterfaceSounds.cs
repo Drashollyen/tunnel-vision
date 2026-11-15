@@ -1,3 +1,4 @@
+using TunnelVision.Audio;
 using TunnelVision.Settings;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,18 +36,27 @@ namespace TunnelVision.UI
             }
         }
 
+        /// <summary>Raised whenever a clip is played, so tests can tell which sound went off.</summary>
+        public static event System.Action<AudioClip> ClipPlayed;
+
         public void PlayHover() => Play(hoverClip, 1f);
 
         public void PlayClick() => Play(clickClip, clickVolume);
 
         public void PlayDisabledClick() => Play(disabledClickClip, clickVolume);
 
-        private static void Play(AudioClip clip, float volume)
+        /// <summary>
+        /// Plays any interface sound through the shared player, so it follows the player's
+        /// interface settings and isn't cut off by a scene change. Does nothing for a null clip.
+        /// </summary>
+        public static void Play(AudioClip clip, float volume = 1f)
         {
             if (clip == null)
             {
                 return;
             }
+
+            ClipPlayed?.Invoke(clip);
 
             if (_player == null)
             {
@@ -54,9 +64,11 @@ namespace TunnelVision.UI
                 DontDestroyOnLoad(playerObject);
                 _player = playerObject.AddComponent<AudioSource>();
                 _player.playOnAwake = false;
+                SoundEffectsVolume.Exclude(_player); // Menu sounds have their own volume setting.
             }
 
-            _player.PlayOneShot(clip, volume * SettingsService.Current.EffectiveInterfaceVolume);
+            var settingsVolume = SettingsService.Current != null ? SettingsService.Current.EffectiveInterfaceVolume : 1f;
+            _player.PlayOneShot(clip, volume * settingsVolume);
         }
     }
 }

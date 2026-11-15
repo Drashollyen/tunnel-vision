@@ -14,10 +14,19 @@ namespace TunnelVision.UI
         private void Awake()
         {
             _panels = gameObject.AddComponent<PanelSwitcher>();
+
+            // The options page is a shared prefab, so its Back button reports back to us.
+            if (optionsPanel != null && optionsPanel.TryGetComponent(out OptionsMenu options))
+            {
+                options.BackPressed += CloseOptions;
+            }
         }
 
         public void Play()
         {
+            // A new playthrough: the demo's ending only counts levels cleared from here.
+            Level.RunStats.Reset();
+
             SceneFader.Load(nextSceneName);
         }
 

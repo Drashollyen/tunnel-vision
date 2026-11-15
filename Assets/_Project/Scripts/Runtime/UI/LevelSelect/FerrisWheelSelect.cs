@@ -9,11 +9,26 @@ namespace TunnelVision.UI
     /// <summary>
     /// The level select wheel. Left and right arrows turn it, the top cabin is selected,
     /// Enter starts that level if it's unlocked, and Escape goes back to the menu.
+    /// Cabins past the prototype's levels show "???" and open a notice instead.
     /// Goes on the Wheel object. Cabins are listed clockwise, starting from the top.
     /// </summary>
     public class FerrisWheelSelect : MonoBehaviour
     {
+        public enum CabinState
+        {
+            Playable,
+            Locked,
+            NotInPrototype,
+        }
+
+        public const string NotInPrototypeMessage = "This Level Is Not Available In The Prototype";
+        private const string UnknownLevelName = "???";
+
         [SerializeField] private RectTransform[] cabins;
+        [Tooltip("How many cabins, from the first, have levels in this prototype. The rest show \"???\".")]
+        [SerializeField] private int prototypeLevelCount = 3;
+        [Tooltip("Optional. Shown when a \"???\" cabin is picked.")]
+        [SerializeField] private NoticeDialog prototypeNotice;
         [SerializeField] private float turnSpeed = 240f;
         [SerializeField] private string[] levelScenes;
         [SerializeField] private string menuScene = "IntroScreen";
@@ -24,15 +39,40 @@ namespace TunnelVision.UI
         [Tooltip("The soft outline behind each cabin, in the same order as Cabins.")]
         [SerializeField] private Image[] cabinOutlines;
 
+        [Header("Sounds")]
+        [Tooltip("Each turn of one cabin.")]
+        [SerializeField] private AudioClip turnSound;
+        [Tooltip("Enter on a playable cabin, as the level starts loading.")]
+        [SerializeField] private AudioClip startSound;
+        [Tooltip("Enter on a cabin the player hasn't unlocked yet.")]
+        [SerializeField] private AudioClip lockedSound;
+        [Tooltip("Enter on a \"???\" cabin, as the notice opens.")]
+        [SerializeField] private AudioClip notInPrototypeSound;
+        [Tooltip("Escape, going back to the main menu.")]
+        [SerializeField] private AudioClip backSound;
+
         private const float SelectedCabinScale = 1.15f;
         private const float CabinEaseSpeed = 12f;
         private const float ArrowBobHeight = 10f;
         private const float ArrowBobSpeed = 4f;
 
+        // The menu plays its greyed-out click at this volume, so the wheel matches it.
+        private const float ErrorVolume = 0.6f;
+
+        // A locked cabin rocks on its hinge for a moment when picked.
+        public const float WobbleSeconds = 0.4f;
+        private const float WobbleDegrees = 6f;
+        private const float WobbleSwingsPerSecond = 9f;
+
         private int _steps;
         private float _angle;
         private Vector2 _arrowRestPosition;
         private int _labelledIndex = -1;
+        private int _wobbleIndex = -1;
+        private float _wobbleStartedAt;
+
+        /// <summary>The cabin that's rocking because it's locked, or -1 when none is.</summary>
+        public int WobblingCabin => _wobbleIndex;
 
         private float StepAngle => 360f / cabins.Length;
 
@@ -45,6 +85,38 @@ namespace TunnelVision.UI
             }
         }
 
+        /// <summary>Whether a cabin can be played, is locked by progress, or has no level in the prototype.</summary>
+        public static CabinState GetCabinState(int index, int prototypeLevelCount, int highestUnlocked)
+        {
+            if (index >= prototypeLevelCount)
+            {
+                return CabinState.NotInPrototype;
+            }
+
+            return index <= highestUnlocked ? CabinState.Playable : CabinState.Locked;
+        }
+
+        /// <summary>The text on the plate under the wheel for a cabin.</summary>
+        public static string PlateText(int index, CabinState state, string levelName)
+        {
+            switch (state)
+            {
+                case CabinState.Playable:
+                    return $"Level {index + 1}: {levelName}";
+                case CabinState.NotInPrototype:
+                    return $"Level {index + 1}: {UnknownLevelName}";
+                default:
+                    return "Locked";
+            }
+        }
+
+        public CabinState StateOf(int index) =>
+            GetCabinState(index, prototypeLevelCount, LevelProgress.HighestUnlocked);
+
+        /// <summary>
+        /// The new target step after a press. Allows at most one step beyond the cabin
+        /// the wheel is nearest to now, so spamming can't queue up a long spin.
+        /// </summary>
         public static int NextStep(int steps, float angle, float stepAngle, int direction)
         {
             var showing = Mathf.RoundToInt(angle / stepAngle);
@@ -61,7 +133,7 @@ namespace TunnelVision.UI
 
         private void Start()
         {
-            _steps = Mathf.Min(LevelProgress.HighestUnlocked, cabins.Length - 1);
+            _steps = Mathf.Min(LevelProgress.HighestUnlocked, prototypeLevelCount - 1, cabins.Length - 1);
             _angle = _steps * StepAngle;
             ApplyRotation();
 
@@ -72,9 +144,23 @@ namespace TunnelVision.UI
 
             for (var i = 0; i < cabins.Length; i++)
             {
-                if (!LevelProgress.IsUnlocked(i))
+                var state = StateOf(i);
+                if (state != CabinState.Playable)
                 {
-                    cabins[i].Find("Body").GetComponent<Image>().color = lockedColor;
+                    var body = cabins[i].Find("Body");
+                    if (body != null)
+                    {
+                        body.GetComponent<Image>().color = lockedColor;
+                    }
+                }
+
+                if (state == CabinState.NotInPrototype)
+                {
+                    var label = cabins[i].Find("Label");
+                    if (label != null)
+                    {
+                        label.GetComponent<TMP_Text>().text = UnknownLevelName;
+                    }
                 }
             }
         }
@@ -86,11 +172,19 @@ namespace TunnelVision.UI
                 return;
             }
 
+            // While the notice is up, or on the frame it closed, keys belong to the notice.
+            if (prototypeNotice != null
+                && (prototypeNotice.IsOpen || prototypeNotice.ClosedOnFrame == Time.frameCount))
+            {
+                return;
+            }
+
             var keyboard = Keyboard.current;
             if (keyboard != null)
             {
                 if (keyboard.escapeKey.wasPressedThisFrame)
                 {
+                    InterfaceSounds.Play(backSound);
                     SceneFader.Load(menuScene);
                     return;
                 }
@@ -99,7 +193,7 @@ namespace TunnelVision.UI
                     : keyboard.leftArrowKey.wasPressedThisFrame ? -1 : 0;
                 if (direction != 0)
                 {
-                    _steps = NextStep(_steps, _angle, StepAngle, direction);
+                    Turn(direction);
                 }
             }
 
@@ -141,34 +235,106 @@ namespace TunnelVision.UI
             if (selectedLabel != null && _labelledIndex != SelectedIndex)
             {
                 _labelledIndex = SelectedIndex;
-                selectedLabel.text = LevelProgress.IsUnlocked(SelectedIndex)
-                    ? $"Level {SelectedIndex + 1}: {levelNames[SelectedIndex]}"
-                    : "Locked";
+                var levelName = levelNames != null && SelectedIndex < levelNames.Length
+                    ? levelNames[SelectedIndex]
+                    : string.Empty;
+                selectedLabel.text = PlateText(SelectedIndex, StateOf(SelectedIndex), levelName);
             }
+        }
+
+        /// <summary>
+        /// How far a locked cabin is tipped, in degrees, this long after it was picked: a quick
+        /// swing back and forth that fades out, and 0 once it has settled.
+        /// </summary>
+        public static float WobbleAngle(float elapsed)
+        {
+            if (elapsed < 0f || elapsed >= WobbleSeconds)
+            {
+                return 0f;
+            }
+
+            var fade = 1f - elapsed / WobbleSeconds;
+            return WobbleDegrees * fade * Mathf.Sin(elapsed * WobbleSwingsPerSecond * 2f * Mathf.PI);
         }
 
         private void ApplyRotation()
         {
             transform.localRotation = Quaternion.Euler(0f, 0f, _angle);
-            foreach (var cabin in cabins)
+
+            var wobble = 0f;
+            if (_wobbleIndex >= 0)
             {
-                cabin.localRotation = Quaternion.Euler(0f, 0f, -_angle);
+                var elapsed = Time.unscaledTime - _wobbleStartedAt;
+                wobble = WobbleAngle(elapsed);
+                if (elapsed >= WobbleSeconds)
+                {
+                    _wobbleIndex = -1;
+                }
+            }
+
+            for (var i = 0; i < cabins.Length; i++)
+            {
+                var tip = i == _wobbleIndex ? wobble : 0f;
+                cabins[i].localRotation = Quaternion.Euler(0f, 0f, -_angle + tip);
             }
         }
 
-        private void StartSelectedLevel()
+        /// <summary>
+        /// What an arrow key does: one cabin left (-1) or right (1). Clicks only when the wheel
+        /// actually takes another step, so a press that spamming has used up stays silent.
+        /// </summary>
+        public void Turn(int direction)
         {
-            if (!LevelProgress.IsUnlocked(SelectedIndex))
+            var next = NextStep(_steps, _angle, StepAngle, direction);
+            if (next != _steps)
             {
+                _steps = next;
+                InterfaceSounds.Play(turnSound);
+            }
+        }
+
+        private void ShowNotInPrototype()
+        {
+            InterfaceSounds.Play(notInPrototypeSound, ErrorVolume);
+
+            if (prototypeNotice != null)
+            {
+                prototypeNotice.Show(NotInPrototypeMessage);
+            }
+            else
+            {
+                Debug.LogWarning("FerrisWheelSelect: no Prototype Notice set, so the \"???\" cabin does nothing.", this);
+            }
+        }
+
+        /// <summary>What Enter does: starts the level, shows the prototype notice, or buzzes if locked.</summary>
+        public void StartSelectedLevel()
+        {
+            var state = StateOf(SelectedIndex);
+
+            if (state == CabinState.NotInPrototype)
+            {
+                ShowNotInPrototype();
                 return;
             }
 
-            var scene = levelScenes[SelectedIndex];
+            if (state == CabinState.Locked)
+            {
+                InterfaceSounds.Play(lockedSound, ErrorVolume);
+                _wobbleIndex = SelectedIndex;
+                _wobbleStartedAt = Time.unscaledTime;
+                return;
+            }
+
+            // Unlocked, but its level hasn't been made yet: treated like a "???" cabin.
+            var scene = levelScenes != null && SelectedIndex < levelScenes.Length ? levelScenes[SelectedIndex] : null;
             if (string.IsNullOrEmpty(scene))
             {
+                ShowNotInPrototype();
                 return;
             }
 
+            InterfaceSounds.Play(startSound);
             SceneFader.Load(scene);
         }
     }

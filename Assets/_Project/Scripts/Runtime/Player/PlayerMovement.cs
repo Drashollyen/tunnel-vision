@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TunnelVision.Audio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,6 +15,7 @@ namespace TunnelVision.Player
 
         [Header("Jumping")]
         public float jumpPower = 10f;
+        [SerializeField] private AudioSource jumpSound;
 
         [Header("GroundCheck")]
         public Transform groundCheckPos;
@@ -31,10 +33,67 @@ namespace TunnelVision.Player
         private bool facingRight = true;
         private Vector2 lookInput;
         private bool controlsEnabled = true;
+        private Quaternion _startEyeRotation = Quaternion.identity;
+        private float _autoWalk;
+
+        // How far ahead of the feet auto-walking checks for ground before taking a step.
+        private const float EdgeLookAhead = 0.6f;
+
+        /// <summary>True while the player is walking by themselves (at the end of a level).</summary>
+        public bool IsAutoWalking => _autoWalk != 0f;
+
+        /// <summary>True while the body faces right.</summary>
+        public bool FacingRight => facingRight;
+
+        /// <summary>
+        /// The smoothing the player's Rigidbody should use. On their own, Interpolate, so they glide
+        /// between physics steps like the camera does instead of shuddering. While riding something
+        /// (a wheel seat or moving platform makes the player its child) it's off, since the ride
+        /// already moves them smoothly and the two would fight.
+        /// </summary>
+        public static RigidbodyInterpolation2D SmoothingFor(bool riding) =>
+            riding ? RigidbodyInterpolation2D.None : RigidbodyInterpolation2D.Interpolate;
+
+        void Awake()
+        {
+            // How the player faces at the start of the level, to come back to on every respawn.
+            if (eyeball != null)
+            {
+                _startEyeRotation = eyeball.localRotation;
+            }
+
+            UpdateSmoothing();
+        }
+
+        void Update()
+        {
+            UpdateSmoothing();
+        }
+
+        // Rides parent the player to the moving thing, and stepping off unparents them.
+        private void UpdateSmoothing()
+        {
+            if (rb == null)
+            {
+                return;
+            }
+
+            var wanted = SmoothingFor(transform.parent != null);
+            if (rb.interpolation != wanted)
+            {
+                rb.interpolation = wanted;
+            }
+        }
 
         // Update is called once per frame
         void FixedUpdate()
         {
+            if (_autoWalk != 0f)
+            {
+                StepAutoWalk();
+                return;
+            }
+
             if (!controlsEnabled)
             { return; }
 
@@ -54,9 +113,13 @@ namespace TunnelVision.Player
         {
             if (!controlsEnabled)
             { return; }
+
+
+
             // If the player is on the ground when the jump button is pressed
             if (context.performed && IsGrounded())
             {
+                jumpSound.PlayIfSet();
                 rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpPower);
             }
 
@@ -91,11 +154,18 @@ namespace TunnelVision.Player
                 facingRight = false;
             }
 
-            bodySprite.flipX = !facingRight;
+            if (bodySprite != null)
+            {
+                bodySprite.flipX = !facingRight;
+            }
         }
 
         private void UpdateLooking()
         {
+            if (eyeball == null)
+            {
+                return;
+            }
 
             if (lookInput.sqrMagnitude > 0.01f)
             {
@@ -125,6 +195,70 @@ namespace TunnelVision.Player
         {
             Gizmos.color = Color.white;
             Gizmos.DrawWireCube(groundCheckPos.position, groundCheckSize);
+        }
+
+        /// <summary>
+        /// Turns the body and the eye back to how they faced at the start of the level (the body
+        /// facing right), and forgets any held direction. Used on every respawn.
+        /// </summary>
+        public void FaceStartDirection()
+        {
+            facingRight = true;
+            horizontalMovement = 0f;
+            lookInput = Vector2.zero;
+
+            if (bodySprite != null)
+            {
+                bodySprite.flipX = false;
+            }
+
+            if (eyeball != null)
+            {
+                eyeball.localRotation = _startEyeRotation;
+                targetAngle = _startEyeRotation.eulerAngles.z;
+            }
+        }
+
+        /// <summary>
+        /// Walks the player on by themselves in <paramref name="direction"/> (1 right, -1 left),
+        /// ignoring input, and stopping at the edge of whatever they're standing on so they never
+        /// walk off it. 0 stops. Used as the screen fades out at the end of a level.
+        /// </summary>
+        public void AutoWalk(float direction)
+        {
+            _autoWalk = Mathf.Sign(direction) * (direction == 0f ? 0f : 1f);
+            horizontalMovement = 0f;
+            lookInput = Vector2.zero;
+
+            if (_autoWalk == 0f && rb != null)
+            {
+                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            }
+        }
+
+        /// <summary>True if there's ground just ahead of the feet in the given direction.</summary>
+        public bool HasGroundAhead(float direction)
+        {
+            if (groundCheckPos == null)
+            {
+                return false;
+            }
+
+            var ahead = (Vector2)groundCheckPos.position + Vector2.right * Mathf.Sign(direction) * EdgeLookAhead;
+            return Physics2D.OverlapBox(ahead, groundCheckSize, 0f, groundLayer) != null;
+        }
+
+        private void StepAutoWalk()
+        {
+            facingRight = _autoWalk > 0f;
+            if (bodySprite != null)
+            {
+                bodySprite.flipX = !facingRight;
+            }
+
+            // At the edge, stand still rather than walk off.
+            var speed = HasGroundAhead(_autoWalk) ? _autoWalk * moveSpeed : 0f;
+            rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
         }
 
         public void EnableControls(bool value)
