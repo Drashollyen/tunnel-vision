@@ -48,6 +48,9 @@ namespace TunnelVision.Player
         /// <summary>True from a death until the player can move again.</summary>
         public bool IsRespawning => _isDying;
 
+        /// <summary>Raised when the player reaches a checkpoint that wasn't already their respawn point.</summary>
+        public event System.Action<Checkpoint> CheckpointReached;
+
         /// <summary>Raised as a death sequence starts.</summary>
         public event System.Action Died;
 
@@ -135,6 +138,7 @@ namespace TunnelVision.Player
 
             _checkpoint = checkpoint;
             _checkpoint.SetLit(true);
+            CheckpointReached?.Invoke(checkpoint);
         }
 
         private IEnumerator DeathSequence()

@@ -28,6 +28,7 @@ namespace TunnelVision.Tests
         [TestCase("Assets/_Project/Prefabs/UI/RoundOverMessage.prefab", "Panel/Title")]
         [TestCase("Assets/_Project/Prefabs/UI/RoundOverMessage.prefab", "Panel/Subtitle")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Collectible Counter/Count")]
+        [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Checkpoint Message")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Pause Menu/Overlay/Pause Panel/Header/Title")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Pause Menu/Overlay/Confirm Panel/Header/Title")]
         public void Text_UsesTheOutlineMaterial(string prefabPath, string textPath)
