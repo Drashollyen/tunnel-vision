@@ -51,6 +51,10 @@ namespace TunnelVision.Level
             _reached = true;
             LevelProgress.CompleteLevel(levelIndex);
 
+            // Teddies found this run are only kept now the level is cleared.
+            var collectibles = FindAnyObjectByType<PlayerCollectibles>();
+            LevelProgress.RecordCollectibles(levelIndex, collectibles != null ? collectibles.Count : 0);
+
             var screen = FindAnyObjectByType<LevelCompleteScreen>();
             if (screen != null)
             {

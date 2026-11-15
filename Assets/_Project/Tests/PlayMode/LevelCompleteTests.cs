@@ -27,6 +27,8 @@ namespace TunnelVision.Tests
         private Button _select;
         private bool _hadProgress;
         private int _savedProgress;
+        private bool _hadTeddies;
+        private int _savedTeddies;
 
         [UnitySetUp]
         public IEnumerator Build()
@@ -34,6 +36,9 @@ namespace TunnelVision.Tests
             _hadProgress = PlayerPrefs.HasKey(ProgressKey);
             _savedProgress = PlayerPrefs.GetInt(ProgressKey, 0);
             PlayerPrefs.SetInt(ProgressKey, 0);
+            _hadTeddies = PlayerPrefs.HasKey(LevelProgress.CollectiblesKey(0));
+            _savedTeddies = PlayerPrefs.GetInt(LevelProgress.CollectiblesKey(0), 0);
+            PlayerPrefs.DeleteKey(LevelProgress.CollectiblesKey(0));
 
             yield return IsolatedScene.Create("LevelCompleteTest");
             Time.timeScale = 1f;
@@ -84,6 +89,10 @@ namespace TunnelVision.Tests
                 PlayerPrefs.SetInt(ProgressKey, _savedProgress);
             else
                 PlayerPrefs.DeleteKey(ProgressKey);
+            if (_hadTeddies)
+                PlayerPrefs.SetInt(LevelProgress.CollectiblesKey(0), _savedTeddies);
+            else
+                PlayerPrefs.DeleteKey(LevelProgress.CollectiblesKey(0));
         }
 
         private TMP_Text MakeText(string name)
@@ -217,6 +226,22 @@ namespace TunnelVision.Tests
             respawn.Kill();
 
             Assert.IsFalse(respawn.IsRespawning, "A hazard during the walk-off shouldn't start a death.");
+        }
+
+
+        [UnityTest]
+        public IEnumerator ClearingTheLevel_SavesTheTeddiesFound()
+        {
+            var collectibles = Object.FindAnyObjectByType<PlayerCollectibles>();
+            collectibles.Add();
+            collectibles.Add();
+            Assert.AreEqual(0, LevelProgress.BestCollectibles(0), "Nothing is saved before the level is cleared.");
+
+            _goal.Reach();
+            yield return null;
+
+            Assert.AreEqual(2, LevelProgress.BestCollectibles(0));
+            StringAssert.Contains("Collectibles: 2", _stats.text);
         }
     }
 }
