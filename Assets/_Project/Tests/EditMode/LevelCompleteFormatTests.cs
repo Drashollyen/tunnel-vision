@@ -26,5 +26,19 @@ namespace TunnelVision.Tests
         {
             Assert.AreEqual("Level Complete", LevelCompleteScreen.Title);
         }
+
+        [Test]
+        public void Fade_GoesBlackFirst_ThenShowsThePanel()
+        {
+            Assert.AreEqual((0f, 0f), LevelCompleteScreen.FadeAt(0f));
+
+            var (halfBlack, panelEarly) = LevelCompleteScreen.FadeAt(LevelCompleteScreen.BlackFadeSeconds * 0.5f);
+            Assert.AreEqual(0.5f, halfBlack, 0.001f);
+            Assert.AreEqual(0f, panelEarly, 0.001f, "The panel waits until the screen is black.");
+
+            var (black, panel) = LevelCompleteScreen.FadeAt(LevelCompleteScreen.BlackFadeSeconds + LevelCompleteScreen.FadeInSeconds);
+            Assert.AreEqual(1f, black, 0.001f);
+            Assert.AreEqual(1f, panel, 0.001f);
+        }
     }
 }

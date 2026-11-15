@@ -8,7 +8,8 @@ using UnityEngine.UI;
 namespace TunnelVision.UI
 {
     /// <summary>
-    /// Shown when the player reaches a level's goal: "Level Complete" with the time taken and the
+    /// Shown when the player reaches a level's goal. The screen fades to black as they cross it,
+    /// then the panel fades in on the black: "Level Complete" with the time taken and the
     /// collectibles found, a Next Level button (when there is a next level) and Level Select.
     /// The game freezes and its sounds and music fade out while it's up. Used with the mouse,
     /// like the other menus. Goes on an always-on object; the overlay is a child that starts hidden.
@@ -16,11 +17,17 @@ namespace TunnelVision.UI
     public class LevelCompleteScreen : MonoBehaviour
     {
         public const string Title = "Level Complete";
+        /// <summary>How long the screen takes to go black, the same as the death sequence's fade.</summary>
+        public const float BlackFadeSeconds = 0.75f;
+        /// <summary>How long the panel then takes to appear on the black.</summary>
         public const float FadeInSeconds = 0.4f;
         public const float SoundsFadeSeconds = 0.5f;
         public const float MusicFadeSeconds = 1f;
 
+        [Tooltip("The full-screen image behind the panel. It fades to solid black.")]
         [SerializeField] private GameObject overlay;
+        [Tooltip("The box with the title, stats and buttons. It fades in once the screen is black.")]
+        [SerializeField] private GameObject panel;
         [SerializeField] private TMP_Text title;
         [SerializeField] private TMP_Text stats;
         [SerializeField] private Button nextLevelButton;
@@ -30,6 +37,8 @@ namespace TunnelVision.UI
         [SerializeField] private AudioClip completeSound;
 
         private CanvasGroup _group;
+        private CanvasGroup _panelGroup;
+        private Image _backdrop;
         private string _nextScene;
         private float _shownAt = float.PositiveInfinity;
 
@@ -37,6 +46,17 @@ namespace TunnelVision.UI
         public static bool IsAnyShowing { get; private set; }
 
         public bool IsShowing { get; private set; }
+
+        /// <summary>How black the screen is behind the panel, from 0 to 1.</summary>
+        public float Blackness => _backdrop != null ? _backdrop.color.a : 0f;
+
+        /// <summary>How visible the panel is, from 0 to 1.</summary>
+        public float PanelVisibility => _panelGroup != null ? _panelGroup.alpha : (_group != null ? _group.alpha : 0f);
+
+        /// <summary>The backdrop's blackness and the panel's visibility this long after crossing the goal.</summary>
+        public static (float black, float panel) FadeAt(float elapsed) => (
+            Mathf.Clamp01(elapsed / BlackFadeSeconds),
+            Mathf.Clamp01((elapsed - BlackFadeSeconds) / FadeInSeconds));
 
         /// <summary>The scene Next Level loads, or null when there isn't one.</summary>
         public string NextScene => _nextScene;
@@ -56,6 +76,12 @@ namespace TunnelVision.UI
         {
             IsAnyShowing = false;
             _group = overlay.TryGetComponent(out CanvasGroup group) ? group : overlay.AddComponent<CanvasGroup>();
+            _backdrop = overlay.GetComponent<Image>();
+            if (panel != null)
+            {
+                _panelGroup = panel.TryGetComponent(out CanvasGroup panelGroup) ? panelGroup : panel.AddComponent<CanvasGroup>();
+            }
+
             overlay.SetActive(false);
 
             if (nextLevelButton != null)
@@ -114,8 +140,8 @@ namespace TunnelVision.UI
                 nextLevelButton.gameObject.SetActive(_nextScene != null);
 
             overlay.SetActive(true);
-            _group.alpha = 0f;
             _shownAt = Time.unscaledTime;
+            Draw(0f);
 
             // Mouse-only, like the other menus: nothing selected, so nothing stays highlighted.
             if (EventSystem.current != null)
@@ -126,10 +152,30 @@ namespace TunnelVision.UI
 
         private void Update()
         {
-            if (IsShowing && _group.alpha < 1f)
+            if (IsShowing && PanelVisibility < 1f)
             {
-                _group.alpha = Mathf.Clamp01((Time.unscaledTime - _shownAt) / FadeInSeconds);
+                Draw(Time.unscaledTime - _shownAt);
             }
+        }
+
+        private void Draw(float elapsed)
+        {
+            var (black, shown) = FadeAt(elapsed);
+
+            if (_panelGroup == null || _backdrop == null)
+            {
+                // No separate panel: the whole overlay fades in together.
+                _group.alpha = shown;
+                return;
+            }
+
+            _group.alpha = 1f;
+            var color = _backdrop.color;
+            color.a = black;
+            _backdrop.color = color;
+
+            _panelGroup.alpha = shown;
+            _panelGroup.blocksRaycasts = shown > 0f; // No clicking buttons that can't be seen yet.
         }
 
         private void GoToNextLevel()

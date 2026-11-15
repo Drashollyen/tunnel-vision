@@ -20,6 +20,7 @@ namespace TunnelVision.Tests
         private LevelGoal _goal;
         private LevelCompleteScreen _screen;
         private GameObject _overlay;
+        private GameObject _panel;
         private TMP_Text _title;
         private TMP_Text _stats;
         private Button _next;
@@ -50,6 +51,9 @@ namespace TunnelVision.Tests
             holder.SetActive(false); // So Awake waits until the fields are filled in.
             _overlay = new GameObject("Overlay", typeof(RectTransform), typeof(Image));
             _overlay.transform.SetParent(holder.transform, false);
+            _overlay.GetComponent<Image>().color = Color.black;
+            _panel = new GameObject("Level Complete Panel", typeof(RectTransform));
+            _panel.transform.SetParent(_overlay.transform, false);
             _title = MakeText("Title");
             _stats = MakeText("Stats");
             _next = MakeButton("Next Level Button");
@@ -57,6 +61,7 @@ namespace TunnelVision.Tests
 
             _screen = holder.AddComponent<LevelCompleteScreen>();
             Set(_screen, "overlay", _overlay);
+            Set(_screen, "panel", _panel);
             Set(_screen, "title", _title);
             Set(_screen, "stats", _stats);
             Set(_screen, "nextLevelButton", _next);
@@ -84,14 +89,14 @@ namespace TunnelVision.Tests
         private TMP_Text MakeText(string name)
         {
             var text = new GameObject(name, typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
-            text.transform.SetParent(_overlay.transform, false);
+            text.transform.SetParent(_panel.transform, false);
             return text;
         }
 
         private Button MakeButton(string name)
         {
             var button = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button)).GetComponent<Button>();
-            button.transform.SetParent(_overlay.transform, false);
+            button.transform.SetParent(_panel.transform, false);
             return button;
         }
 
@@ -126,15 +131,20 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator Screen_FadesIn()
+        public IEnumerator Screen_GoesBlackThenThePanelFadesIn()
         {
             _goal.Reach();
             yield return null;
-            var group = _overlay.GetComponent<CanvasGroup>();
-            Assert.Less(group.alpha, 1f);
+            Assert.Less(_screen.Blackness, 1f, "The screen should fade to black, not cut.");
+            Assert.AreEqual(0f, _screen.PanelVisibility, 0.001f, "The panel waits for the black.");
+            Assert.IsFalse(_panel.GetComponent<CanvasGroup>().blocksRaycasts, "Hidden buttons can't be clicked.");
+
+            yield return new WaitForSecondsRealtime(LevelCompleteScreen.BlackFadeSeconds + 0.05f);
+            Assert.AreEqual(1f, _screen.Blackness, 0.001f, "Fully black once crossed.");
 
             yield return new WaitForSecondsRealtime(LevelCompleteScreen.FadeInSeconds + 0.1f);
-            Assert.AreEqual(1f, group.alpha, 0.001f);
+            Assert.AreEqual(1f, _screen.PanelVisibility, 0.001f);
+            Assert.IsTrue(_panel.GetComponent<CanvasGroup>().blocksRaycasts);
         }
 
         [UnityTest]

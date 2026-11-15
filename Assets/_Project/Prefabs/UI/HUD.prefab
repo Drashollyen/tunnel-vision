@@ -3369,6 +3369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.LevelCompleteScreen
   overlay: {fileID: 518325588840120662}
+  panel: {fileID: 322355238062443699}
   title: {fileID: 690340745578168310}
   stats: {fileID: 831446026733460497}
   nextLevelButton: {fileID: 706282016882422155}
@@ -3434,7 +3435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.6}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
