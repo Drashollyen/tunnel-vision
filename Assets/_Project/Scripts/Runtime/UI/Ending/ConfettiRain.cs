@@ -42,7 +42,7 @@ namespace TunnelVision.UI
             _area = (RectTransform)transform;
             for (var i = 0; i < pieces; i++)
             {
-                var go = new GameObject("Confetti", typeof(RectTransform), typeof(Image));
+                var go = new GameObject("Confetti Piece", typeof(RectTransform), typeof(Image));
                 go.layer = gameObject.layer;
                 var rect = (RectTransform)go.transform;
                 rect.SetParent(_area, false);
