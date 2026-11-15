@@ -9,7 +9,7 @@ namespace TunnelVision.UI
     /// <summary>
     /// The level select wheel. Left and right arrows turn it, the top cabin is selected,
     /// Enter starts that level if it's unlocked, and Escape goes back to the menu.
-    /// Cabins past the prototype's levels show "?" and open a notice instead.
+    /// Cabins past the prototype's levels show "???" and open a notice instead.
     /// Goes on the Wheel object. Cabins are listed clockwise, starting from the top.
     /// </summary>
     public class FerrisWheelSelect : MonoBehaviour
@@ -22,12 +22,12 @@ namespace TunnelVision.UI
         }
 
         public const string NotInPrototypeMessage = "This Level Is Not Available In The Prototype";
-        private const string UnknownLevelName = "?";
+        private const string UnknownLevelName = "???";
 
         [SerializeField] private RectTransform[] cabins;
-        [Tooltip("How many cabins, from the first, have levels in this prototype. The rest show \"?\".")]
+        [Tooltip("How many cabins, from the first, have levels in this prototype. The rest show \"???\".")]
         [SerializeField] private int prototypeLevelCount = 3;
-        [Tooltip("Optional. Shown when a \"?\" cabin is picked.")]
+        [Tooltip("Optional. Shown when a \"???\" cabin is picked.")]
         [SerializeField] private NoticeDialog prototypeNotice;
         [SerializeField] private float turnSpeed = 240f;
         [SerializeField] private string[] levelScenes;
@@ -46,7 +46,7 @@ namespace TunnelVision.UI
         [SerializeField] private AudioClip startSound;
         [Tooltip("Enter on a cabin the player hasn't unlocked yet.")]
         [SerializeField] private AudioClip lockedSound;
-        [Tooltip("Enter on a \"?\" cabin, as the notice opens.")]
+        [Tooltip("Enter on a \"???\" cabin, as the notice opens.")]
         [SerializeField] private AudioClip notInPrototypeSound;
         [Tooltip("Escape, going back to the main menu.")]
         [SerializeField] private AudioClip backSound;
@@ -267,7 +267,7 @@ namespace TunnelVision.UI
                 }
                 else
                 {
-                    Debug.LogWarning("FerrisWheelSelect: no Prototype Notice set, so the \"?\" cabin does nothing.", this);
+                    Debug.LogWarning("FerrisWheelSelect: no Prototype Notice set, so the \"???\" cabin does nothing.", this);
                 }
 
                 return;

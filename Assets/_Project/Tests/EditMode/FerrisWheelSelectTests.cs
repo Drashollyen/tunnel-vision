@@ -64,7 +64,7 @@ namespace TunnelVision.Tests
                 FerrisWheelSelect.PlateText(0, FerrisWheelSelect.CabinState.Playable, "Big Top"));
             Assert.AreEqual("Locked",
                 FerrisWheelSelect.PlateText(1, FerrisWheelSelect.CabinState.Locked, "Stalls"));
-            Assert.AreEqual("Level 4: ?",
+            Assert.AreEqual("Level 4: ???",
                 FerrisWheelSelect.PlateText(3, FerrisWheelSelect.CabinState.NotInPrototype, "Rides"));
         }
 

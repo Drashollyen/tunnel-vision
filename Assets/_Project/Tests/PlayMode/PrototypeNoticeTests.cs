@@ -100,8 +100,8 @@ namespace TunnelVision.Tests
 
             Assert.AreEqual("Level 1", LabelOf(0));
             Assert.AreEqual("Level 3", LabelOf(2));
-            Assert.AreEqual("?", LabelOf(3));
-            Assert.AreEqual("?", LabelOf(4));
+            Assert.AreEqual("???", LabelOf(3));
+            Assert.AreEqual("???", LabelOf(4));
         }
 
         [UnityTest]
@@ -174,7 +174,7 @@ namespace TunnelVision.Tests
             Set(_wheel, "prototypeNotice", null);
             SelectCabin(3);
 
-            LogAssert.Expect(LogType.Warning, "FerrisWheelSelect: no Prototype Notice set, so the \"?\" cabin does nothing.");
+            LogAssert.Expect(LogType.Warning, "FerrisWheelSelect: no Prototype Notice set, so the \"???\" cabin does nothing.");
             _wheel.StartSelectedLevel();
         }
     }
