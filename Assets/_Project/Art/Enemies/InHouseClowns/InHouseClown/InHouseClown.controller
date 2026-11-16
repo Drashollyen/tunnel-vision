@@ -6,7 +6,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: InHouseClown_Orange
+  m_Name: InHouseClown
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Speed
@@ -69,7 +69,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 0a3f08ba7fbb4ee79070fd6dc67afebf, type: 2}
+  m_Motion: {fileID: 7400000, guid: 83746d0bfd3345fcb1d41e319b361413, type: 2}
   m_Tag:
   m_SpeedParameter:
   m_MirrorParameter:
@@ -98,7 +98,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 870a81df6dba45a1b0c6f11cc2a39d1b, type: 2}
+  m_Motion: {fileID: 7400000, guid: e15cd28bbefb4839b41fba41760f6034, type: 2}
   m_Tag:
   m_SpeedParameter:
   m_MirrorParameter:
@@ -126,7 +126,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 7ee44ba2685e4cd88a56bf88740d650f, type: 2}
+  m_Motion: {fileID: 7400000, guid: 7ddcad256c4149deabcb79fa78143e21, type: 2}
   m_Tag:
   m_SpeedParameter:
   m_MirrorParameter:
@@ -153,7 +153,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 76f9a01805b44e1cbd84e19e1b75a85e, type: 2}
+  m_Motion: {fileID: 7400000, guid: 9792af87c4a44c5ca17d03cd2951d59c, type: 2}
   m_Tag:
   m_SpeedParameter:
   m_MirrorParameter:
@@ -179,7 +179,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: eca67c35a373466088b1e58a74836764, type: 2}
+  m_Motion: {fileID: 7400000, guid: d3870c4d6c8f4d94b350e08219f349bc, type: 2}
   m_Tag:
   m_SpeedParameter:
   m_MirrorParameter:

@@ -4,40 +4,40 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: 21300000
-    second: InHouseClown_Red_Sprite_0
+    second: InHouseClown_Sprite_0
   - first:
       213: 21300002
-    second: InHouseClown_Red_Sprite_1
+    second: InHouseClown_Sprite_1
   - first:
       213: 21300004
-    second: InHouseClown_Red_Sprite_2
+    second: InHouseClown_Sprite_2
   - first:
       213: 21300006
-    second: InHouseClown_Red_Sprite_3
+    second: InHouseClown_Sprite_3
   - first:
       213: 21300008
-    second: InHouseClown_Red_Sprite_4
+    second: InHouseClown_Sprite_4
   - first:
       213: 21300010
-    second: InHouseClown_Red_Sprite_5
+    second: InHouseClown_Sprite_5
   - first:
       213: 21300012
-    second: InHouseClown_Red_Sprite_6
+    second: InHouseClown_Sprite_6
   - first:
       213: 21300014
-    second: InHouseClown_Red_Sprite_7
+    second: InHouseClown_Sprite_7
   - first:
       213: 21300016
-    second: InHouseClown_Red_Sprite_8
+    second: InHouseClown_Sprite_8
   - first:
       213: 21300018
-    second: InHouseClown_Red_Sprite_9
+    second: InHouseClown_Sprite_9
   - first:
       213: 21300020
-    second: InHouseClown_Red_Sprite_10
+    second: InHouseClown_Sprite_10
   - first:
       213: 21300022
-    second: InHouseClown_Red_Sprite_11
+    second: InHouseClown_Sprite_11
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -148,7 +148,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_0
+      name: InHouseClown_Sprite_0
       rect:
         serializedVersion: 2
         x: 0
@@ -170,7 +170,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_1
+      name: InHouseClown_Sprite_1
       rect:
         serializedVersion: 2
         x: 300
@@ -192,7 +192,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_2
+      name: InHouseClown_Sprite_2
       rect:
         serializedVersion: 2
         x: 600
@@ -214,7 +214,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_3
+      name: InHouseClown_Sprite_3
       rect:
         serializedVersion: 2
         x: 900
@@ -236,7 +236,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_4
+      name: InHouseClown_Sprite_4
       rect:
         serializedVersion: 2
         x: 1200
@@ -258,7 +258,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_5
+      name: InHouseClown_Sprite_5
       rect:
         serializedVersion: 2
         x: 1500
@@ -280,7 +280,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_6
+      name: InHouseClown_Sprite_6
       rect:
         serializedVersion: 2
         x: 0
@@ -302,7 +302,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_7
+      name: InHouseClown_Sprite_7
       rect:
         serializedVersion: 2
         x: 300
@@ -324,7 +324,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_8
+      name: InHouseClown_Sprite_8
       rect:
         serializedVersion: 2
         x: 600
@@ -346,7 +346,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_9
+      name: InHouseClown_Sprite_9
       rect:
         serializedVersion: 2
         x: 900
@@ -368,7 +368,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_10
+      name: InHouseClown_Sprite_10
       rect:
         serializedVersion: 2
         x: 1200
@@ -390,7 +390,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Red_Sprite_11
+      name: InHouseClown_Sprite_11
       rect:
         serializedVersion: 2
         x: 1500
@@ -425,18 +425,18 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      InHouseClown_Red_Sprite_0: 21300000
-      InHouseClown_Red_Sprite_1: 21300002
-      InHouseClown_Red_Sprite_2: 21300004
-      InHouseClown_Red_Sprite_3: 21300006
-      InHouseClown_Red_Sprite_4: 21300008
-      InHouseClown_Red_Sprite_5: 21300010
-      InHouseClown_Red_Sprite_6: 21300012
-      InHouseClown_Red_Sprite_7: 21300014
-      InHouseClown_Red_Sprite_8: 21300016
-      InHouseClown_Red_Sprite_9: 21300018
-      InHouseClown_Red_Sprite_10: 21300020
-      InHouseClown_Red_Sprite_11: 21300022
+      InHouseClown_Sprite_0: 21300000
+      InHouseClown_Sprite_1: 21300002
+      InHouseClown_Sprite_2: 21300004
+      InHouseClown_Sprite_3: 21300006
+      InHouseClown_Sprite_4: 21300008
+      InHouseClown_Sprite_5: 21300010
+      InHouseClown_Sprite_6: 21300012
+      InHouseClown_Sprite_7: 21300014
+      InHouseClown_Sprite_8: 21300016
+      InHouseClown_Sprite_9: 21300018
+      InHouseClown_Sprite_10: 21300020
+      InHouseClown_Sprite_11: 21300022
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

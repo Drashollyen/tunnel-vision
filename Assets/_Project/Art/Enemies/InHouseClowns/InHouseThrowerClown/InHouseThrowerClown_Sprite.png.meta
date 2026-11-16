@@ -4,61 +4,61 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: 21300000
-    second: InHouseClown_Orange_Sprite_0
+    second: InHouseThrowerClown_Sprite_0
   - first:
       213: 21300002
-    second: InHouseClown_Orange_Sprite_1
+    second: InHouseThrowerClown_Sprite_1
   - first:
       213: 21300004
-    second: InHouseClown_Orange_Sprite_2
+    second: InHouseThrowerClown_Sprite_2
   - first:
       213: 21300006
-    second: InHouseClown_Orange_Sprite_3
+    second: InHouseThrowerClown_Sprite_3
   - first:
       213: 21300008
-    second: InHouseClown_Orange_Sprite_4
+    second: InHouseThrowerClown_Sprite_4
   - first:
       213: 21300010
-    second: InHouseClown_Orange_Sprite_5
+    second: InHouseThrowerClown_Sprite_5
   - first:
       213: 21300012
-    second: InHouseClown_Orange_Sprite_6
+    second: InHouseThrowerClown_Sprite_6
   - first:
       213: 21300014
-    second: InHouseClown_Orange_Sprite_7
+    second: InHouseThrowerClown_Sprite_7
   - first:
       213: 21300016
-    second: InHouseClown_Orange_Sprite_8
+    second: InHouseThrowerClown_Sprite_8
   - first:
       213: 21300018
-    second: InHouseClown_Orange_Sprite_9
+    second: InHouseThrowerClown_Sprite_9
   - first:
       213: 21300020
-    second: InHouseClown_Orange_Sprite_10
+    second: InHouseThrowerClown_Sprite_10
   - first:
       213: 21300022
-    second: InHouseClown_Orange_Sprite_11
+    second: InHouseThrowerClown_Sprite_11
   - first:
       213: 21300024
-    second: InHouseClown_Orange_Sprite_12
+    second: InHouseThrowerClown_Sprite_12
   - first:
       213: 21300026
-    second: InHouseClown_Orange_Sprite_13
+    second: InHouseThrowerClown_Sprite_13
   - first:
       213: 21300028
-    second: InHouseClown_Orange_Sprite_14
+    second: InHouseThrowerClown_Sprite_14
   - first:
       213: 21300030
-    second: InHouseClown_Orange_Sprite_15
+    second: InHouseThrowerClown_Sprite_15
   - first:
       213: 21300032
-    second: InHouseClown_Orange_Sprite_16
+    second: InHouseThrowerClown_Sprite_16
   - first:
       213: 21300034
-    second: InHouseClown_Orange_Sprite_17
+    second: InHouseThrowerClown_Sprite_17
   - first:
       213: 21300036
-    second: InHouseClown_Orange_Sprite_18
+    second: InHouseThrowerClown_Sprite_18
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -169,7 +169,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_0
+      name: InHouseThrowerClown_Sprite_0
       rect:
         serializedVersion: 2
         x: 0
@@ -191,7 +191,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_1
+      name: InHouseThrowerClown_Sprite_1
       rect:
         serializedVersion: 2
         x: 325
@@ -213,7 +213,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_2
+      name: InHouseThrowerClown_Sprite_2
       rect:
         serializedVersion: 2
         x: 650
@@ -235,7 +235,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_3
+      name: InHouseThrowerClown_Sprite_3
       rect:
         serializedVersion: 2
         x: 975
@@ -257,7 +257,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_4
+      name: InHouseThrowerClown_Sprite_4
       rect:
         serializedVersion: 2
         x: 1300
@@ -279,7 +279,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_5
+      name: InHouseThrowerClown_Sprite_5
       rect:
         serializedVersion: 2
         x: 1625
@@ -301,7 +301,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_6
+      name: InHouseThrowerClown_Sprite_6
       rect:
         serializedVersion: 2
         x: 0
@@ -323,7 +323,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_7
+      name: InHouseThrowerClown_Sprite_7
       rect:
         serializedVersion: 2
         x: 325
@@ -345,7 +345,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_8
+      name: InHouseThrowerClown_Sprite_8
       rect:
         serializedVersion: 2
         x: 650
@@ -367,7 +367,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_9
+      name: InHouseThrowerClown_Sprite_9
       rect:
         serializedVersion: 2
         x: 975
@@ -389,7 +389,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_10
+      name: InHouseThrowerClown_Sprite_10
       rect:
         serializedVersion: 2
         x: 1300
@@ -411,7 +411,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_11
+      name: InHouseThrowerClown_Sprite_11
       rect:
         serializedVersion: 2
         x: 1625
@@ -433,7 +433,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_12
+      name: InHouseThrowerClown_Sprite_12
       rect:
         serializedVersion: 2
         x: 0
@@ -455,7 +455,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_13
+      name: InHouseThrowerClown_Sprite_13
       rect:
         serializedVersion: 2
         x: 325
@@ -477,7 +477,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_14
+      name: InHouseThrowerClown_Sprite_14
       rect:
         serializedVersion: 2
         x: 650
@@ -499,7 +499,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_15
+      name: InHouseThrowerClown_Sprite_15
       rect:
         serializedVersion: 2
         x: 975
@@ -521,7 +521,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_16
+      name: InHouseThrowerClown_Sprite_16
       rect:
         serializedVersion: 2
         x: 1300
@@ -543,7 +543,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_17
+      name: InHouseThrowerClown_Sprite_17
       rect:
         serializedVersion: 2
         x: 1625
@@ -565,7 +565,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: InHouseClown_Orange_Sprite_18
+      name: InHouseThrowerClown_Sprite_18
       rect:
         serializedVersion: 2
         x: 0
@@ -600,25 +600,25 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      InHouseClown_Orange_Sprite_0: 21300000
-      InHouseClown_Orange_Sprite_1: 21300002
-      InHouseClown_Orange_Sprite_2: 21300004
-      InHouseClown_Orange_Sprite_3: 21300006
-      InHouseClown_Orange_Sprite_4: 21300008
-      InHouseClown_Orange_Sprite_5: 21300010
-      InHouseClown_Orange_Sprite_6: 21300012
-      InHouseClown_Orange_Sprite_7: 21300014
-      InHouseClown_Orange_Sprite_8: 21300016
-      InHouseClown_Orange_Sprite_9: 21300018
-      InHouseClown_Orange_Sprite_10: 21300020
-      InHouseClown_Orange_Sprite_11: 21300022
-      InHouseClown_Orange_Sprite_12: 21300024
-      InHouseClown_Orange_Sprite_13: 21300026
-      InHouseClown_Orange_Sprite_14: 21300028
-      InHouseClown_Orange_Sprite_15: 21300030
-      InHouseClown_Orange_Sprite_16: 21300032
-      InHouseClown_Orange_Sprite_17: 21300034
-      InHouseClown_Orange_Sprite_18: 21300036
+      InHouseThrowerClown_Sprite_0: 21300000
+      InHouseThrowerClown_Sprite_1: 21300002
+      InHouseThrowerClown_Sprite_2: 21300004
+      InHouseThrowerClown_Sprite_3: 21300006
+      InHouseThrowerClown_Sprite_4: 21300008
+      InHouseThrowerClown_Sprite_5: 21300010
+      InHouseThrowerClown_Sprite_6: 21300012
+      InHouseThrowerClown_Sprite_7: 21300014
+      InHouseThrowerClown_Sprite_8: 21300016
+      InHouseThrowerClown_Sprite_9: 21300018
+      InHouseThrowerClown_Sprite_10: 21300020
+      InHouseThrowerClown_Sprite_11: 21300022
+      InHouseThrowerClown_Sprite_12: 21300024
+      InHouseThrowerClown_Sprite_13: 21300026
+      InHouseThrowerClown_Sprite_14: 21300028
+      InHouseThrowerClown_Sprite_15: 21300030
+      InHouseThrowerClown_Sprite_16: 21300032
+      InHouseThrowerClown_Sprite_17: 21300034
+      InHouseThrowerClown_Sprite_18: 21300036
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

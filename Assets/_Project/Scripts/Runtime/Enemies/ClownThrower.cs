@@ -27,6 +27,9 @@ namespace TunnelVision.Enemies
         [SerializeField] private Animator animator;
         [SerializeField] private SpriteRenderer body;
 
+        [Tooltip("Tick if the sprites are drawn facing right (the IamZacard clown); untick if they face left (the in-house thrower).")]
+        [SerializeField] private bool artFacesRight = true;
+
         [Header("Throwing")]
         [SerializeField] private ClownBall ballPrefab;
 
@@ -53,8 +56,8 @@ namespace TunnelVision.Enemies
         /// <summary>True when <see cref="ThrowAt(Vector2)"/> would start a throw right now.</summary>
         public bool CanThrow => !_dead && !IsThrowing && Time.time >= _nextThrowAt;
 
-        /// <summary>True while he faces right (the way the sprites are drawn).</summary>
-        public bool FacingRight => body == null || !body.flipX;
+        /// <summary>True while he faces right.</summary>
+        public bool FacingRight => body == null ? artFacesRight : body.flipX != artFacesRight;
 
         public bool IsDead => _dead;
 
@@ -117,7 +120,8 @@ namespace TunnelVision.Enemies
                 return;
             }
 
-            body.flipX = direction < 0f;
+            // Flip only when he needs to face the other way from how he's drawn.
+            body.flipX = (direction > 0f) != artFacesRight;
         }
 
         /// <summary>How fast he's moving; above 0.1 plays Run, otherwise Idle. Sign doesn't matter.</summary>
