@@ -7,7 +7,7 @@ namespace TunnelVision.Enemies
     /// The Sword Swallower's body: plays his animations and throws his sword. The AI decides when;
     /// this makes it happen, the same way <see cref="ClownThrower"/> does for the Thrower Clown:
     /// <list type="bullet">
-    /// <item><see cref="ThrowAt(Vector2)"/> turns to face the target and throws the sword straight at it.</item>
+    /// <item><see cref="ThrowAt(Vector2)"/> turns to face the target and throws the sword level, straight ahead.</item>
     /// <item><see cref="CanThrow"/> says whether a throw would start right now (not mid-throw, not cooling down).</item>
     /// <item><see cref="Face"/> turns him without throwing.</item>
     /// </list>
@@ -38,7 +38,6 @@ namespace TunnelVision.Enemies
         [Tooltip("Seconds after a sword leaves his hand before he can throw again. The throw animation runs about 2.2 s after the release.")]
         [SerializeField] private float cooldown = 2.5f;
 
-        private Vector2 _target;
         private float _throwStartedAt;
         private float _nextThrowAt;
 
@@ -83,8 +82,8 @@ namespace TunnelVision.Enemies
 
         /// <summary>
         /// Turns to face <paramref name="target"/> and plays the throw. The sword leaves on the
-        /// release frame, flying straight at <paramref name="target"/>. Returns false, and does
-        /// nothing, when <see cref="CanThrow"/> is false.
+        /// release frame and flies level, straight ahead. Returns false, and does nothing, when
+        /// <see cref="CanThrow"/> is false.
         /// </summary>
         public bool ThrowAt(Vector2 target)
         {
@@ -93,7 +92,6 @@ namespace TunnelVision.Enemies
                 return false;
             }
 
-            _target = target;
             Face(target.x - transform.position.x);
             IsThrowing = true;
             _throwStartedAt = Time.time;
@@ -136,9 +134,8 @@ namespace TunnelVision.Enemies
                 return;
             }
 
-            var from = ReleasePoint();
-            var sword = Instantiate(swordPrefab, from, Quaternion.identity);
-            sword.Launch(LaunchVelocity(from, _target, swordSpeed));
+            var sword = Instantiate(swordPrefab, ReleasePoint(), Quaternion.identity);
+            sword.Launch(LaunchVelocity(FacingRight, swordSpeed));
             Thrown?.Invoke(sword);
         }
 
@@ -160,19 +157,9 @@ namespace TunnelVision.Enemies
         }
 
         /// <summary>
-        /// The velocity that sends a sword from <paramref name="from"/> straight at
-        /// <paramref name="to"/> at <paramref name="speed"/>. A target on top of the hand gets
-        /// thrown the way he faces.
+        /// The sword flies level in a straight line, the way he faces, so it's easy to read and dodge.
         /// </summary>
-        public Vector2 LaunchVelocity(Vector2 from, Vector2 to, float speed)
-        {
-            var direction = to - from;
-            if (direction.sqrMagnitude < 0.0001f)
-            {
-                direction = FacingRight ? Vector2.right : Vector2.left;
-            }
-
-            return direction.normalized * Mathf.Abs(speed);
-        }
+        public static Vector2 LaunchVelocity(bool facingRight, float speed) =>
+            new Vector2(facingRight ? Mathf.Abs(speed) : -Mathf.Abs(speed), 0f);
     }
 }
