@@ -282,7 +282,7 @@ MonoBehaviour:
   steps:
   - {fileID: 8300000, guid: 85d3e321d10c6264690bf474e5aff0a1, type: 3}
   - {fileID: 8300000, guid: e96f85acbc6859145bf3f18f030918ba, type: 3}
-  squeak: {fileID: 8300000, guid: bb150e9e4df75ef4194f7be6c6a2c2a7, type: 3}
+  squeak: {fileID: 0}
   squeakEverySeconds: {x: 2, y: 6}
   laugh: {fileID: 0}
   windup: {fileID: 8300000, guid: e4476c406a90c3446b8b78d4b6cbf6d0, type: 3}
