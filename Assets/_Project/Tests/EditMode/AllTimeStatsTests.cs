@@ -108,39 +108,50 @@ namespace TunnelVision.Tests
         }
 
         [Test]
-        public void StatsText_ShowsTheColumnsUnclearedLevelsAndTotals()
+        public void StatsText_HasBothTitles_AndAnEmptyRecord()
         {
             var text = StatsPage.StatsText(1);
 
-            foreach (var column in StatsPage.Columns)
-            {
-                Assert.That(text, Does.Contain(column));
-            }
-
-            Assert.That(text, Does.Contain("Level 1<pos="), "Level 1 gets a row, cleared or not (real saves may have cleared it).");
+            Assert.That(text, Does.Contain(StatsPage.BestHeading));
             Assert.That(text, Does.Contain(StatsPage.AllTimeHeading));
-            Assert.That(text, Does.Contain("Levels Cleared  0"));
-            Assert.That(text, Does.Contain("Demo Completed  0"));
+            Assert.That(text, Does.Contain("Levels Cleared:  0"));
+            Assert.That(text, Does.Contain("Demo Completed:  0"));
+            Assert.That(text, Does.Contain("Lives Lost:  0"));
         }
 
         [Test]
-        public void StatsText_PutsEachLevelsBestsInTheColumns()
+        public void BestLines_ShowEachLevelsBests_OrNotCleared()
         {
             AllTimeStats.RecordClear(TestLevel, 75f, 2, 1, false);
 
-            var text = StatsPage.StatsText(TestLevel + 1);
+            var lines = StatsPage.BestLines(TestLevel + 1);
 
-            Assert.That(text, Does.Contain(StatsPage.Row($"Level {TestLevel}", StatsPage.NotCleared)));
-            Assert.That(text, Does.Contain(StatsPage.Row($"Level {TestLevel + 1}", LevelCompleteScreen.FormatTime(75f),
-                LevelProgress.BestCollectibles(TestLevel).ToString(), "1")));
-            Assert.That(text, Does.Contain(StatsPage.Row(StatsPage.AllTimeHeading, LevelCompleteScreen.FormatTime(75f), "2", "1")));
+            Assert.That(lines, Has.Some.EqualTo($"Level {TestLevel}:  {StatsPage.NotCleared}"));
+            var timeLine = lines.IndexOf($"Level {TestLevel + 1}:  {LevelCompleteScreen.FormatTime(75f)}");
+            Assert.That(timeLine, Is.GreaterThan(0), "The cleared level shows its best time.");
+            Assert.That(lines[timeLine + 1], Does.Contain("1 Life Lost"), "Its other bests go on the line below.");
         }
 
         [Test]
-        public void Row_PlacesValuesInColumns_AndSkipsEmptyOnes()
+        public void AllTimeLines_ShowTheTotals()
         {
-            Assert.That(StatsPage.Row("Level 1", "1:15", "2", "0"), Is.EqualTo("Level 1<pos=32%>1:15<pos=54%>2<pos=78%>0"));
-            Assert.That(StatsPage.Row("A", "", "B"), Is.EqualTo("A<pos=54%>B"));
+            AllTimeStats.RecordClear(TestLevel, 75f, 2, 1, true);
+
+            var lines = StatsPage.AllTimeLines();
+
+            Assert.That(lines, Has.Some.EqualTo("Levels Cleared:  1"));
+            Assert.That(lines, Has.Some.EqualTo("Demo Completed:  1"));
+            Assert.That(lines, Has.Some.EqualTo($"Time Played:  {LevelCompleteScreen.FormatTime(75f)}"));
+            Assert.That(lines, Has.Some.EqualTo("Collectibles:  2"));
+            Assert.That(lines, Has.Some.EqualTo("Lives Lost:  1"));
+        }
+
+        [Test]
+        public void Columns_PutsTheRightColumnBesideTheLeft_LineForLine()
+        {
+            var text = StatsPage.Columns(new[] { "A", "B", "C" }, new[] { "X", "Y" });
+
+            Assert.That(text, Is.EqualTo("A<pos=54%>X\nB<pos=54%>Y\nC"));
         }
     }
 }
