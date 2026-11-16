@@ -8,6 +8,11 @@
 #
 # Each change is built at most once: a build.yml-only change is tested on its PR and is not
 # rebuilt after merging. Download builds from the run's "Artifacts" section.
+#
+# Releases: run it from the Actions tab on main with a version, like v1.0. The game is built with
+# that version, zipped as "Tunnel Vision v1.0.zip" and published as a GitHub Release tagged v1.0.
+# Leave the version empty for a plain build. A version that's already been released is refused
+# before anything is built.
 name: Build
 
 on:
@@ -21,9 +26,16 @@ on:
   pull_request:
     branches: [main, revamp]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, like v1.0. Leave empty to only build.'
+        required: false
+        default: ''
+        type: string
 
+# A release gets a group of its own, so a later push to main can't cancel it halfway.
 concurrency:
-  group: build-${{ github.ref }}
+  group: build-${{ github.ref }}${{ inputs.version && format('-release-{0}', inputs.version) || '' }}
   cancel-in-progress: true
 
 permissions:
@@ -65,7 +77,40 @@ jobs:
     timeout-minutes: 60
     env:
       TARGET_PLATFORM: StandaloneWindows64
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      artifact: ${{ steps.release.outputs.artifact }}
     steps:
+      # Checked before the long build, so a mistyped or repeated version fails in seconds.
+      - name: Check the release version
+        id: release
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          artifact="TunnelVision-$TARGET_PLATFORM-$GITHUB_SHA"
+          echo "artifact=$artifact" >> "$GITHUB_OUTPUT"
+          if [ -z "$VERSION" ]; then
+            echo "No version given: building without a release."
+            exit 0
+          fi
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Releases are made from main. Run this on main, not ${GITHUB_REF#refs/heads/}."
+            exit 1
+          fi
+          if ! [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "::error::'$VERSION' isn't a version like v1.0 or v1.0.1."
+            exit 1
+          fi
+          if gh release view "$VERSION" > /dev/null 2>&1; then
+            echo "::error::$VERSION has already been released. Pick the next version."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "number=${VERSION#v}" >> "$GITHUB_OUTPUT"
+          echo "Releasing $VERSION."
+
       # The Unity Docker image is large and some runners don't have room for it, which fails the
       # build with "no space left on device". This job doesn't use any of these tools.
       - name: Free disk space
@@ -116,10 +161,69 @@ jobs:
         with:
           targetPlatform: ${{ env.TARGET_PLATFORM }}
           buildName: TunnelVision
+          # A release stamps its version into the game (Application.version); plain builds keep
+          # the usual version worked out from git.
+          versioning: ${{ steps.release.outputs.number && 'Custom' || 'Semantic' }}
+          version: ${{ steps.release.outputs.number }}
 
       - name: Upload build
         uses: actions/upload-artifact@v7
         with:
-          name: TunnelVision-${{ env.TARGET_PLATFORM }}-${{ github.sha }}
+          name: ${{ steps.release.outputs.artifact }}
           path: build/${{ env.TARGET_PLATFORM }}
           retention-days: 14
+
+  release:
+    name: Publish release
+    needs: build
+    if: needs.build.result == 'success' && needs.build.outputs.version != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - name: Download the build
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.artifact }}
+          path: build
+
+      # The zip holds a "Tunnel Vision" folder, so unzipping doesn't spill files everywhere.
+      # Unity's debug and backup folders are left out: they aren't meant to ship.
+      - name: Zip the game
+        run: |
+          staging="$RUNNER_TEMP/release"
+          mkdir -p "$staging/Tunnel Vision"
+          cp -r build/. "$staging/Tunnel Vision/"
+          find "$staging/Tunnel Vision" -maxdepth 1 -type d \
+            \( -name '*_BurstDebugInformation_DoNotShip' -o -name '*_BackUpThisFolder_ButDontShipItWithYourGame' \) \
+            -exec rm -rf {} +
+          cd "$staging"
+          zip -qr "Tunnel Vision $VERSION.zip" "Tunnel Vision"
+          ls -lh "Tunnel Vision $VERSION.zip"
+
+      # Also kept on the run as "Tunnel Vision v1.0", which downloads as exactly
+      # "Tunnel Vision v1.0.zip" (with the same "Tunnel Vision" folder inside).
+      - name: Keep the zip on the run
+        uses: actions/upload-artifact@v7
+        with:
+          name: Tunnel Vision ${{ env.VERSION }}
+          path: |
+            ${{ runner.temp }}/release/
+            !${{ runner.temp }}/release/*.zip
+          retention-days: 90
+
+      # GitHub swaps spaces in release file names for dots, so the download is
+      # "Tunnel.Vision.v1.0.zip"; the release page labels it "Tunnel Vision v1.0.zip".
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "$VERSION" \
+            "$RUNNER_TEMP/release/Tunnel Vision $VERSION.zip#Tunnel Vision $VERSION.zip" \
+            --target "$GITHUB_SHA" \
+            --title "Tunnel Vision $VERSION" \
+            --generate-notes
