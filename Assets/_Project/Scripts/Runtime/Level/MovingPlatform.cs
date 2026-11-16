@@ -62,7 +62,7 @@ namespace TunnelVision.Level
         {
             if (collision.gameObject.CompareTag("Player"))
             {
-                collision.gameObject.transform.parent = null;
+                RideParenting.LetGo(collision.transform, transform);
             }
         }
     }
