@@ -171,8 +171,33 @@ namespace TunnelVision.Player
         // Improved the bool checks since we were returning both true and false in the if statement
         private bool IsGrounded()
         {
-            return Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0f, groundLayer) != null;
+            return Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0f, groundLayer) != null
+                || IsRestingOnGround();
         }
+
+        // The ground check box is narrower than the body, so on the very corner of a platform the body
+        // can be held up while the box misses. Count any ground pushing up on the body as standing too
+        // (walls push sideways, so they don't count).
+        private bool IsRestingOnGround()
+        {
+            if (rb == null || !rb.simulated)
+            {
+                return false;
+            }
+
+            var filter = new ContactFilter2D
+            {
+                useLayerMask = true,
+                layerMask = groundLayer,
+                useNormalAngle = true,
+                minNormalAngle = 90f - MaxStandingSlope,
+                maxNormalAngle = 90f + MaxStandingSlope,
+            };
+            return rb.IsTouching(filter);
+        }
+
+        // How far from flat (in degrees) a surface can be and still count as standing on it.
+        private const float MaxStandingSlope = 45f;
 
         private void UpdateFacing()
         {
