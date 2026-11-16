@@ -1,10 +1,10 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using TunnelVision.Level;
 using TunnelVision.Player;
 using UnityEngine;
 using UnityEngine.TestTools;
+using static TunnelVision.Tests.Private;
 
 namespace TunnelVision.Tests
 {
@@ -34,21 +34,10 @@ namespace TunnelVision.Tests
             player.AddComponent<BoxCollider2D>();
             player.AddComponent<PlayerLives>();
 
-            _body = new GameObject("BodySprite").AddComponent<SpriteRenderer>();
-            _body.transform.SetParent(player.transform, false);
-            _eye = new GameObject("Eyeball").transform;
-            _eye.SetParent(player.transform, false);
-
             player.SetActive(false); // So Awake waits until the parts are filled in.
-            _movement = player.AddComponent<PlayerMovement>();
-            _movement.rb = rb;
-            Set(_movement, "bodySprite", _body);
-            Set(_movement, "eyeball", _eye);
+            _movement = TestPlayer.AddMovement(player, rb, out _body, out _eye);
             _respawn = player.AddComponent<PlayerRespawn>();
-            foreach (var field in new[] { "revealDuration", "revealHoldDuration", "fadeDuration", "blackHoldDuration" })
-            {
-                Set(_respawn, field, Step);
-            }
+            TestPlayer.ShortenDeath(_respawn, Step);
 
             player.SetActive(true);
             yield return null;
@@ -58,11 +47,6 @@ namespace TunnelVision.Tests
         public void Clean()
         {
             IsolatedScene.Close();
-        }
-
-        private static void Set(object target, string field, object value)
-        {
-            target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);
         }
 
         private void FaceLeftAndLookUpLeft()

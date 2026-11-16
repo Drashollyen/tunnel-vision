@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using TunnelVision.Audio;
 using TunnelVision.Level;
@@ -37,10 +36,7 @@ namespace TunnelVision.Tests
             player.AddComponent<BoxCollider2D>();
             _lives = player.AddComponent<PlayerLives>();
             _respawn = player.AddComponent<PlayerRespawn>();
-            foreach (var field in new[] { "revealDuration", "revealHoldDuration", "fadeDuration", "blackHoldDuration" })
-            {
-                typeof(PlayerRespawn).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_respawn, Step);
-            }
+            TestPlayer.ShortenDeath(_respawn, Step);
 
             var musicObject = new GameObject("Level Music");
             _source = musicObject.AddComponent<AudioSource>();
@@ -127,7 +123,6 @@ namespace TunnelVision.Tests
             Assert.AreEqual(0f, _source.volume, 0.001f);
             Assert.IsFalse(_source.isPlaying);
         }
-
 
         [Test]
         public void Approach_EasesFromFullToSilentAtTheGoal()

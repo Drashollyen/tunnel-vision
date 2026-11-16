@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.Player;
@@ -16,7 +15,7 @@ namespace TunnelVision.Tests
     /// </summary>
     public class RoundOverFadeTests
     {
-        private const float Step = 0.3f; // Each part of the shortened death sequence.
+        private const float Step = 0.6f; // Each part of the shortened death sequence; long enough that a slow frame can't skip a window.
 
         private PlayerRespawn _respawn;
         private RoundOverMessage _message;
@@ -34,10 +33,7 @@ namespace TunnelVision.Tests
             player.AddComponent<BoxCollider2D>();
             player.AddComponent<PlayerLives>();
             _respawn = player.AddComponent<PlayerRespawn>();
-            foreach (var field in new[] { "revealDuration", "revealHoldDuration", "fadeDuration", "blackHoldDuration" })
-            {
-                typeof(PlayerRespawn).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_respawn, Step);
-            }
+            TestPlayer.ShortenDeath(_respawn, Step);
 
             var canvas = new GameObject("HUD", typeof(Canvas));
             var holder = new GameObject("RoundOverMessage");
@@ -75,14 +71,14 @@ namespace TunnelVision.Tests
 
         private void Set(string field, object value)
         {
-            typeof(RoundOverMessage).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_message, value);
+            Private.Set(_message, field, value);
         }
 
         [UnityTest]
         public IEnumerator LostLife_StaysUpThroughTheReveal()
         {
             _respawn.Kill();
-            yield return new WaitForSecondsRealtime(_respawn.SecondsUntilBlack - _respawn.FadeToBlackSeconds - 0.1f);
+            yield return new WaitForSecondsRealtime(_respawn.SecondsUntilBlack - _respawn.FadeToBlackSeconds - Step * 0.5f);
 
             Assert.IsTrue(_panel.activeSelf);
             Assert.AreEqual(1f, _message.Visibility, 0.001f);
@@ -97,7 +93,7 @@ namespace TunnelVision.Tests
             Assert.Less(_message.Visibility, 1f, "It should be fading with the screen.");
             Assert.Greater(_message.Visibility, 0f, "It should fade, not vanish.");
 
-            yield return new WaitForSecondsRealtime(_respawn.FadeToBlackSeconds * 0.5f + 0.1f);
+            yield return new WaitForSecondsRealtime(_respawn.FadeToBlackSeconds * 0.5f + Step * 0.5f);
             Assert.IsFalse(_panel.activeSelf, "Gone by the time the screen is black.");
         }
 
@@ -118,7 +114,6 @@ namespace TunnelVision.Tests
             Assert.AreEqual(1f, _message.Visibility, 0.001f);
         }
 
-
         private void LoseAllButOneLife()
         {
             var lives = _respawn.GetComponent<PlayerLives>();
@@ -134,7 +129,7 @@ namespace TunnelVision.Tests
             LoseAllButOneLife();
             yield return new WaitForSecondsRealtime(0.1f);
             _respawn.Kill(); // The last life.
-            yield return new WaitForSecondsRealtime(_respawn.SecondsUntilBlack - _respawn.FadeToBlackSeconds - 0.1f);
+            yield return new WaitForSecondsRealtime(_respawn.SecondsUntilBlack - _respawn.FadeToBlackSeconds - Step * 0.5f);
 
             Assert.IsFalse(_button.gameObject.activeSelf);
         }
@@ -151,7 +146,7 @@ namespace TunnelVision.Tests
             Assert.Greater(_message.ButtonVisibility, 0f, "It should be fading in.");
             Assert.Less(_message.ButtonVisibility, 1f, "It should fade in, not pop.");
 
-            yield return new WaitForSecondsRealtime(_respawn.FadeToBlackSeconds * 0.5f + 0.1f);
+            yield return new WaitForSecondsRealtime(_respawn.FadeToBlackSeconds * 0.5f + Step * 0.5f);
             Assert.AreEqual(1f, _message.ButtonVisibility, 0.001f, "Fully there once the screen is black.");
         }
     }

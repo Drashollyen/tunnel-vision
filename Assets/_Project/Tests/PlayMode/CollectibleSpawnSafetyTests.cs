@@ -10,30 +10,51 @@ using UnityEngine.TestTools;
 namespace TunnelVision.Tests
 {
     /// <summary>
-    /// Loads each real level and checks every teddy spawn point is safe and reachable: solid
-    /// ground just below, inside the camera's bounds, not inside anything solid, clear of drop
-    /// towers, lifts and wheels. A bad point fails here before it can kill or strand a player.
+    /// Loads each real level and checks its teddies are where they should be: three fixed spots
+    /// per level, inside the camera's bounds, not inside anything solid or a drop tower. Spots on
+    /// the ground need solid ground just below. A few spots are off the ground on purpose, picked
+    /// up by riding a wheel or drop tower or by a jump; those are listed below with how to reach
+    /// them, and are left out of the ground and ride-clearance checks. A spot that moves fails here.
     /// </summary>
     public class CollectibleSpawnSafetyTests
     {
         private const int GroundLayers = 1 << 6;
+        private const int TeddiesPerLevel = 3;
         private const float MaxGroundBelow = 1.5f;   // Ground this close is walking or a small hop.
         private static readonly Vector2 TeddySize = new Vector2(0.74f, 0.87f);
-        private const float LiftClearance = 4f;      // Lifts travel straight up and down.
-        private const float WheelClearance = 9f;     // Wheel seats orbit 8 from the hub.
+        private const float LiftClearance = 4f;      // Lifts travel straight up and down, between their two points.
+        private const float WheelClearance = 2f;     // How close a spot can be to the circle the seats ride.
+
+        // Off-the-ground spots, checked by hand from the level layout, and how you get each one.
+        private static readonly Dictionary<string, (Vector2 spot, string how)[]> StuntSpots =
+            new Dictionary<string, (Vector2, string)[]>
+            {
+                ["Level1"] = new[]
+                {
+                    (new Vector2(332f, 14.3f), "Jump left off Platform 29, or fall down the right side of Platform 24."),
+                    (new Vector2(383.5f, -1.2f), "Stand on Big Wheel 4's seat as it swings through the bottom left; it passes just under the teddy."),
+                },
+                ["Level2"] = new[]
+                {
+                    (new Vector2(186f, 22f), "Ride Drop Tower 1's seat to the top (it's right underneath) and jump."),
+                    (new Vector2(85f, 14f), "Ride Big Wheel 2: it sits on the circle the seats travel."),
+                },
+                ["Level3"] = new[]
+                {
+                    (new Vector2(168.5f, 18f), "Ride Drop Tower 2 to the top."),
+                },
+            };
 
         private static IEnumerable<string> Levels()
         {
             yield return "Assets/_Project/Scenes/Levels/Level1.unity";
             yield return "Assets/_Project/Scenes/Levels/Level2.unity";
+            yield return "Assets/_Project/Scenes/Levels/Level3.unity";
         }
 
         private static IEnumerator Load(string path)
         {
-#if UNITY_EDITOR
-            yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
-                path, new LoadSceneParameters(LoadSceneMode.Single));
-#endif
+            yield return TestScenes.Load(path);
             yield return new WaitForFixedUpdate();
             Physics2D.SyncTransforms();
         }
@@ -45,25 +66,53 @@ namespace TunnelVision.Tests
             return spawner.SpawnPoints;
         }
 
+        private static bool IsStuntSpot(Vector2 point)
+        {
+            return StuntSpots.TryGetValue(SceneManager.GetActiveScene().name, out var spots)
+                   && spots.Any(s => Vector2.Distance(s.spot, point) < 0.01f);
+        }
+
         [UnityTest]
-        public IEnumerator EveryLevel_HasMoreSpotsThanTeddies([ValueSource(nameof(Levels))] string level)
+        public IEnumerator EveryLevel_PlacesATeddyOnEachOfItsThreeSpots([ValueSource(nameof(Levels))] string level)
         {
             yield return Load(level);
             var points = SpawnPoints(out var spawner);
 
-            Assert.Greater(points.Count, spawner.Count, "Spots to choose between, so runs differ.");
-            Assert.AreEqual(spawner.Count, spawner.Spawned.Count, "It should place its teddies at the start.");
+            Assert.AreEqual(TeddiesPerLevel, points.Count, "Three fixed spots per level.");
+            Assert.AreEqual(points.Count, spawner.Spawned.Count, "A teddy on every spot at the start.");
         }
 
         [UnityTest]
-        public IEnumerator EverySpot_HasGroundJustBelow([ValueSource(nameof(Levels))] string level)
+        public IEnumerator EveryStuntSpot_IsStillThere([ValueSource(nameof(Levels))] string level)
+        {
+            yield return Load(level);
+            var points = SpawnPoints(out _).Select(p => (Vector2)p.position).ToList();
+            if (!StuntSpots.TryGetValue(SceneManager.GetActiveScene().name, out var spots))
+            {
+                yield break;
+            }
+
+            foreach (var (spot, how) in spots)
+            {
+                Assert.IsTrue(points.Any(p => Vector2.Distance(p, spot) < 0.01f),
+                    $"A teddy was checked by hand at {spot} ({how}) but isn't there now. Check the new spot can be reached, then update this list.");
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator EveryGroundSpot_HasGroundJustBelow([ValueSource(nameof(Levels))] string level)
         {
             yield return Load(level);
             foreach (var point in SpawnPoints(out _))
             {
+                if (IsStuntSpot(point.position))
+                {
+                    continue;
+                }
+
                 var hit = Physics2D.Raycast(point.position, Vector2.down, MaxGroundBelow, GroundLayers);
                 Assert.IsTrue(hit.collider != null && !hit.collider.isTrigger,
-                    $"{point.name} should have solid ground within {MaxGroundBelow} below it.");
+                    $"{point.name} should have solid ground within {MaxGroundBelow} below it, or be a listed stunt spot.");
             }
         }
 
@@ -99,28 +148,39 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator EverySpot_IsClearOfLiftsAndWheels([ValueSource(nameof(Levels))] string level)
+        public IEnumerator EveryGroundSpot_IsClearOfLiftsAndWheels([ValueSource(nameof(Levels))] string level)
         {
             yield return Load(level);
             var lifts = Object.FindObjectsByType<MovingPlatform>(FindObjectsInactive.Include);
-            var hubs = Object.FindObjectsByType<BigWheelRotation>(FindObjectsInactive.Include)
+            // Each wheel: its hub, and how far out its seats swing.
+            var wheels = Object.FindObjectsByType<BigWheelRotation>(FindObjectsInactive.Include)
                 .Where(seat => seat.transRotationPoint != null)
-                .Select(seat => (Vector2)seat.transRotationPoint.position)
-                .Distinct()
+                .GroupBy(seat => seat.transRotationPoint)
+                .Select(g => ((Vector2)g.Key.position,
+                    g.Max(seat => Vector2.Distance(seat.transform.position, g.Key.position))))
                 .ToList();
 
             foreach (var point in SpawnPoints(out _))
             {
-                foreach (var lift in lifts)
+                if (IsStuntSpot(point.position))
                 {
-                    Assert.Greater(Mathf.Abs(point.position.x - lift.transform.position.x), LiftClearance,
-                        $"{point.name} is in {lift.name}'s path.");
+                    continue; // Reached from the ride itself.
                 }
 
-                foreach (var hub in hubs)
+                foreach (var lift in lifts)
                 {
-                    Assert.Greater(Mathf.Abs(point.position.x - hub.x), WheelClearance,
-                        $"{point.name} is in a wheel's swing.");
+                    // Only the stretch it actually travels, plus room for the platform and Nicholas on it.
+                    var bottom = Mathf.Min(lift.pointA.position.y, lift.pointB.position.y) - 1f;
+                    var top = Mathf.Max(lift.pointA.position.y, lift.pointB.position.y) + 5f;
+                    var beside = Mathf.Abs(point.position.x - lift.transform.position.x) <= LiftClearance;
+                    var sameHeight = point.position.y >= bottom && point.position.y <= top;
+                    Assert.IsFalse(beside && sameHeight, $"{point.name} is in {lift.name}'s path.");
+                }
+
+                foreach (var (hub, radius) in wheels)
+                {
+                    var fromSeats = Mathf.Abs(Vector2.Distance(point.position, hub) - radius);
+                    Assert.Greater(fromSeats, WheelClearance, $"{point.name} is in a wheel's swing.");
                 }
             }
         }

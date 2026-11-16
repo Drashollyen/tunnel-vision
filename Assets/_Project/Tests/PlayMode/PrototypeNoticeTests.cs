@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using TMPro;
@@ -7,6 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
+using static TunnelVision.Tests.Private;
 
 namespace TunnelVision.Tests
 {
@@ -16,8 +18,6 @@ namespace TunnelVision.Tests
     /// </summary>
     public class PrototypeNoticeTests
     {
-        private const int CabinCount = 5;
-
         private NoticeDialog _dialog;
         private TMP_Text _message;
         private Button _close;
@@ -29,62 +29,22 @@ namespace TunnelVision.Tests
         {
             yield return IsolatedScene.Create("PrototypeNoticeTest");
 
-            new GameObject("EventSystem", typeof(EventSystem));
-            var canvas = new GameObject("Canvas", typeof(Canvas)).transform;
-
-            // The dialog: a dim background with a message and a close button.
-            var dialogObject = new GameObject("Prototype Notice", typeof(RectTransform), typeof(Image));
-            dialogObject.transform.SetParent(canvas, false);
-            dialogObject.SetActive(false);
-            _message = new GameObject("Message", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
-            _message.transform.SetParent(dialogObject.transform, false);
-            _close = new GameObject("Close Button", typeof(RectTransform), typeof(Image), typeof(Button))
-                .GetComponent<Button>();
-            _close.transform.SetParent(dialogObject.transform, false);
-            _dialog = dialogObject.AddComponent<NoticeDialog>();
-            Set(_dialog, "message", _message);
-            Set(_dialog, "closeButton", _close);
-
-            // The wheel: five cabins, each with a Body and a Label like the real ones.
-            var wheelObject = new GameObject("Wheel", typeof(RectTransform));
-            wheelObject.transform.SetParent(canvas, false);
-            wheelObject.SetActive(false);
-            _cabins = new RectTransform[CabinCount];
-            var scenes = new string[CabinCount];
-            for (var i = 0; i < CabinCount; i++)
-            {
-                var cabin = new GameObject("Cabin" + (i + 1), typeof(RectTransform));
-                cabin.transform.SetParent(wheelObject.transform, false);
-                var body = new GameObject("Body", typeof(RectTransform), typeof(Image));
-                body.transform.SetParent(cabin.transform, false);
-                var label = new GameObject("Label", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
-                label.transform.SetParent(cabin.transform, false);
-                label.text = "Level " + (i + 1);
-                _cabins[i] = cabin.GetComponent<RectTransform>();
-                // Not in the build, so SceneFader only warns and nothing loads.
-                scenes[i] = "NoSuchSceneForTests";
-            }
-
-            _wheel = wheelObject.AddComponent<FerrisWheelSelect>();
-            Set(_wheel, "cabins", _cabins);
-            Set(_wheel, "levelScenes", scenes);
+            var rig = TestWheel.Build();
+            _wheel = rig.Wheel;
+            _cabins = rig.Cabins;
+            _dialog = rig.Dialog;
+            _message = rig.Message;
+            _close = rig.Close;
+            // Not in the build, so SceneFader only warns and nothing loads.
+            Set(_wheel, "levelScenes", Enumerable.Repeat("NoSuchSceneForTests", TestWheel.CabinCount).ToArray());
             Set(_wheel, "levelNames", new[] { "Big Top", "Stalls", "Arcade", "Rides", "House Of Mirrors" });
-            Set(_wheel, "prototypeLevelCount", 3);
-            Set(_wheel, "prototypeNotice", _dialog);
-            wheelObject.SetActive(true);
+            rig.SwitchOn();
         }
 
         [TearDown]
         public void Clean()
         {
             IsolatedScene.Close();
-        }
-
-        private static void Set(object target, string field, object value)
-        {
-            target.GetType()
-                .GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(target, value);
         }
 
         private void SelectCabin(int index)
@@ -178,7 +138,6 @@ namespace TunnelVision.Tests
             LogAssert.Expect(LogType.Warning, "FerrisWheelSelect: no Prototype Notice set, so the \"???\" cabin does nothing.");
             _wheel.StartSelectedLevel();
         }
-
 
         [UnityTest]
         public IEnumerator UnlockedCabinWithNoLevelYet_OpensTheNotice()

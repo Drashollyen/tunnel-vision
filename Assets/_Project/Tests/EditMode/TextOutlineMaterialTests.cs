@@ -29,6 +29,7 @@ namespace TunnelVision.Tests
         [TestCase("Assets/_Project/Prefabs/UI/RoundOverMessage.prefab", "Panel/Subtitle")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Collectible Counter/Count")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Checkpoint Message")]
+        [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Collectible Message")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Pause Menu/Overlay/Pause Panel/Header/Title")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Pause Menu/Overlay/Confirm Panel/Header/Title")]
         [TestCase("Assets/_Project/Prefabs/UI/HUD.prefab", "Level Complete/Overlay/Level Complete Panel/Header/Title")]

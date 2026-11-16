@@ -182,11 +182,11 @@ namespace TunnelVision.Tests
             SettingsService.Current.EffectsVolume = 1f;
             SettingsService.Current.ApplyAudio();
 
-            SoundEffectsVolume.FadeOutGameplay(0.2f, 0.3f);
-            yield return new WaitForSecondsRealtime(0.2f);
+            SoundEffectsVolume.FadeOutGameplay(0.2f, 1f);
+            yield return new WaitForSecondsRealtime(0.3f); // Well inside the 1 s delay.
             Assert.AreEqual(0.5f, wheel.volume, 0.001f, "Nothing should change during the delay.");
 
-            yield return new WaitForSecondsRealtime(0.45f);
+            yield return new WaitForSecondsRealtime(1.2f);
             Assert.IsFalse(wheel.isPlaying);
         }
 

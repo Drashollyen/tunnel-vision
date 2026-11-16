@@ -26,7 +26,9 @@ namespace TunnelVision.UI
             _text.text = Message;
             _text.alpha = 0f;
 
-            _collectibles = FindAnyObjectByType<PlayerCollectibles>();
+            // Find or add, not just find: the Player has none until something adds one, and the
+            // counter beside this may not have woken up yet.
+            _collectibles = PlayerCollectibles.FindOrAdd();
             if (_collectibles != null)
             {
                 _collectibles.CountChanged += OnCountChanged;

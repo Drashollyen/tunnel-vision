@@ -33,14 +33,7 @@ namespace TunnelVision.Tests
 
             settings.Load();
 
-            Assert.That(settings.MasterVolume, Is.EqualTo(GameSettings.DefaultMasterVolume));
-            Assert.That(settings.MusicVolume, Is.EqualTo(GameSettings.DefaultMusicVolume));
-            Assert.That(settings.EffectsVolume, Is.EqualTo(GameSettings.DefaultEffectsVolume));
-            Assert.That(settings.InterfaceVolume, Is.EqualTo(GameSettings.DefaultInterfaceVolume));
-            Assert.That(settings.InterfaceSounds, Is.EqualTo(GameSettings.DefaultInterfaceSounds));
-            Assert.That(settings.DisplayMode, Is.EqualTo(GameSettings.DefaultDisplayMode));
-            Assert.That(settings.ResolutionWidth, Is.EqualTo(GameSettings.DefaultResolutionSize));
-            Assert.That(settings.ResolutionHeight, Is.EqualTo(GameSettings.DefaultResolutionSize));
+            AssertDefaults(settings);
         }
 
         [Test]
@@ -127,22 +120,22 @@ namespace TunnelVision.Tests
         }
 
         [TestCase(-1f, 0f)]
-        [TestCase(1.5f, 1f)]
         [TestCase(0.4f, 0.4f)]
-        public void MasterVolume_IsClampedToZeroOne(float input, float expected)
-        {
-            var settings = new GameSettings(new MemoryStore()) { MasterVolume = input };
-
-            Assert.That(settings.MasterVolume, Is.EqualTo(expected));
-        }
-
-        [TestCase(-1f, 0f)]
         [TestCase(1.5f, 1f)]
-        public void InterfaceVolume_IsClampedToZeroOne(float input, float expected)
+        public void EveryVolume_IsClampedToZeroOne(float input, float expected)
         {
-            var settings = new GameSettings(new MemoryStore()) { InterfaceVolume = input };
+            var settings = new GameSettings(new MemoryStore())
+            {
+                MasterVolume = input,
+                MusicVolume = input,
+                EffectsVolume = input,
+                InterfaceVolume = input,
+            };
 
-            Assert.That(settings.InterfaceVolume, Is.EqualTo(expected));
+            Assert.That(settings.MasterVolume, Is.EqualTo(expected), "Master");
+            Assert.That(settings.MusicVolume, Is.EqualTo(expected), "Music");
+            Assert.That(settings.EffectsVolume, Is.EqualTo(expected), "Effects");
+            Assert.That(settings.InterfaceVolume, Is.EqualTo(expected), "Interface");
         }
 
         [Test]
@@ -174,6 +167,11 @@ namespace TunnelVision.Tests
 
             settings.ResetToDefaults();
 
+            AssertDefaults(settings);
+        }
+
+        private static void AssertDefaults(GameSettings settings)
+        {
             Assert.That(settings.MasterVolume, Is.EqualTo(GameSettings.DefaultMasterVolume));
             Assert.That(settings.MusicVolume, Is.EqualTo(GameSettings.DefaultMusicVolume));
             Assert.That(settings.EffectsVolume, Is.EqualTo(GameSettings.DefaultEffectsVolume));
@@ -182,17 +180,6 @@ namespace TunnelVision.Tests
             Assert.That(settings.DisplayMode, Is.EqualTo(GameSettings.DefaultDisplayMode));
             Assert.That(settings.ResolutionWidth, Is.EqualTo(GameSettings.DefaultResolutionSize));
             Assert.That(settings.ResolutionHeight, Is.EqualTo(GameSettings.DefaultResolutionSize));
-        }
-
-
-        [TestCase(-1f, 0f)]
-        [TestCase(0.5f, 0.5f)]
-        [TestCase(2f, 1f)]
-        public void MusicAndEffectsVolume_AreClampedToZeroOne(float input, float expected)
-        {
-            var settings = new GameSettings(new MemoryStore()) { MusicVolume = input, EffectsVolume = input };
-            Assert.That(settings.MusicVolume, Is.EqualTo(expected));
-            Assert.That(settings.EffectsVolume, Is.EqualTo(expected));
         }
     }
 }

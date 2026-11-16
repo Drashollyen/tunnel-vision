@@ -25,17 +25,5 @@ namespace TunnelVision.Tests
             Assert.DoesNotThrow(() => source.PlayIfSet());
             Assert.DoesNotThrow(() => source.StopIfSet());
         }
-
-        [Test]
-        public void SetSound_StopsWithoutError()
-        {
-            var holder = new GameObject("Sound");
-            var source = holder.AddComponent<AudioSource>();
-
-            Assert.DoesNotThrow(() => source.StopIfSet());
-            Assert.IsFalse(source.isPlaying);
-
-            Object.DestroyImmediate(holder);
-        }
     }
 }

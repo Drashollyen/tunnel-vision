@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.UI;
@@ -8,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
+using static TunnelVision.Tests.Private;
 
 namespace TunnelVision.Tests
 {
@@ -17,24 +17,19 @@ namespace TunnelVision.Tests
     /// </summary>
     public class FerrisWheelSoundTests
     {
-        private const int CabinCount = 5;
-        private const string ProgressKey = "HighestLevelUnlocked";
 
         private FerrisWheelSelect _wheel;
         private NoticeDialog _dialog;
         private Button _close;
         private AudioClip _turn, _start, _locked, _notInPrototype, _back, _menuClick;
         private readonly List<AudioClip> _played = new List<AudioClip>();
-        private bool _hadProgress;
-        private int _savedProgress;
+        private SavedPrefs _progress;
 
         [UnitySetUp]
         public IEnumerator Build()
         {
             // Only cabin 1 is unlocked, whatever this machine has saved.
-            _hadProgress = PlayerPrefs.HasKey(ProgressKey);
-            _savedProgress = PlayerPrefs.GetInt(ProgressKey, 0);
-            PlayerPrefs.SetInt(ProgressKey, 0);
+            _progress = SavedPrefs.Hold(TestPlayer.ProgressKey);
 
             yield return IsolatedScene.Create("FerrisWheelSoundTest");
 
@@ -45,45 +40,20 @@ namespace TunnelVision.Tests
             _back = Clip("Back");
             _menuClick = Clip("MenuClick");
 
-            new GameObject("EventSystem", typeof(EventSystem));
-            var canvas = new GameObject("Canvas", typeof(Canvas)).transform;
-
-            var dialogObject = new GameObject("Prototype Notice", typeof(RectTransform), typeof(Image));
-            dialogObject.transform.SetParent(canvas, false);
-            dialogObject.SetActive(false);
-            _close = new GameObject("Close Button", typeof(RectTransform), typeof(Image), typeof(Button))
-                .GetComponent<Button>();
-            _close.transform.SetParent(dialogObject.transform, false);
-            _dialog = dialogObject.AddComponent<NoticeDialog>();
-            Set(_dialog, "closeButton", _close);
+            var rig = TestWheel.Build(); // Its cabins have no scenes, so nothing loads.
+            _wheel = rig.Wheel;
+            _dialog = rig.Dialog;
+            _close = rig.Close;
             // The menu's button sounds, which also give the OK button its click.
-            var sounds = canvas.gameObject.AddComponent<InterfaceSounds>();
+            var sounds = rig.Canvas.gameObject.AddComponent<InterfaceSounds>();
             Set(sounds, "clickClip", _menuClick);
 
-            var wheelObject = new GameObject("Wheel", typeof(RectTransform));
-            wheelObject.transform.SetParent(canvas, false);
-            wheelObject.SetActive(false);
-            var cabins = new RectTransform[CabinCount];
-            for (var i = 0; i < CabinCount; i++)
-            {
-                var cabin = new GameObject("Cabin" + (i + 1), typeof(RectTransform));
-                cabin.transform.SetParent(wheelObject.transform, false);
-                var label = new GameObject("Label", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
-                label.transform.SetParent(cabin.transform, false);
-                cabins[i] = cabin.GetComponent<RectTransform>();
-            }
-
-            _wheel = wheelObject.AddComponent<FerrisWheelSelect>();
-            Set(_wheel, "cabins", cabins);
-            Set(_wheel, "levelScenes", new string[CabinCount]); // Nothing loads.
-            Set(_wheel, "prototypeLevelCount", 3);
-            Set(_wheel, "prototypeNotice", _dialog);
             Set(_wheel, "turnSound", _turn);
             Set(_wheel, "startSound", _start);
             Set(_wheel, "lockedSound", _locked);
             Set(_wheel, "notInPrototypeSound", _notInPrototype);
             Set(_wheel, "backSound", _back);
-            wheelObject.SetActive(true);
+            rig.SwitchOn();
 
             _played.Clear();
             InterfaceSounds.ClipPlayed += Record;
@@ -95,32 +65,17 @@ namespace TunnelVision.Tests
         {
             InterfaceSounds.ClipPlayed -= Record;
             IsolatedScene.Close();
-
-            if (_hadProgress)
-            {
-                PlayerPrefs.SetInt(ProgressKey, _savedProgress);
-            }
-            else
-            {
-                PlayerPrefs.DeleteKey(ProgressKey);
-            }
+            _progress.Restore();
         }
 
         private void Record(AudioClip clip) => _played.Add(clip);
 
         private static AudioClip Clip(string name) => AudioClip.Create(name, 441, 1, 44100, false);
 
-        private static void Set(object target, string field, object value)
-        {
-            target.GetType()
-                .GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(target, value);
-        }
-
         private void SelectCabin(int index)
         {
             Set(_wheel, "_steps", index);
-            Set(_wheel, "_angle", index * 360f / CabinCount);
+            Set(_wheel, "_angle", index * 360f / TestWheel.CabinCount);
         }
 
         [UnityTest]
@@ -179,23 +134,14 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator QuestionMarkCabin_DoesNotRock()
+        public IEnumerator QuestionMarkCabin_PlaysTheNoticeSound_WithoutRocking()
         {
-            SelectCabin(3);
-            _wheel.StartSelectedLevel();
-
-            Assert.AreEqual(-1, _wheel.WobblingCabin);
-            yield break;
-        }
-
-        [UnityTest]
-        public IEnumerator QuestionMarkCabin_PlaysTheNoticeSound()
-        {
+            // That the notice opens is PrototypeNoticeTests' job; this checks how it sounds and moves.
             SelectCabin(3);
             _wheel.StartSelectedLevel();
 
             CollectionAssert.AreEqual(new[] { _notInPrototype }, _played);
-            Assert.IsTrue(_dialog.IsOpen);
+            Assert.AreEqual(-1, _wheel.WobblingCabin, "Only locked cabins rock.");
             yield break;
         }
 

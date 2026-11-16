@@ -43,18 +43,19 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator Spawn_PlacesThreeTeddiesOnDifferentPoints()
+        public IEnumerator Spawn_PutsATeddyOnEveryPoint()
         {
-            _spawner.Spawn(new System.Random(7));
+            _spawner.Spawn();
             yield return null;
 
-            Assert.AreEqual(3, _spawner.Spawned.Count);
+            Assert.AreEqual(_points.Count, _spawner.Spawned.Count, "One teddy per spawn point, every run.");
             var used = new HashSet<Vector3>();
             foreach (var teddy in _spawner.Spawned)
             {
                 Assert.IsNotNull(teddy, "Each one should be a teddy.");
                 var spot = _points.Find(p => Mathf.Abs(p.x - teddy.transform.position.x) < 0.01f);
                 Assert.AreNotEqual(default(Vector3), spot, "Each teddy sits on a spawn point.");
+                Assert.AreEqual(spot.y, teddy.transform.position.y, 0.01f, "Exactly on its point.");
                 Assert.IsTrue(used.Add(spot), "No two teddies on one point.");
             }
         }
@@ -62,7 +63,7 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator SpawnedTeddies_AreNotCountedAsSpawnPoints()
         {
-            _spawner.Spawn(new System.Random(7));
+            _spawner.Spawn();
             yield return null;
 
             Assert.AreEqual(8, _spawner.SpawnPoints.Count);

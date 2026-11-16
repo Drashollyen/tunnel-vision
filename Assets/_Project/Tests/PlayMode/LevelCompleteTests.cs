@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Reflection;
+using System.Linq;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.Level;
@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
+using static TunnelVision.Tests.Private;
 
 namespace TunnelVision.Tests
 {
@@ -25,20 +26,12 @@ namespace TunnelVision.Tests
         private TMP_Text _stats;
         private Button _next;
         private Button _select;
-        private bool _hadProgress;
-        private int _savedProgress;
-        private bool _hadTeddies;
-        private int _savedTeddies;
+        private SavedPrefs _saved;
 
         [UnitySetUp]
         public IEnumerator Build()
         {
-            _hadProgress = PlayerPrefs.HasKey(ProgressKey);
-            _savedProgress = PlayerPrefs.GetInt(ProgressKey, 0);
-            PlayerPrefs.SetInt(ProgressKey, 0);
-            _hadTeddies = PlayerPrefs.HasKey(LevelProgress.CollectiblesKey(0));
-            _savedTeddies = PlayerPrefs.GetInt(LevelProgress.CollectiblesKey(0), 0);
-            PlayerPrefs.DeleteKey(LevelProgress.CollectiblesKey(0));
+            _saved = SavedPrefs.Hold(ProgressKey, LevelProgress.CollectiblesKey(0));
 
             yield return IsolatedScene.Create("LevelCompleteTest");
             Time.timeScale = 1f;
@@ -85,14 +78,7 @@ namespace TunnelVision.Tests
         {
             Time.timeScale = 1f;
             IsolatedScene.Close();
-            if (_hadProgress)
-                PlayerPrefs.SetInt(ProgressKey, _savedProgress);
-            else
-                PlayerPrefs.DeleteKey(ProgressKey);
-            if (_hadTeddies)
-                PlayerPrefs.SetInt(LevelProgress.CollectiblesKey(0), _savedTeddies);
-            else
-                PlayerPrefs.DeleteKey(LevelProgress.CollectiblesKey(0));
+            _saved.Restore();
         }
 
         private TMP_Text MakeText(string name)
@@ -107,11 +93,6 @@ namespace TunnelVision.Tests
             var button = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button)).GetComponent<Button>();
             button.transform.SetParent(_panel.transform, false);
             return button;
-        }
-
-        private static void Set(object target, string field, object value)
-        {
-            target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);
         }
 
         [UnityTest]
@@ -157,12 +138,15 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator NextLevel_ShowsWhenThereIsANextLevel()
+        public IEnumerator NextLevel_ShowsWhenThereIsANextLevel_WithLevelSelectBesideIt()
         {
+            var label = LabelNextButton();
             _goal.Reach();
             yield return null;
 
+            Assert.IsFalse(_screen.EndsDemo);
             Assert.IsTrue(_next.gameObject.activeSelf);
+            Assert.AreEqual(LevelCompleteScreen.NextLevelLabel, label.text);
             Assert.AreEqual("Level2", _screen.NextScene);
             Assert.IsTrue(_select.gameObject.activeSelf);
         }
@@ -204,7 +188,6 @@ namespace TunnelVision.Tests
             Assert.AreEqual(firstStats, _stats.text, "A second touch shouldn't show it again.");
         }
 
-
         [UnityTest]
         public IEnumerator Game_FreezesOnceTheScreenIsBlack()
         {
@@ -228,7 +211,6 @@ namespace TunnelVision.Tests
             Assert.IsFalse(respawn.IsRespawning, "A hazard during the walk-off shouldn't start a death.");
         }
 
-
         [UnityTest]
         public IEnumerator ClearingTheLevel_SavesTheTeddiesFound()
         {
@@ -243,7 +225,6 @@ namespace TunnelVision.Tests
             Assert.AreEqual(2, LevelProgress.BestCollectibles(0));
             StringAssert.Contains("Collectibles: 2", _stats.text);
         }
-
 
         private TMP_Text LabelNextButton()
         {
@@ -282,15 +263,30 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator OtherLevels_SayNextLevel()
+        public IEnumerator RealPanel_ShrinksWhenThereIsOnlyOneButton()
         {
-            var label = LabelNextButton();
-            _goal.Reach();
-            yield return null;
+#if UNITY_EDITOR
+            var hud = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Prefabs/UI/HUD.prefab");
+            var source = hud.GetComponentsInChildren<RectTransform>(true).First(t => t.name == "Level Complete Panel");
+            var canvas = new GameObject("Panel Test Canvas", typeof(Canvas)).transform;
+            var panel = (RectTransform)Object.Instantiate(source.gameObject, canvas, false).transform;
+            var select = panel.Find("Level Select Button").gameObject;
 
-            Assert.IsFalse(_screen.EndsDemo);
-            Assert.AreEqual(LevelCompleteScreen.NextLevelLabel, label.text);
-            Assert.IsTrue(_select.gameObject.activeSelf);
+            select.SetActive(true);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+            yield return null;
+            var withTwo = panel.rect.height;
+
+            select.SetActive(false); // As on the demo's last level.
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+            yield return null;
+            var withOne = panel.rect.height;
+
+            Assert.AreEqual(500f, withTwo, 1f, "Two buttons: the size the panel was designed at.");
+            Assert.AreEqual(withTwo - 100f, withOne, 1f, "One button: no empty gap where the second was.");
+#else
+            yield break;
+#endif
         }
     }
 }

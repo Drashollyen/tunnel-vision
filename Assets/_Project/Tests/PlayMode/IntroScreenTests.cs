@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.Settings;
@@ -37,12 +38,33 @@ namespace TunnelVision.Tests
         }
 
         [Test]
-        public void IntroScreen_HasPlayOptionsAndQuitButtons()
+        public void IntroScreen_HasPlayOptionsInfoAndQuitButtons()
         {
             Assert.That(FindButton("Play Button"), Is.Not.Null);
             Assert.That(FindButton("Options Button"), Is.Not.Null);
             Assert.That(FindButton("Info Button"), Is.Not.Null);
             Assert.That(FindButton("Quit Button"), Is.Not.Null);
+        }
+
+        [UnityTest]
+        public IEnumerator Background_IsTheFairgroundArt_AndCoversTheWholeView()
+        {
+            yield return null; // BackgroundFill sizes it in LateUpdate.
+            // A world sprite, not UI, so Find (which only looks at UI objects) won't see it.
+            var background = Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Include)
+                .FirstOrDefault(r => r.name == "Background");
+            Assert.IsNotNull(background, "The menu should have its Background sprite.");
+            Assert.AreEqual("menu-bg_0", background.sprite.name, "The in-house fairground art.");
+            Assert.IsNotNull(background.GetComponent<BackgroundFill>(), "Scaled to fit any screen shape.");
+
+            var view = Camera.main;
+            var half = new Vector2(view.orthographicSize * view.aspect, view.orthographicSize);
+            var centre = (Vector2)view.transform.position;
+            var bounds = background.bounds;
+            Assert.LessOrEqual(bounds.min.x, centre.x - half.x + 0.01f, "No gap on the left.");
+            Assert.GreaterOrEqual(bounds.max.x, centre.x + half.x - 0.01f, "No gap on the right.");
+            Assert.LessOrEqual(bounds.min.y, centre.y - half.y + 0.01f, "No gap at the bottom.");
+            Assert.GreaterOrEqual(bounds.max.y, centre.y + half.y - 0.01f, "No gap at the top.");
         }
 
         [Test]

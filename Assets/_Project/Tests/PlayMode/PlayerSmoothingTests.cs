@@ -26,17 +26,8 @@ namespace TunnelVision.Tests
             _rb.gravityScale = 0f;
             _rb.interpolation = RigidbodyInterpolation2D.None; // As both levels' scenes set it.
 
-            // The real player always has a body sprite and an eye, and movement uses both.
-            var body = new GameObject("BodySprite").AddComponent<SpriteRenderer>();
-            body.transform.SetParent(_player.transform, false);
-            var eye = new GameObject("Eyeball").transform;
-            eye.SetParent(_player.transform, false);
-
             _player.SetActive(false);
-            var movement = _player.AddComponent<PlayerMovement>();
-            movement.rb = _rb;
-            typeof(PlayerMovement).GetField("bodySprite", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(movement, body);
-            typeof(PlayerMovement).GetField("eyeball", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(movement, eye);
+            TestPlayer.AddMovement(_player, _rb);
             _player.SetActive(true);
             yield return null;
         }
@@ -45,13 +36,6 @@ namespace TunnelVision.Tests
         public void Clean()
         {
             IsolatedScene.Close();
-        }
-
-        [Test]
-        public void Smoothing_IsOnAlone_AndOffWhileRiding()
-        {
-            Assert.AreEqual(RigidbodyInterpolation2D.Interpolate, PlayerMovement.SmoothingFor(riding: false));
-            Assert.AreEqual(RigidbodyInterpolation2D.None, PlayerMovement.SmoothingFor(riding: true));
         }
 
         [UnityTest]

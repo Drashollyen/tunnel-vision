@@ -1858,6 +1858,135 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &7311500000000000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7311500000000000002}
+  - component: {fileID: 7311500000000000003}
+  - component: {fileID: 7311500000000000004}
+  - component: {fileID: 7311500000000000005}
+  - component: {fileID: 7311500000000000006}
+  - component: {fileID: 7311500000000000007}
+  m_Layer: 5
+  m_Name: Chaplin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7311500000000000002
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 701772106406277449}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: -540, y: 0}
+  m_SizeDelta: {x: 134, y: 258}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!222 &7311500000000000003
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_CullTransparentMesh: 1
+--- !u!114 &7311500000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: -3318007214645083915, guid: 88a65fd0319a188498d385ffaf0ac1c4, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7311500000000000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbe327a7681e4a47b76239d661ea9c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.SpriteFlipbook
+  frames:
+  - {fileID: -3318007214645083915, guid: 88a65fd0319a188498d385ffaf0ac1c4, type: 3}
+  - {fileID: 7591081000407596256, guid: b949349f75a7bc247aba8aa8b54a3d3f, type: 3}
+  framesPerSecond: 1.5
+--- !u!114 &7311500000000000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f018e7ccc5b46cb939a080225638c37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.ChaplinEasterEgg
+  voice: {fileID: 8300000, guid: 547388e7364340f4903b04244dd5089b, type: 3}
+  confetti: {fileID: 887342482604219609}
+  musicFadeSeconds: 1.5
+  blackFadeSeconds: 1.2
+  darkBeforeVoice: 0.4
+  darkAfterVoice: 0.8
+  confettiColour: {r: 0, g: 0, b: 0, a: 1}
+--- !u!114 &7311500000000000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40775de9a32f4b4a8f797e95cdb0f934, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.CelebrationLoop
+  move: 0
+  amount: 18
+  speed: 1.3
+  offset: 0.6
 --- !u!1 &1779390894
 GameObject:
   m_ObjectHideFlags: 0
@@ -2892,6 +3021,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 7311500000000000002}
   - {fileID: 218269052517528872}
   - {fileID: 589843986918525261}
   - {fileID: 413636133420563097}
@@ -3418,6 +3548,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.EyeGlance
   targets:
+  - {fileID: 7311500000000000002}
   - {fileID: 589843986918525261}
   - {fileID: 413636133420563097}
   - {fileID: 324888172289157906}

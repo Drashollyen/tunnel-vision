@@ -25,6 +25,8 @@ namespace TunnelVision.UI
         private sealed class Piece
         {
             public RectTransform Rect;
+            public Image Image;
+            public Color StartColour;
             public float Speed;
             public float Drift;
             public float Spin;
@@ -33,6 +35,9 @@ namespace TunnelVision.UI
 
         private readonly List<Piece> _pieces = new List<Piece>();
         private RectTransform _area;
+        private Color _tint;
+        private float _tintAmount;
+        private float _tintSpeed;
 
         /// <summary>How many confetti pieces are falling.</summary>
         public int PieceCount => _pieces.Count;
@@ -54,6 +59,8 @@ namespace TunnelVision.UI
                 var piece = new Piece
                 {
                     Rect = rect,
+                    Image = image,
+                    StartColour = image.color,
                     Speed = fallSpeed * Random.Range(0.6f, 1.4f),
                     Drift = Random.Range(20f, 60f),
                     Spin = Random.Range(-240f, 240f),
@@ -62,6 +69,29 @@ namespace TunnelVision.UI
                 // Spread out to begin with, so it doesn't all start in one line.
                 Place(piece, Random.Range(0f, 1f));
                 _pieces.Add(piece);
+            }
+        }
+
+        /// <summary>Turns every piece to <paramref name="colour"/> over <paramref name="seconds"/>.</summary>
+        public void FadeTo(Color colour, float seconds)
+        {
+            _tint = colour;
+            _tintAmount = 0f;
+            _tintSpeed = seconds > 0f ? 1f / seconds : float.PositiveInfinity;
+        }
+
+        /// <summary>True once every piece has finished turning to the colour given to <see cref="FadeTo"/>.</summary>
+        public bool IsTinted => _tintSpeed > 0f && _tintAmount >= 1f;
+
+        /// <summary>The colour of each piece, for tests.</summary>
+        public IEnumerable<Color> PieceColours
+        {
+            get
+            {
+                foreach (var piece in _pieces)
+                {
+                    yield return piece.Image.color;
+                }
             }
         }
 
@@ -76,6 +106,15 @@ namespace TunnelVision.UI
         private void Update()
         {
             var dt = Time.unscaledDeltaTime;
+            if (_tintSpeed > 0f && _tintAmount < 1f)
+            {
+                _tintAmount = Mathf.MoveTowards(_tintAmount, 1f, _tintSpeed * dt);
+                foreach (var piece in _pieces)
+                {
+                    piece.Image.color = Color.Lerp(piece.StartColour, _tint, _tintAmount);
+                }
+            }
+
             var bottom = -_area.rect.height * 0.5f - pieceSize.y;
             foreach (var piece in _pieces)
             {
