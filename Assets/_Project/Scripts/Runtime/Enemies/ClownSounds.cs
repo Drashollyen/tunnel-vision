@@ -5,7 +5,7 @@ namespace TunnelVision.Enemies
     /// <summary>
     /// A clown's sounds, for both the normal clown and the Thrower Clown.
     /// <list type="bullet">
-    /// <item>Footsteps: the Run clip calls <see cref="PlayStep"/> as each foot lands, alternating between the step sounds.</item>
+    /// <item>Footsteps: the Run clip calls <see cref="PlayStep"/> as each foot lands; every second one (by default) plays a sound, alternating between the step sounds.</item>
     /// <item>Squeak: plays every so often, at random, while he's walking (his Animator's Speed is above 0.1).</item>
     /// <item>Laugh: <see cref="PlayLaugh"/>, for the AI to call (say, on spotting Nicholas).</item>
     /// <item>Throwing: the Throw clip calls <see cref="PlayWindup"/> on the wind-up and <see cref="PlayThrow"/> on the release.</item>
@@ -24,6 +24,10 @@ namespace TunnelVision.Enemies
         [Tooltip("Played in turn, one per footstep.")]
         [SerializeField] private AudioClip[] steps;
 
+        [Tooltip("Plays a step sound on every this-many footsteps: 1 for every step, 2 for every other one.")]
+        [Min(1)]
+        [SerializeField] private int stepSoundEvery = 2;
+
         [SerializeField] private AudioClip squeak;
 
         [Tooltip("The squeak plays at a random moment between these many seconds of walking.")]
@@ -37,6 +41,7 @@ namespace TunnelVision.Enemies
         [SerializeField] private AudioClip throwSound;
 
         private int _nextStep;
+        private int _footsteps;
         private float _untilSqueak;
 
         private void Reset()
@@ -89,10 +94,20 @@ namespace TunnelVision.Enemies
             return Random.Range(min, max);
         }
 
-        /// <summary>The next footstep. Called by the Run clip.</summary>
+        /// <summary>
+        /// A footstep, called by the Run clip as each foot lands. Only every
+        /// <see cref="stepSoundEvery"/>th one makes a sound, alternating between the step sounds.
+        /// </summary>
         public void PlayStep()
         {
             if (steps == null || steps.Length == 0)
+            {
+                return;
+            }
+
+            var every = Mathf.Max(1, stepSoundEvery);
+            var footstep = _footsteps++;
+            if (footstep % every != 0)
             {
                 return;
             }
