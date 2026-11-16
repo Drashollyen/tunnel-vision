@@ -1849,6 +1849,7 @@ RectTransform:
   - {fileID: 354245461547567575}
   - {fileID: 558896880564468768}
   - {fileID: 701772106406277449}
+  - {fileID: 7311500000000000002}
   - {fileID: 126176979004710137}
   - {fileID: 861762933505538301}
   m_Father: {fileID: 0}
@@ -1858,6 +1859,126 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &7311500000000000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7311500000000000002}
+  - component: {fileID: 7311500000000000003}
+  - component: {fileID: 7311500000000000004}
+  - component: {fileID: 7311500000000000005}
+  - component: {fileID: 7311500000000000006}
+  m_Layer: 5
+  m_Name: Chaplin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7311500000000000002
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1770531897}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 150, y: 40}
+  m_SizeDelta: {x: 134, y: 258}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!222 &7311500000000000003
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_CullTransparentMesh: 1
+--- !u!114 &7311500000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: -3318007214645083915, guid: 88a65fd0319a188498d385ffaf0ac1c4, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7311500000000000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbe327a7681e4a47b76239d661ea9c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.SpriteFlipbook
+  frames:
+  - {fileID: -3318007214645083915, guid: 88a65fd0319a188498d385ffaf0ac1c4, type: 3}
+  - {fileID: 7591081000407596256, guid: b949349f75a7bc247aba8aa8b54a3d3f, type: 3}
+  framesPerSecond: 1.5
+--- !u!114 &7311500000000000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f018e7ccc5b46cb939a080225638c37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.ChaplinEasterEgg
+  voice: {fileID: 8300000, guid: 547388e7364340f4903b04244dd5089b, type: 3}
+  confetti: {fileID: 887342482604219609}
+  font: {fileID: 11400000, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}
+  musicFadeSeconds: 1.5
+  lightsOutSeconds: 0.8
+  darkBeforeVoice: 0.6
+  darkAfterVoice: 0.8
+  countdownFrom: 10
+  confettiColour: {r: 0, g: 0, b: 0, a: 1}
+  boxColour: {r: 0.07, g: 0, b: 0, a: 0.98}
+  borderColour: {r: 0.45, g: 0, b: 0.02, a: 1}
+  headerColour: {r: 0.62, g: 0.04, b: 0.04, a: 1}
+  messageColour: {r: 0.66, g: 0.58, b: 0.58, a: 1}
+  countdownColour: {r: 0.8, g: 0, b: 0, a: 1}
+  shakePixels: 3
 --- !u!1 &1779390894
 GameObject:
   m_ObjectHideFlags: 0

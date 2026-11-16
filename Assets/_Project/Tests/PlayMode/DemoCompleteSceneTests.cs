@@ -6,6 +6,7 @@ using TunnelVision.Audio;
 using TunnelVision.Level;
 using TunnelVision.UI;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -117,6 +118,93 @@ namespace TunnelVision.Tests
             Assert.IsTrue(MusicPlayer.Current.GetComponent<AudioSource>().isPlaying);
             Assert.IsTrue(MusicPlayer.Current.PlaysIn("DemoComplete"));
             Assert.AreEqual("demo-complete-music", MusicPlayer.Current.Music.name, "The ending has its own track.");
+        }
+
+        [UnityTest]
+        public IEnumerator Chaplin_IsThere_AndClickable()
+        {
+            var chaplin = Find("Chaplin");
+            Assert.IsNotNull(chaplin, "Chaplin should be back on the ending screen.");
+            Assert.IsNotNull(Find("Sword Swallower"), "The Sword Swallower stays too.");
+            var image = chaplin.GetComponent<Image>();
+            Assert.IsNotNull(image.sprite);
+            Assert.IsTrue(image.raycastTarget, "Chaplin has to catch clicks.");
+            Assert.IsNull(chaplin.GetComponent<Button>(), "He's hidden: no button look, and no extra button.");
+
+            var egg = chaplin.GetComponent<ChaplinEasterEgg>();
+            Assert.IsNotNull(egg);
+            Assert.AreEqual("chaplin-tunnel-vision", egg.Voice.name);
+            Assert.AreEqual(Find("Confetti").GetComponent<ConfettiRain>(), egg.Confetti);
+            Assert.IsNotNull(egg.FontAsset);
+            Assert.Greater(egg.CountdownFrom, 0);
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator Chaplin_StaysClearOfTheStatsButtonsAndCast()
+        {
+            var chaplin = ScreenRect(Find("Chaplin"));
+            foreach (var name in new[] { "Stats Box", "Main Menu Button", "Nicholas", "Clown", "Balloon Dog", "Sword Swallower", "TitlePlate", "Subtitle" })
+            {
+                Assert.IsFalse(chaplin.Overlaps(ScreenRect(Find(name))), $"Chaplin overlaps {name}.");
+            }
+
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator ClickingChaplin_RunsTheWholeShow_ThenCloses()
+        {
+            var egg = Find("Chaplin").GetComponent<ChaplinEasterEgg>();
+            typeof(ChaplinEasterEgg).GetField("countdownFrom", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(egg, 1);
+            var quits = 0;
+            var realQuit = ChaplinEasterEgg.QuitAction;
+            ChaplinEasterEgg.QuitAction = () => quits++;
+            try
+            {
+                yield return null;
+                var music = MusicPlayer.Current;
+                ExecuteEvents.Execute(egg.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
+                yield return null;
+
+                Assert.AreEqual(ChaplinEasterEgg.Stage.MusicFading, egg.Current);
+                Assert.IsTrue(music == null || music.IsFadingOut, "The music should fade out.");
+                Assert.IsNotNull(Find("Easter Egg Overlay"), "The black screen goes on top of everything.");
+
+                var sawVoice = false;
+                var sawCountdown = false;
+                for (var until = Time.realtimeSinceStartup + 15f; Time.realtimeSinceStartup < until && egg.Current != ChaplinEasterEgg.Stage.Closing;)
+                {
+                    sawVoice |= egg.Current == ChaplinEasterEgg.Stage.Voice;
+                    if (egg.Current == ChaplinEasterEgg.Stage.Countdown && egg.MessageText != null && egg.MessageText.text.Length > 0)
+                    {
+                        sawCountdown = true;
+                        Assert.IsTrue(egg.MessageBox.activeInHierarchy);
+                    }
+
+                    yield return null;
+                }
+
+                Assert.IsTrue(sawVoice, "Chaplin's clip should play.");
+                Assert.IsTrue(sawCountdown, "The message should count down.");
+                Assert.AreEqual(ChaplinEasterEgg.Stage.Closing, egg.Current);
+                Assert.AreEqual(1, quits, "The game closes once at zero.");
+                foreach (var colour in egg.Confetti.PieceColours)
+                {
+                    Assert.AreEqual(Color.black, colour, "The confetti should have turned black.");
+                }
+            }
+            finally
+            {
+                ChaplinEasterEgg.QuitAction = realQuit;
+            }
+        }
+
+        private static Rect ScreenRect(GameObject go)
+        {
+            var corners = new Vector3[4];
+            ((RectTransform)go.transform).GetWorldCorners(corners);
+            return Rect.MinMaxRect(corners[0].x, corners[0].y, corners[2].x, corners[2].y);
         }
 
         [UnityTest]
