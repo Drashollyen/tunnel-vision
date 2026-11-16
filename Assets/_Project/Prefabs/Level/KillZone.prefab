@@ -91,3 +91,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d513f1929b4a9584780eb2aea126384e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.Hazard
+  fallsIn: 1

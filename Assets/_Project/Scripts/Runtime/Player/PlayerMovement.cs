@@ -25,6 +25,14 @@ namespace TunnelVision.Player
         [Header("Facing")]
         [SerializeField] private SpriteRenderer bodySprite;
 
+        [Header("Animation")]
+        [Tooltip("The body's Animator. Optional: without one the body just doesn't animate.")]
+        [SerializeField] private Animator bodyAnimator;
+
+        private static readonly int SpeedParam = Animator.StringToHash("Speed");
+        private static readonly int GroundedParam = Animator.StringToHash("Grounded");
+        private static readonly int DeadParam = Animator.StringToHash("Dead");
+
         [Header("Looking")]
         [SerializeField] private Transform eyeball;
         [SerializeField] private float eyeTurnSpeed = 360f;
@@ -68,6 +76,29 @@ namespace TunnelVision.Player
         void Update()
         {
             UpdateSmoothing();
+            UpdateAnimator();
+        }
+
+        // Walk while moving sideways, jump pose while off the ground.
+        private void UpdateAnimator()
+        {
+            if (bodyAnimator == null || bodyAnimator.runtimeAnimatorController == null || rb == null)
+            {
+                return;
+            }
+
+            var speed = rb.simulated ? Mathf.Abs(rb.linearVelocity.x) : 0f;
+            bodyAnimator.SetFloat(SpeedParam, speed);
+            bodyAnimator.SetBool(GroundedParam, !rb.simulated || groundCheckPos == null || IsGrounded());
+        }
+
+        /// <summary>Shows the death pose (true) or puts the body back to normal (false).</summary>
+        public void SetDead(bool dead)
+        {
+            if (bodyAnimator != null && bodyAnimator.runtimeAnimatorController != null)
+            {
+                bodyAnimator.SetBool(DeadParam, dead);
+            }
         }
 
         // Rides parent the player to the moving thing, and stepping off unparents them.
@@ -140,8 +171,33 @@ namespace TunnelVision.Player
         // Improved the bool checks since we were returning both true and false in the if statement
         private bool IsGrounded()
         {
-            return Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0f, groundLayer) != null;
+            return Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0f, groundLayer) != null
+                || IsRestingOnGround();
         }
+
+        // The ground check box is narrower than the body, so on the very corner of a platform the body
+        // can be held up while the box misses. Count any ground pushing up on the body as standing too
+        // (walls push sideways, so they don't count).
+        private bool IsRestingOnGround()
+        {
+            if (rb == null || !rb.simulated)
+            {
+                return false;
+            }
+
+            var filter = new ContactFilter2D
+            {
+                useLayerMask = true,
+                layerMask = groundLayer,
+                useNormalAngle = true,
+                minNormalAngle = 90f - MaxStandingSlope,
+                maxNormalAngle = 90f + MaxStandingSlope,
+            };
+            return rb.IsTouching(filter);
+        }
+
+        // How far from flat (in degrees) a surface can be and still count as standing on it.
+        private const float MaxStandingSlope = 45f;
 
         private void UpdateFacing()
         {

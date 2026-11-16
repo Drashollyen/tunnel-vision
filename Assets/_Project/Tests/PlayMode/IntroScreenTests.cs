@@ -99,6 +99,26 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
+        public IEnumerator StatsButton_OpensStats_AndCloseReturns()
+        {
+            Assert.That(Find("Stats Panel").activeInHierarchy, Is.False);
+
+            FindButton("Stats Button").onClick.Invoke();
+            yield return WaitForPanelSwitch();
+
+            Assert.That(Find("Main Panel").activeInHierarchy, Is.False);
+            Assert.That(Find("Stats Panel").activeInHierarchy, Is.True);
+            Assert.That(Find("Best Clears Text").GetComponent<TMP_Text>().text, Does.Contain(StatsPage.BestHeading));
+            Assert.That(Find("All Time Text").GetComponent<TMP_Text>().text, Does.Contain(StatsPage.AllTimeHeading));
+
+            FindButton("Stats Close Button").onClick.Invoke();
+            yield return WaitForPanelSwitch();
+
+            Assert.That(Find("Main Panel").activeInHierarchy, Is.True);
+            Assert.That(Find("Stats Panel").activeInHierarchy, Is.False);
+        }
+
+        [UnityTest]
         public IEnumerator OptionsPage_ShowsSavedSettings()
         {
             SettingsService.Current.MasterVolume = 0.25f;

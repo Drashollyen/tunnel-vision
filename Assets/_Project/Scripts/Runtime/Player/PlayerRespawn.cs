@@ -37,6 +37,16 @@ namespace TunnelVision.Player
         [SerializeField] private float fadeDuration = 0.75f;
         [SerializeField] private float blackHoldDuration = 0.3f;
 
+        [Header("Death Fall")]
+        [Tooltip("On death, pause in the death pose, hop up, then drop straight down through the floor.")]
+        [SerializeField] private bool fallOnDeath = true;
+        [Tooltip("Seconds frozen in the death pose before the hop.")]
+        [SerializeField] private float deathPause = 0.4f;
+        [Tooltip("How fast the hop starts upward, in units per second.")]
+        [SerializeField] private float deathHopSpeed = 9f;
+        [Tooltip("How hard the fall pulls down, in units per second squared.")]
+        [SerializeField] private float deathFallGravity = 30f;
+
         private PlayerLives _lives;
         private Rigidbody2D _body;
         private Vector3 _levelStart;
@@ -44,6 +54,9 @@ namespace TunnelVision.Player
         private bool _isDying;
         private float _normalGlobalIntensity;
         private GameObject _madeFade;
+        private Coroutine _fall;
+        private readonly System.Collections.Generic.List<CinemachineCamera> _heldCameras =
+            new System.Collections.Generic.List<CinemachineCamera>();
 
         /// <summary>True from a death until the player can move again.</summary>
         public bool IsRespawning => _isDying;
@@ -111,8 +124,11 @@ namespace TunnelVision.Player
             }
         }
 
-        /// <summary>Takes one life. Further calls do nothing until the player is back in play.</summary>
-        public void Kill()
+        /// <summary>
+        /// Takes one life. Further calls do nothing until the player is back in play.
+        /// <paramref name="fellIntoPit"/> skips the death hop: the player just keeps falling.
+        /// </summary>
+        public void Kill(bool fellIntoPit = false)
         {
             // Nothing can kill the player once the level is complete and they're walking off.
             if (_isDying || UI.LevelCompleteScreen.IsAnyShowing)
@@ -122,7 +138,7 @@ namespace TunnelVision.Player
 
             _isDying = true;
             Died?.Invoke();
-            StartCoroutine(DeathSequence());
+            StartCoroutine(DeathSequence(fellIntoPit));
         }
 
         public void ReachCheckpoint(Checkpoint checkpoint)
@@ -147,7 +163,7 @@ namespace TunnelVision.Player
             CheckpointReached?.Invoke(checkpoint);
         }
 
-        private IEnumerator DeathSequence()
+        private IEnumerator DeathSequence(bool fellIntoPit)
         {
             // Stop controls and come off any moving platform.
             if (movement != null)
@@ -157,6 +173,9 @@ namespace TunnelVision.Player
 
             transform.SetParent(null, true);
 
+            // Falling into a pit carries on at the speed they were already falling.
+            var fallingSpeed = Mathf.Min(0f, _body.linearVelocity.y);
+
             // Stop motion, gravity and collisions.
             _body.linearVelocity = Vector2.zero;
             _body.angularVelocity = 0f;
@@ -165,6 +184,20 @@ namespace TunnelVision.Player
             if (visionLight != null)
             {
                 visionLight.enabled = false;
+            }
+
+            // The death pose, then a hop and a drop through the floor while the level lights up.
+            if (movement != null)
+            {
+                movement.SetDead(true);
+            }
+
+            if (fallOnDeath)
+            {
+                // The camera holds still while they fall out of the level, like old platformers;
+                // following them down would drag it along the bottom of the camera bounds.
+                HoldCameras();
+                _fall = StartCoroutine(fellIntoPit ? Fall(fallingSpeed) : DeathFall());
             }
 
             // Shows the Round Over or Game Over text.
@@ -188,10 +221,18 @@ namespace TunnelVision.Player
 
             // Move while the screen is fully black, facing the way the level starts (to the right),
             // whichever way the player was facing when they died.
+            if (_fall != null)
+            {
+                StopCoroutine(_fall);
+                _fall = null;
+            }
+
+            ReleaseCameras();
             MoveTo(_checkpoint != null ? _checkpoint.RespawnPosition : _levelStart);
             if (movement != null)
             {
                 movement.FaceStartDirection();
+                movement.SetDead(false);
             }
 
             if (globalLight != null)
@@ -218,6 +259,67 @@ namespace TunnelVision.Player
             }
 
             _isDying = false;
+        }
+
+        /// <summary>
+        /// The death fall, like an old platformer: a moment frozen in the death pose, a hop up, then
+        /// a drop straight down through the floor and off the screen. Only moves up and down. Runs
+        /// until the screen is black (the physics body is off, so nothing stops the fall).
+        /// </summary>
+        private IEnumerator DeathFall()
+        {
+            yield return new WaitForSecondsRealtime(deathPause);
+            yield return Fall(deathHopSpeed);
+        }
+
+        /// <summary>
+        /// Moves straight up and down from <paramref name="startSpeed"/> (positive is up) under the
+        /// death fall's gravity until the screen is black. With no hop, it's just a drop.
+        /// </summary>
+        private IEnumerator Fall(float startSpeed)
+        {
+            var velocity = startSpeed;
+            var stopAt = Time.unscaledTime + SecondsUntilBlack;
+            while (Time.unscaledTime < stopAt)
+            {
+                var dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
+                velocity -= deathFallGravity * dt;
+                transform.position += new Vector3(0f, velocity * dt, 0f);
+                yield return null;
+            }
+
+            _fall = null;
+        }
+
+        /// <summary>Stops every camera that follows the player from following, until <see cref="ReleaseCameras"/>.</summary>
+        private void HoldCameras()
+        {
+            _heldCameras.Clear();
+            foreach (var cam in FindObjectsByType<CinemachineCamera>())
+            {
+                if (cam.Follow == transform)
+                {
+                    cam.Follow = null;
+                    _heldCameras.Add(cam);
+                }
+            }
+        }
+
+        /// <summary>Points the held cameras back at the player. Call while the screen is black, just before moving them.</summary>
+        private void ReleaseCameras()
+        {
+            foreach (var cam in _heldCameras)
+            {
+                if (cam != null)
+                {
+                    cam.Follow = transform;
+
+                    // Snap straight to the respawned player instead of gliding across the level.
+                    cam.PreviousStateIsValid = false;
+                }
+            }
+
+            _heldCameras.Clear();
         }
 
         private void MoveTo(Vector3 position)

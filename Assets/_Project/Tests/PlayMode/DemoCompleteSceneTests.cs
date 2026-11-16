@@ -64,7 +64,7 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator TheWholeCast_IsThere()
         {
-            foreach (var name in new[] { "Nicholas", "Clown", "Balloon Dog", "Sword Swallower (Placeholder)" })
+            foreach (var name in new[] { "Nicholas", "Clown", "Balloon Dog", "Sword Swallower" })
             {
                 var member = Find(name);
                 Assert.IsNotNull(member, name);

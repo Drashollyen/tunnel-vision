@@ -1,0 +1,626 @@
+fileFormatVersion: 2
+guid: 587f7ba21ad4442d9893ad88db93ee9f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: InHouseThrowerClown_Sprite_0
+  - first:
+      213: 21300002
+    second: InHouseThrowerClown_Sprite_1
+  - first:
+      213: 21300004
+    second: InHouseThrowerClown_Sprite_2
+  - first:
+      213: 21300006
+    second: InHouseThrowerClown_Sprite_3
+  - first:
+      213: 21300008
+    second: InHouseThrowerClown_Sprite_4
+  - first:
+      213: 21300010
+    second: InHouseThrowerClown_Sprite_5
+  - first:
+      213: 21300012
+    second: InHouseThrowerClown_Sprite_6
+  - first:
+      213: 21300014
+    second: InHouseThrowerClown_Sprite_7
+  - first:
+      213: 21300016
+    second: InHouseThrowerClown_Sprite_8
+  - first:
+      213: 21300018
+    second: InHouseThrowerClown_Sprite_9
+  - first:
+      213: 21300020
+    second: InHouseThrowerClown_Sprite_10
+  - first:
+      213: 21300022
+    second: InHouseThrowerClown_Sprite_11
+  - first:
+      213: 21300024
+    second: InHouseThrowerClown_Sprite_12
+  - first:
+      213: 21300026
+    second: InHouseThrowerClown_Sprite_13
+  - first:
+      213: 21300028
+    second: InHouseThrowerClown_Sprite_14
+  - first:
+      213: 21300030
+    second: InHouseThrowerClown_Sprite_15
+  - first:
+      213: 21300032
+    second: InHouseThrowerClown_Sprite_16
+  - first:
+      213: 21300034
+    second: InHouseThrowerClown_Sprite_17
+  - first:
+      213: 21300036
+    second: InHouseThrowerClown_Sprite_18
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.0681}
+  spritePixelsToUnits: 92
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
+  swizzle: 50462976
+  cookieLightType: 1
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 837
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 918097dda55949398365744dc2c8822b
+      internalID: 21300000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_1
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 837
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 186f68a929a64feea41d4f72f3468bc5
+      internalID: 21300002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_2
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 837
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ae581b3103940829879b5b4994bda33
+      internalID: 21300004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_3
+      rect:
+        serializedVersion: 2
+        x: 975
+        y: 837
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48dc6a14ac2141e9b798a25757e5e515
+      internalID: 21300006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_4
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 837
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32ded43e506847508d8b97ebc2018d18
+      internalID: 21300008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_5
+      rect:
+        serializedVersion: 2
+        x: 1625
+        y: 837
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e2e17802d204786b908a7535565af50
+      internalID: 21300010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 558
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68840d1f5fd34fa393824556ad47012f
+      internalID: 21300012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_7
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 558
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f00077459eca4c81a00f26ed3464733d
+      internalID: 21300014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_8
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 558
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b29214fa6294e56a740d7275762d961
+      internalID: 21300016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_9
+      rect:
+        serializedVersion: 2
+        x: 975
+        y: 558
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 190d3211aa7d4e9bb57973bb35b5db9f
+      internalID: 21300018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_10
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 558
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b26d4323aaea43bf8d16f841648ddf67
+      internalID: 21300020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_11
+      rect:
+        serializedVersion: 2
+        x: 1625
+        y: 558
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fd8d9c10b8e4a23a2a56f9953c4da2f
+      internalID: 21300022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 279
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1fe6be8746b47069f2f4a91064c3c81
+      internalID: 21300024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_13
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 279
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68a1afb8dd0c4a47bc341bc9f50e052c
+      internalID: 21300026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_14
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 279
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3c3ff7ef4684b91b6f1b2b36fa00a62
+      internalID: 21300028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_15
+      rect:
+        serializedVersion: 2
+        x: 975
+        y: 279
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70a0bd09c0924b9891684e26ca8e35e2
+      internalID: 21300030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_16
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 279
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6dcdbbc02eb49fe985fbc7fec0df6d6
+      internalID: 21300032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_17
+      rect:
+        serializedVersion: 2
+        x: 1625
+        y: 279
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32be597013464e22aae5160b175f5804
+      internalID: 21300034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: InHouseThrowerClown_Sprite_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 325
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0681}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c054e03975c444f8b8e2ba9020d886d
+      internalID: 21300036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1093bb0adb084e5184d3653fe45a32a7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      InHouseThrowerClown_Sprite_0: 21300000
+      InHouseThrowerClown_Sprite_1: 21300002
+      InHouseThrowerClown_Sprite_10: 21300020
+      InHouseThrowerClown_Sprite_11: 21300022
+      InHouseThrowerClown_Sprite_12: 21300024
+      InHouseThrowerClown_Sprite_13: 21300026
+      InHouseThrowerClown_Sprite_14: 21300028
+      InHouseThrowerClown_Sprite_15: 21300030
+      InHouseThrowerClown_Sprite_16: 21300032
+      InHouseThrowerClown_Sprite_17: 21300034
+      InHouseThrowerClown_Sprite_18: 21300036
+      InHouseThrowerClown_Sprite_2: 21300004
+      InHouseThrowerClown_Sprite_3: 21300006
+      InHouseThrowerClown_Sprite_4: 21300008
+      InHouseThrowerClown_Sprite_5: 21300010
+      InHouseThrowerClown_Sprite_6: 21300012
+      InHouseThrowerClown_Sprite_7: 21300014
+      InHouseThrowerClown_Sprite_8: 21300016
+      InHouseThrowerClown_Sprite_9: 21300018
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
