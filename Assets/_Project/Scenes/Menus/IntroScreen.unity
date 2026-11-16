@@ -1405,6 +1405,7 @@ GameObject:
   m_Component:
   - component: {fileID: 640821965}
   - component: {fileID: 640821964}
+  - component: {fileID: 7311700000000000001}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -1412,6 +1413,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &7311700000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 640821963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a1797b2ccf46528598c98dfb7589df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.BackgroundFill
+  targetCamera: {fileID: 0}
 --- !u!212 &640821964
 SpriteRenderer:
   serializedVersion: 3
