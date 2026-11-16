@@ -8,6 +8,7 @@ namespace TunnelVision.UI
         [SerializeField] private GameObject mainPanel;
         [SerializeField] private GameObject optionsPanel;
         [SerializeField] private GameObject infoPanel;
+        [SerializeField] private GameObject statsPanel;
 
         private PanelSwitcher _panels;
 
@@ -48,6 +49,16 @@ namespace TunnelVision.UI
         public void CloseInfo()
         {
             _panels.Switch(infoPanel, mainPanel);
+        }
+
+        public void OpenStats()
+        {
+            _panels.Switch(mainPanel, statsPanel);
+        }
+
+        public void CloseStats()
+        {
+            _panels.Switch(statsPanel, mainPanel);
         }
 
         public void Quit()
