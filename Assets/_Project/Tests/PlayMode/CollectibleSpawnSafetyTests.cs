@@ -22,7 +22,7 @@ namespace TunnelVision.Tests
         private const int TeddiesPerLevel = 3;
         private const float MaxGroundBelow = 1.5f;   // Ground this close is walking or a small hop.
         private static readonly Vector2 TeddySize = new Vector2(0.74f, 0.87f);
-        private const float LiftClearance = 4f;      // Lifts travel straight up and down.
+        private const float LiftClearance = 4f;      // Lifts travel straight up and down, between their two points.
         private const float WheelClearance = 2f;     // How close a spot can be to the circle the seats ride.
 
         // Off-the-ground spots, checked by hand from the level layout, and how you get each one.
@@ -32,12 +32,12 @@ namespace TunnelVision.Tests
                 ["Level1"] = new[]
                 {
                     (new Vector2(332f, 14.3f), "Jump left off Platform 29, or fall down the right side of Platform 24."),
-                    (new Vector2(383.5f, -1.2f), "Stand on Big Wheel 4's seat as it swings through the bottom left."),
+                    (new Vector2(383.5f, -1.2f), "Stand on Big Wheel 4's seat as it swings through the bottom left; it passes just under the teddy."),
                 },
                 ["Level2"] = new[]
                 {
-                    (new Vector2(186f, 22f), "Jump right off the top of Drop Tower 1."),
-                    (new Vector2(85f, 14f), "Drop off the right edge of Platform 07, through Big Wheel 2's hub."),
+                    (new Vector2(186f, 22f), "Ride Drop Tower 1's seat to the top (it's right underneath) and jump."),
+                    (new Vector2(85f, 14f), "Ride Big Wheel 2: it sits on the circle the seats travel."),
                 },
                 ["Level3"] = new[]
                 {
@@ -169,8 +169,12 @@ namespace TunnelVision.Tests
 
                 foreach (var lift in lifts)
                 {
-                    Assert.Greater(Mathf.Abs(point.position.x - lift.transform.position.x), LiftClearance,
-                        $"{point.name} is in {lift.name}'s path.");
+                    // Only the stretch it actually travels, plus room for the platform and Nicholas on it.
+                    var bottom = Mathf.Min(lift.pointA.position.y, lift.pointB.position.y) - 1f;
+                    var top = Mathf.Max(lift.pointA.position.y, lift.pointB.position.y) + 5f;
+                    var beside = Mathf.Abs(point.position.x - lift.transform.position.x) <= LiftClearance;
+                    var sameHeight = point.position.y >= bottom && point.position.y <= top;
+                    Assert.IsFalse(beside && sameHeight, $"{point.name} is in {lift.name}'s path.");
                 }
 
                 foreach (var (hub, radius) in wheels)

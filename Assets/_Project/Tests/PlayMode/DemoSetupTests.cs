@@ -55,10 +55,24 @@ namespace TunnelVision.Tests
             var jump = Private.Get<AudioSource>(player.GetComponent<PlayerMovement>(), "jumpSound");
             var death = Private.Get<AudioSource>(player, "deathSound");
             Assert.AreEqual("Nicholas-Jump", jump.resource.name);
+            Assert.AreEqual("Nicholas-Death", death.resource.name);
+            Assert.AreEqual(jump.gameObject, player.gameObject, "Played from Nicholas himself.");
+            Assert.AreEqual(death.gameObject, player.gameObject);
+        }
+
+        [Test]
+        public void ThePlayerPrefab_HasTheNewSoundsAtTheirVolumes()
+        {
+            // Checked on the prefab: in a running level the Effects Volume setting scales them.
+#if UNITY_EDITOR
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Prefabs/Player.prefab");
+            var jump = Private.Get<AudioSource>(prefab.GetComponent<PlayerMovement>(), "jumpSound");
+            var death = Private.Get<AudioSource>(prefab.GetComponent<PlayerLives>(), "deathSound");
+            Assert.AreEqual("Nicholas-Jump", jump.resource.name);
             Assert.AreEqual(0.3f, jump.volume, 0.001f);
             Assert.AreEqual("Nicholas-Death", death.resource.name);
             Assert.AreEqual(0.4f, death.volume, 0.001f);
-            Assert.AreEqual(jump.gameObject, player.gameObject, "Played from Nicholas himself.");
+#endif
         }
 
         [UnityTest]
