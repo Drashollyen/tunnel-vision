@@ -62,12 +62,9 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator LosingALife_PopsTheLastEyeAway()
         {
+            // The swell itself is checked frame-free in LivesDisplayCurveTests; this checks the result.
             _lives.LoseLife();
-            yield return new WaitForSecondsRealtime(LivesDisplay.SwellSeconds * 0.8f);
-
-            Assert.Greater(_eyes[3].rectTransform.localScale.x, 1.05f, "The eye should swell first.");
-
-            yield return new WaitForSecondsRealtime(LivesDisplay.LoseSeconds);
+            yield return new WaitForSecondsRealtime(LivesDisplay.LoseSeconds + 0.1f);
 
             Assert.AreEqual(0f, _eyes[3].rectTransform.localScale.x, 0.001f, "The eye should be gone.");
             Assert.AreEqual(0f, _eyes[3].color.a, 0.001f);
