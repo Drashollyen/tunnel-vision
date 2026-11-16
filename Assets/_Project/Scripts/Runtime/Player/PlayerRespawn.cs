@@ -122,8 +122,11 @@ namespace TunnelVision.Player
             }
         }
 
-        /// <summary>Takes one life. Further calls do nothing until the player is back in play.</summary>
-        public void Kill()
+        /// <summary>
+        /// Takes one life. Further calls do nothing until the player is back in play.
+        /// <paramref name="fellIntoPit"/> skips the death hop: the player just keeps falling.
+        /// </summary>
+        public void Kill(bool fellIntoPit = false)
         {
             // Nothing can kill the player once the level is complete and they're walking off.
             if (_isDying || UI.LevelCompleteScreen.IsAnyShowing)
@@ -133,7 +136,7 @@ namespace TunnelVision.Player
 
             _isDying = true;
             Died?.Invoke();
-            StartCoroutine(DeathSequence());
+            StartCoroutine(DeathSequence(fellIntoPit));
         }
 
         public void ReachCheckpoint(Checkpoint checkpoint)
@@ -158,7 +161,7 @@ namespace TunnelVision.Player
             CheckpointReached?.Invoke(checkpoint);
         }
 
-        private IEnumerator DeathSequence()
+        private IEnumerator DeathSequence(bool fellIntoPit)
         {
             // Stop controls and come off any moving platform.
             if (movement != null)
@@ -167,6 +170,9 @@ namespace TunnelVision.Player
             }
 
             transform.SetParent(null, true);
+
+            // Falling into a pit carries on at the speed they were already falling.
+            var fallingSpeed = Mathf.Min(0f, _body.linearVelocity.y);
 
             // Stop motion, gravity and collisions.
             _body.linearVelocity = Vector2.zero;
@@ -186,7 +192,7 @@ namespace TunnelVision.Player
 
             if (fallOnDeath)
             {
-                _fall = StartCoroutine(DeathFall());
+                _fall = StartCoroutine(fellIntoPit ? Fall(fallingSpeed) : DeathFall());
             }
 
             // Shows the Round Over or Game Over text.
@@ -257,8 +263,16 @@ namespace TunnelVision.Player
         private IEnumerator DeathFall()
         {
             yield return new WaitForSecondsRealtime(deathPause);
+            yield return Fall(deathHopSpeed);
+        }
 
-            var velocity = deathHopSpeed;
+        /// <summary>
+        /// Moves straight up and down from <paramref name="startSpeed"/> (positive is up) under the
+        /// death fall's gravity until the screen is black. With no hop, it's just a drop.
+        /// </summary>
+        private IEnumerator Fall(float startSpeed)
+        {
+            var velocity = startSpeed;
             var stopAt = Time.unscaledTime + SecondsUntilBlack;
             while (Time.unscaledTime < stopAt)
             {
