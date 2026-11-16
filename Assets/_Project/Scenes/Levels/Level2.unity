@@ -8730,8 +8730,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.LevelGoal
   levelIndex: 1
   levelSelectScene: LevelSelect
-  nextLevelScene: 
-  endsDemo: 1
+  nextLevelScene: Level3
+  endsDemo: 0
   demoEndScene: DemoComplete
 --- !u!1 &888024042424401816
 GameObject:
