@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.Settings;
@@ -49,7 +50,10 @@ namespace TunnelVision.Tests
         public IEnumerator Background_IsTheFairgroundArt_AndCoversTheWholeView()
         {
             yield return null; // BackgroundFill sizes it in LateUpdate.
-            var background = Find("Background").GetComponent<SpriteRenderer>();
+            // A world sprite, not UI, so Find (which only looks at UI objects) won't see it.
+            var background = Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Include)
+                .FirstOrDefault(r => r.name == "Background");
+            Assert.IsNotNull(background, "The menu should have its Background sprite.");
             Assert.AreEqual("menu-bg_0", background.sprite.name, "The in-house fairground art.");
             Assert.IsNotNull(background.GetComponent<BackgroundFill>(), "Scaled to fit any screen shape.");
 
