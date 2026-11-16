@@ -45,6 +45,24 @@ namespace TunnelVision.Tests
             Assert.That(FindButton("Quit Button"), Is.Not.Null);
         }
 
+        [UnityTest]
+        public IEnumerator Background_IsTheFairgroundArt_AndCoversTheWholeView()
+        {
+            yield return null; // BackgroundFill sizes it in LateUpdate.
+            var background = Find("Background").GetComponent<SpriteRenderer>();
+            Assert.AreEqual("menu-bg_0", background.sprite.name, "The in-house fairground art.");
+            Assert.IsNotNull(background.GetComponent<BackgroundFill>(), "Scaled to fit any screen shape.");
+
+            var view = Camera.main;
+            var half = new Vector2(view.orthographicSize * view.aspect, view.orthographicSize);
+            var centre = (Vector2)view.transform.position;
+            var bounds = background.bounds;
+            Assert.LessOrEqual(bounds.min.x, centre.x - half.x + 0.01f, "No gap on the left.");
+            Assert.GreaterOrEqual(bounds.max.x, centre.x + half.x - 0.01f, "No gap on the right.");
+            Assert.LessOrEqual(bounds.min.y, centre.y - half.y + 0.01f, "No gap at the bottom.");
+            Assert.GreaterOrEqual(bounds.max.y, centre.y + half.y - 0.01f, "No gap at the top.");
+        }
+
         [Test]
         public void IntroScreen_StartsWithOptionsHidden()
         {
