@@ -8459,7 +8459,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.CollectibleSpawner
   teddyPrefab: {fileID: 221500800770032247, guid: 89e92502a6b94e4ea2675884a780be07, type: 3}
-  count: 3
 --- !u!1 &446502400070625913
 GameObject:
   m_ObjectHideFlags: 0

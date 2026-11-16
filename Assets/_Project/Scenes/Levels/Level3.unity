@@ -12718,7 +12718,7 @@ Transform:
   m_GameObject: {fileID: 728510792340085467}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 168.38, y: 18.08, z: 0}
+  m_LocalPosition: {x: 168.5, y: 18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12749,7 +12749,7 @@ Transform:
   m_GameObject: {fileID: 148164732139849748}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 388, y: 10, z: 0}
+  m_LocalPosition: {x: 388, y: 9.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12883,7 +12883,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.CollectibleSpawner
   teddyPrefab: {fileID: 221500800770032247, guid: 89e92502a6b94e4ea2675884a780be07, type: 3}
-  count: 3
 --- !u!1 &596426177176001769
 GameObject:
   m_ObjectHideFlags: 0
