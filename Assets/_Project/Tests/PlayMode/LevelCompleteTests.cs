@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using TMPro;
@@ -279,6 +280,33 @@ namespace TunnelVision.Tests
 
             Assert.IsFalse(_next.gameObject.activeSelf);
             Assert.IsTrue(_select.gameObject.activeSelf, "The player must never be stuck.");
+        }
+
+        [UnityTest]
+        public IEnumerator RealPanel_ShrinksWhenThereIsOnlyOneButton()
+        {
+#if UNITY_EDITOR
+            var hud = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Prefabs/UI/HUD.prefab");
+            var source = hud.GetComponentsInChildren<RectTransform>(true).First(t => t.name == "Level Complete Panel");
+            var canvas = new GameObject("Panel Test Canvas", typeof(Canvas)).transform;
+            var panel = (RectTransform)Object.Instantiate(source.gameObject, canvas, false).transform;
+            var select = panel.Find("Level Select Button").gameObject;
+
+            select.SetActive(true);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+            yield return null;
+            var withTwo = panel.rect.height;
+
+            select.SetActive(false); // As on the demo's last level.
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+            yield return null;
+            var withOne = panel.rect.height;
+
+            Assert.AreEqual(500f, withTwo, 1f, "Two buttons: the size the panel was designed at.");
+            Assert.AreEqual(withTwo - 100f, withOne, 1f, "One button: no empty gap where the second was.");
+#else
+            yield break;
+#endif
         }
 
         [UnityTest]
