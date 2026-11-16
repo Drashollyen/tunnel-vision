@@ -254,8 +254,8 @@ MonoBehaviour:
   squeak: {fileID: 0}
   squeakEverySeconds: {x: 2, y: 6}
   laugh: {fileID: 0}
-  windup: {fileID: 8300000, guid: 12cbc582a59e8c043b837132ee331b8f, type: 3}
-  throwSound: {fileID: 0}
+  windup: {fileID: 0}
+  throwSound: {fileID: 8300000, guid: 38762b71291760f40b541533dd6626a0, type: 3}
 --- !u!1 &1100000000000000002
 GameObject:
   m_ObjectHideFlags: 0
