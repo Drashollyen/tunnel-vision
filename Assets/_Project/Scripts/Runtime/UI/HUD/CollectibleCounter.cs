@@ -27,14 +27,9 @@ namespace TunnelVision.UI
 
         private void Awake()
         {
-            _collectibles = FindAnyObjectByType<PlayerCollectibles>();
+            _collectibles = PlayerCollectibles.FindOrAdd();
             _lives = FindAnyObjectByType<PlayerLives>();
             _group = TryGetComponent(out CanvasGroup group) ? group : gameObject.AddComponent<CanvasGroup>();
-
-            if (_collectibles == null && _lives != null)
-            {
-                _collectibles = _lives.gameObject.AddComponent<PlayerCollectibles>();
-            }
 
             if (_collectibles == null)
             {

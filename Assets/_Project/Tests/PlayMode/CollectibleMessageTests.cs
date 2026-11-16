@@ -55,6 +55,27 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
+        public IEnumerator Shows_EvenWhenThePlayerHadNoCollectiblesYet()
+        {
+            // Like the real levels: the Player prefab has no PlayerCollectibles until something
+            // adds one, and the message may wake up before the counter does.
+            Object.DestroyImmediate(_collectibles.gameObject);
+            var player = new GameObject("Player").AddComponent<PlayerLives>();
+            var go = new GameObject("Second Message", typeof(RectTransform));
+            go.AddComponent<TextMeshProUGUI>();
+            var message = go.AddComponent<CollectibleMessage>();
+            yield return null;
+
+            var collectibles = player.GetComponent<PlayerCollectibles>();
+            Assert.IsNotNull(collectibles, "The message should give the Player its collectibles.");
+            Assert.AreSame(collectibles, PlayerCollectibles.FindOrAdd(), "Everyone shares the one.");
+
+            collectibles.Add();
+            yield return new WaitForSecondsRealtime(CheckpointMessage.FadeInSeconds + 0.2f);
+            Assert.AreEqual(1f, message.Visibility, 0.001f, "The pickup should show the message.");
+        }
+
+        [UnityTest]
         public IEnumerator NextTeddy_ShowsItAgain()
         {
             _collectibles.Add();
