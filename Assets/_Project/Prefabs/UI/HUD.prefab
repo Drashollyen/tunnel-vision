@@ -4493,7 +4493,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Teddy Found
+  m_text: Collectible Found
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4b5052e80cdd0b4a986b9be9f50633a, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: cc76b11d4a91409197dcada50ebe2fd6, type: 2}

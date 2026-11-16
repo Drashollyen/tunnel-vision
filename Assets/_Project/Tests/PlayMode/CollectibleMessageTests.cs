@@ -39,7 +39,7 @@ namespace TunnelVision.Tests
         public IEnumerator StartsHidden_WithTheRightWords()
         {
             Assert.AreEqual(0f, _message.Visibility, 0.001f);
-            Assert.AreEqual("Teddy Found", _text.text);
+            Assert.AreEqual("Collectible Found", _text.text);
             yield break;
         }
 
