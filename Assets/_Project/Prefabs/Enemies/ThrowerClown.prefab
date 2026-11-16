@@ -276,7 +276,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: feadc4b00f9c4e42bbceab6e6841227b, type: 3}
   m_Name:
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Enemies.ClownSounds
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Enemies.EnemySounds
   source: {fileID: 82100000000000001}
   animator: {fileID: 95100000000000001}
   steps:

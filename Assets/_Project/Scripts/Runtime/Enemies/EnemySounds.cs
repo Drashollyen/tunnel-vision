@@ -3,16 +3,17 @@ using UnityEngine;
 namespace TunnelVision.Enemies
 {
     /// <summary>
-    /// A clown's sounds, for both the normal clown and the Thrower Clown.
+    /// An enemy's sounds: the clown, the Thrower Clown and the Sword Swallower all use it, each with
+    /// only the sounds it needs.
     /// <list type="bullet">
     /// <item>Footsteps: the Run clip calls <see cref="PlayStep"/> as each foot lands; every second one (by default) plays a sound, alternating between the step sounds.</item>
     /// <item>Squeak: plays every so often, at random, while he's walking (his Animator's Speed is above 0.1).</item>
     /// <item>Laugh: <see cref="PlayLaugh"/>, for the AI to call (say, on spotting Nicholas).</item>
     /// <item>Throwing: the Throw clip calls <see cref="PlayWindup"/> on the wind-up and <see cref="PlayThrow"/> on the release.</item>
     /// </list>
-    /// Any sound left empty is simply skipped.
+    /// Any sound left empty is simply skipped, so an enemy that doesn't walk just leaves the walking sounds empty.
     /// </summary>
-    public class ClownSounds : MonoBehaviour
+    public class EnemySounds : MonoBehaviour
     {
         private static readonly int SpeedParam = Animator.StringToHash("Speed");
         private const float WalkingSpeed = 0.1f;
