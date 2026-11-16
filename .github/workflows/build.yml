@@ -176,7 +176,9 @@ jobs:
   release:
     name: Publish release
     needs: build
-    if: needs.build.result == 'success' && needs.build.outputs.version != ''
+    # always() is needed: "changes" is skipped on manual runs, and without it GitHub skips every
+    # job downstream of a skipped one, even though build ran and succeeded.
+    if: always() && needs.build.result == 'success' && needs.build.outputs.version != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
