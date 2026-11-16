@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.Audio;
@@ -197,38 +196,6 @@ namespace TunnelVision.Tests
             var corners = new Vector3[4];
             ((RectTransform)go.transform).GetWorldCorners(corners);
             return Rect.MinMaxRect(corners[0].x, corners[0].y, corners[2].x, corners[2].y);
-        }
-
-        [UnityTest]
-        public IEnumerator LevelTwo_LeadsOnToLevelThree()
-        {
-#if UNITY_EDITOR
-            yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
-                "Assets/_Project/Scenes/Levels/Level2.unity", new LoadSceneParameters(LoadSceneMode.Single));
-#endif
-            yield return null;
-            var goal = Object.FindAnyObjectByType<LevelGoal>();
-            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            Assert.IsFalse((bool)typeof(LevelGoal).GetField("endsDemo", flags).GetValue(goal), "Level 3 ends the demo now.");
-            Assert.AreEqual("Level3", typeof(LevelGoal).GetField("nextLevelScene", flags).GetValue(goal));
-            Assert.IsTrue(Application.CanStreamedLevelBeLoaded("Level3"), "Level 3 should be in the build.");
-        }
-
-        [UnityTest]
-        public IEnumerator LevelThree_EndsTheDemo()
-        {
-#if UNITY_EDITOR
-            yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
-                "Assets/_Project/Scenes/Levels/Level3.unity", new LoadSceneParameters(LoadSceneMode.Single));
-#endif
-            yield return null;
-            var goal = Object.FindAnyObjectByType<LevelGoal>();
-            Assert.IsNotNull(goal, "Level 3 should have a goal.");
-            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            Assert.AreEqual(2, typeof(LevelGoal).GetField("levelIndex", flags).GetValue(goal));
-            Assert.IsTrue((bool)typeof(LevelGoal).GetField("endsDemo", flags).GetValue(goal));
-            Assert.AreEqual("DemoComplete", typeof(LevelGoal).GetField("demoEndScene", flags).GetValue(goal));
-            Assert.IsTrue(Application.CanStreamedLevelBeLoaded("DemoComplete"), "The ending should be in the build.");
         }
     }
 }

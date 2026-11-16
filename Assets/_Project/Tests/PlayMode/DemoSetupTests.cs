@@ -54,6 +54,11 @@ namespace TunnelVision.Tests
                 Assert.AreEqual($"Level{level + 1}", next);
                 Assert.IsTrue(Application.CanStreamedLevelBeLoaded(next), $"{next} should be in the build.");
             }
+            else
+            {
+                Assert.AreEqual("DemoComplete", Get<string>(goals[0], "demoEndScene"));
+                Assert.IsTrue(Application.CanStreamedLevelBeLoaded("DemoComplete"), "The ending should be in the build.");
+            }
         }
 
         [UnityTest]
