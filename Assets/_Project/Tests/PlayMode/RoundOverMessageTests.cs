@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.Player;
@@ -74,9 +73,7 @@ namespace TunnelVision.Tests
 
         private void Set(string field, object value)
         {
-            typeof(RoundOverMessage)
-                .GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(_message, value);
+            Private.Set(_message, field, value);
         }
 
         private void LoseAllLives()

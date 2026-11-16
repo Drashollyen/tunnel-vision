@@ -7,6 +7,7 @@ using TunnelVision.Player;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
+using static TunnelVision.Tests.Private;
 
 namespace TunnelVision.Tests
 {
@@ -35,12 +36,6 @@ namespace TunnelVision.Tests
         {
             Object.DestroyImmediate(_player);
             IsolatedScene.Close();
-        }
-
-        private static void Set(object target, string field, object value)
-        {
-            target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                .SetValue(target, value);
         }
 
         private static Transform Point(string name, Vector3 position, Transform parent = null)

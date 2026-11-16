@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.Player;
@@ -34,10 +33,7 @@ namespace TunnelVision.Tests
             player.AddComponent<BoxCollider2D>();
             player.AddComponent<PlayerLives>();
             _respawn = player.AddComponent<PlayerRespawn>();
-            foreach (var field in new[] { "revealDuration", "revealHoldDuration", "fadeDuration", "blackHoldDuration" })
-            {
-                typeof(PlayerRespawn).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_respawn, Step);
-            }
+            TestPlayer.ShortenDeath(_respawn, Step);
 
             var canvas = new GameObject("HUD", typeof(Canvas));
             var holder = new GameObject("RoundOverMessage");
@@ -75,7 +71,7 @@ namespace TunnelVision.Tests
 
         private void Set(string field, object value)
         {
-            typeof(RoundOverMessage).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_message, value);
+            Private.Set(_message, field, value);
         }
 
         [UnityTest]
@@ -117,7 +113,6 @@ namespace TunnelVision.Tests
             Assert.IsTrue(_panel.activeSelf, "Out Of Lives stays on screen with its button.");
             Assert.AreEqual(1f, _message.Visibility, 0.001f);
         }
-
 
         private void LoseAllButOneLife()
         {

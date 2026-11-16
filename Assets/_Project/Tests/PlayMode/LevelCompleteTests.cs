@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Linq;
-using System.Reflection;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.Level;
@@ -10,6 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
+using static TunnelVision.Tests.Private;
 
 namespace TunnelVision.Tests
 {
@@ -26,20 +26,12 @@ namespace TunnelVision.Tests
         private TMP_Text _stats;
         private Button _next;
         private Button _select;
-        private bool _hadProgress;
-        private int _savedProgress;
-        private bool _hadTeddies;
-        private int _savedTeddies;
+        private SavedPrefs _saved;
 
         [UnitySetUp]
         public IEnumerator Build()
         {
-            _hadProgress = PlayerPrefs.HasKey(ProgressKey);
-            _savedProgress = PlayerPrefs.GetInt(ProgressKey, 0);
-            PlayerPrefs.SetInt(ProgressKey, 0);
-            _hadTeddies = PlayerPrefs.HasKey(LevelProgress.CollectiblesKey(0));
-            _savedTeddies = PlayerPrefs.GetInt(LevelProgress.CollectiblesKey(0), 0);
-            PlayerPrefs.DeleteKey(LevelProgress.CollectiblesKey(0));
+            _saved = SavedPrefs.Hold(ProgressKey, LevelProgress.CollectiblesKey(0));
 
             yield return IsolatedScene.Create("LevelCompleteTest");
             Time.timeScale = 1f;
@@ -86,14 +78,7 @@ namespace TunnelVision.Tests
         {
             Time.timeScale = 1f;
             IsolatedScene.Close();
-            if (_hadProgress)
-                PlayerPrefs.SetInt(ProgressKey, _savedProgress);
-            else
-                PlayerPrefs.DeleteKey(ProgressKey);
-            if (_hadTeddies)
-                PlayerPrefs.SetInt(LevelProgress.CollectiblesKey(0), _savedTeddies);
-            else
-                PlayerPrefs.DeleteKey(LevelProgress.CollectiblesKey(0));
+            _saved.Restore();
         }
 
         private TMP_Text MakeText(string name)
@@ -108,11 +93,6 @@ namespace TunnelVision.Tests
             var button = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button)).GetComponent<Button>();
             button.transform.SetParent(_panel.transform, false);
             return button;
-        }
-
-        private static void Set(object target, string field, object value)
-        {
-            target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);
         }
 
         [UnityTest]
@@ -208,7 +188,6 @@ namespace TunnelVision.Tests
             Assert.AreEqual(firstStats, _stats.text, "A second touch shouldn't show it again.");
         }
 
-
         [UnityTest]
         public IEnumerator Game_FreezesOnceTheScreenIsBlack()
         {
@@ -232,7 +211,6 @@ namespace TunnelVision.Tests
             Assert.IsFalse(respawn.IsRespawning, "A hazard during the walk-off shouldn't start a death.");
         }
 
-
         [UnityTest]
         public IEnumerator ClearingTheLevel_SavesTheTeddiesFound()
         {
@@ -247,7 +225,6 @@ namespace TunnelVision.Tests
             Assert.AreEqual(2, LevelProgress.BestCollectibles(0));
             StringAssert.Contains("Collectibles: 2", _stats.text);
         }
-
 
         private TMP_Text LabelNextButton()
         {

@@ -6,7 +6,6 @@ using TunnelVision.Level;
 using TunnelVision.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
@@ -23,10 +22,7 @@ namespace TunnelVision.Tests
             RunStats.Reset();
             RunStats.Record(new RunStats.LevelResult(0, 65f, 3, 0));
             RunStats.Record(new RunStats.LevelResult(1, 90f, 1, 1));
-#if UNITY_EDITOR
-            yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
-                Scene, new LoadSceneParameters(LoadSceneMode.Single));
-#endif
+            yield return TestScenes.Load(Scene);
             yield return new WaitForSecondsRealtime(0.2f);
         }
 

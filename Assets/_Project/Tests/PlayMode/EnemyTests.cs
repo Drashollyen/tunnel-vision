@@ -1,10 +1,10 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using TunnelVision.Enemies;
 using TunnelVision.Player;
 using UnityEngine;
 using UnityEngine.TestTools;
+using static TunnelVision.Tests.Private;
 
 namespace TunnelVision.Tests
 {
@@ -39,11 +39,6 @@ namespace TunnelVision.Tests
         {
             Object.DestroyImmediate(_player); // Stops any death sequence a hit started.
             IsolatedScene.Close();
-        }
-
-        private static void Set(object target, string field, object value)
-        {
-            target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);
         }
 
         private static Transform Point(string name, float x, float y)

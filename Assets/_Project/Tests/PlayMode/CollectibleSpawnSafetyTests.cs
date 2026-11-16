@@ -54,10 +54,7 @@ namespace TunnelVision.Tests
 
         private static IEnumerator Load(string path)
         {
-#if UNITY_EDITOR
-            yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
-                path, new LoadSceneParameters(LoadSceneMode.Single));
-#endif
+            yield return TestScenes.Load(path);
             yield return new WaitForFixedUpdate();
             Physics2D.SyncTransforms();
         }

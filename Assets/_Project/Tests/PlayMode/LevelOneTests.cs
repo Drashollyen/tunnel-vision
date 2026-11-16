@@ -2,7 +2,6 @@ using System.Collections;
 using NUnit.Framework;
 using TunnelVision.Player;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace TunnelVision.Tests
@@ -30,10 +29,7 @@ namespace TunnelVision.Tests
         [UnitySetUp]
         public IEnumerator LoadLevel()
         {
-#if UNITY_EDITOR
-            yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
-                LevelPath, new LoadSceneParameters(LoadSceneMode.Single));
-#endif
+            yield return TestScenes.Load(LevelPath);
             yield return new WaitForSeconds(0.5f);
             _lives = Object.FindAnyObjectByType<PlayerLives>();
             _respawn = _lives.GetComponent<PlayerRespawn>();

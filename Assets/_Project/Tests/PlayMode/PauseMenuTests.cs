@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using TMPro;
 using TunnelVision.UI;
@@ -92,7 +91,7 @@ namespace TunnelVision.Tests
 
         private void Set(string field, object value)
         {
-            typeof(PauseMenu).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_menu, value);
+            Private.Set(_menu, field, value);
         }
 
         [UnityTest]
