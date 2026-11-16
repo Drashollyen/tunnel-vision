@@ -6,6 +6,8 @@ namespace TunnelVision.Enemies
     [RequireComponent(typeof(Rigidbody2D))]
     public class Clown : MonoBehaviour
     {
+        private static readonly int SpeedParam = Animator.StringToHash("Speed");
+
         private const float ArriveDistance = 0.1f;
 
         [Header("Patrol")]
@@ -17,13 +19,31 @@ namespace TunnelVision.Enemies
         [SerializeField] private float chaseSpeed = 3f;
         [SerializeField] private float chaseRange = 5f;
 
-        private Rigidbody2D _body;
+        [Header("Art")]
+        [Tooltip("Tick if the sprites are drawn facing right; untick if they face left.")]
+        [SerializeField] private bool artFacesRight = true;
+        [Tooltip("Optional. Found on this object if left empty.")]
+        [SerializeField] private SpriteRenderer body;
+        [Tooltip("Optional. Found on this object if left empty.")]
+        [SerializeField] private Animator animator;
+
+        private Rigidbody2D _rigidbody;
         private Transform _player;
         private Transform _currentTarget;
 
         private void Awake()
         {
-            _body = GetComponent<Rigidbody2D>();
+            _rigidbody = GetComponent<Rigidbody2D>();
+
+            if (body == null)
+            {
+                body = GetComponent<SpriteRenderer>();
+            }
+
+            if (animator == null)
+            {
+                animator = GetComponent<Animator>();
+            }
 
             var playerLives = FindAnyObjectByType<PlayerLives>();
 
@@ -40,7 +60,7 @@ namespace TunnelVision.Enemies
 
         private void FixedUpdate()
         {
-            var distanceToPlayer = Vector2.Distance(_body.position, _player.position);
+            var distanceToPlayer = Vector2.Distance(_rigidbody.position, _player.position);
 
             if (distanceToPlayer < chaseRange)
             {
@@ -56,7 +76,7 @@ namespace TunnelVision.Enemies
         {
             MoveToward(_currentTarget.position.x, patrolSpeed);
 
-            if (Mathf.Abs(_body.position.x - _currentTarget.position.x) < ArriveDistance)
+            if (Mathf.Abs(_rigidbody.position.x - _currentTarget.position.x) < ArriveDistance)
             {
                 _currentTarget = _currentTarget == pointA ? pointB : pointA;
             }
@@ -64,16 +84,28 @@ namespace TunnelVision.Enemies
 
         private void MoveToward(float targetX, float speed)
         {
-            var distance = targetX - _body.position.x;
+            var distance = targetX - _rigidbody.position.x;
             var direction = Mathf.Abs(distance) < ArriveDistance ? 0f : Mathf.Sign(distance);
+            var moveSpeed = direction * speed;
 
-            // Only the sideways speed is set, so gravity still pulls him down.
-            _body.linearVelocity = new Vector2(direction * speed, _body.linearVelocity.y);
+            _rigidbody.linearVelocity = new Vector2(moveSpeed, _rigidbody.linearVelocity.y);
+
+            if (animator != null)
+            {
+                animator.SetFloat(SpeedParam, Mathf.Abs(moveSpeed));
+            }
 
             if (direction != 0f)
             {
-                var scale = transform.localScale;
-                transform.localScale = new Vector3(direction * Mathf.Abs(scale.x), scale.y, scale.z);
+                Face(direction);
+            }
+        }
+
+        private void Face(float direction)
+        {
+            if (body != null)
+            {
+                body.flipX = (direction > 0f) != artFacesRight;
             }
         }
     }
