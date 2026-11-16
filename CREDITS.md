@@ -9,7 +9,6 @@ Add every third-party asset here in the same PR that adds it. Keep downloaded as
 | Jersey 10, The Soft Type Project Authors | [fonts.google.com/specimen/Jersey+10](https://fonts.google.com/specimen/Jersey+10) | SIL OFL 1.1 |
 | Rotating Eyeball, Code Inferno Games | [opengameart.org/content/rotating-eyeball-animation](https://opengameart.org/content/rotating-eyeball-animation) | CC0 1.0 |
 | Liberation Sans (TextMesh Pro default), Red Hat / Unity | Bundled with TextMesh Pro | SIL OFL 1.1 |
-| Free 2D Mega Pack, Brackeys | [assetstore.unity.com/packages/2d/free-2d-mega-pack-177430](https://assetstore.unity.com/packages/2d/free-2d-mega-pack-177430) | Standard Unity Asset Store EULA |
 | 2D Pixel Clown Spritesheet, IamZacard (also recoloured, with three added throw frames, for the Thrower Clown in `Assets/_Project/Art/Enemies/ThrowerClown/`) | [iamzacard.itch.io/2d-pixel-clown-spritesheet](https://iamzacard.itch.io/2d-pixel-clown-spritesheet) | CC0 1.0 |
 | Balloon dog pixel art (background removed and rebuilt at 33x31 for `Assets/_Project/Art/Enemies/BalloonDog/balloon-dog.png`), original artist unknown, found on Pinterest | [uk.pinterest.com/pin/385128205659955019](https://uk.pinterest.com/pin/385128205659955019/) | Unknown |
 | Circus tents photo (cropped, mirrored and pixelated for the level select backdrop), Breno Cardoso on Pexels | [pexels.com/photo/8419827](https://www.pexels.com/photo/woman-in-hat-on-carnival-8419827/) | Pexels License |
