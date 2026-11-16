@@ -58,19 +58,18 @@ Go to **Unity Hub > Add > Add project from disk** and select `tunnel-vision`. **
 ```
 Assets/
   _Project/                 Game content. All new work goes here.
-    Art/                    Sprites by subject: Player, Enemies, Environment, Tiles, UI
+    Art/                    Sprites by subject: Player, Enemies, Environment, Decoration, Collectibles, UI
     Audio/                  Music and sound effects
     Fonts/                  TextMesh Pro font assets
     Physics/                Physics materials and player controls (Input)
-    Prefabs/                Reusable objects: Player, Level, UI
-    Scenes/Menus/           IntroScreen (first in build), LevelSelect
-    Scenes/Levels/          Playable levels (start new ones from Level1)
+    Prefabs/                Reusable objects: Player, Enemies, Level, UI
+    Scenes/Menus/           IntroScreen (first in build), LevelSelect, DemoComplete
+    Scenes/Levels/          Level1 to Level3 (start new ones from Level1)
     Scenes/Dev/             Throwaway test scenes (keep them out of the build list)
     Scripts/Runtime/        Game code (TunnelVision.Runtime), one folder per namespace
     Scripts/Editor/         Editor tools
     Tests/EditMode/         Unit tests
     Tests/PlayMode/         Scene tests
-    Tiles/                  Tile assets and palettes
   ThirdParty/               Downloaded assets. Don't edit (see CREDITS.md)
   Settings/                 URP and Input System settings
   TextMesh Pro/             TMP resources
