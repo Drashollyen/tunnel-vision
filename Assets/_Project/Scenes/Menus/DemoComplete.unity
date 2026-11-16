@@ -3218,7 +3218,7 @@ GameObject:
   - component: {fileID: 778765919199476406}
   - component: {fileID: 136111128120308607}
   m_Layer: 5
-  m_Name: Sword Swallower (Placeholder)
+  m_Name: Sword Swallower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3240,8 +3240,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 390, y: 0}
-  m_SizeDelta: {x: 134, y: 258}
+  m_AnchoredPosition: {x: 390, y: -28}
+  m_SizeDelta: {x: 350, y: 350}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &398427252601626947
 CanvasRenderer:
@@ -3271,7 +3271,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3318007214645083915, guid: 88a65fd0319a188498d385ffaf0ac1c4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -3310,9 +3310,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.SpriteFlipbook
   frames:
-  - {fileID: -3318007214645083915, guid: 88a65fd0319a188498d385ffaf0ac1c4, type: 3}
-  - {fileID: 7591081000407596256, guid: b949349f75a7bc247aba8aa8b54a3d3f, type: 3}
-  framesPerSecond: 1.5
+  - {fileID: 21300000, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300002, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300004, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300006, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300008, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300010, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300012, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300014, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300016, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300018, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300020, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300022, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300024, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300024, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300024, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300024, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300024, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  - {fileID: 21300024, guid: f787a3bb80b74841a4c8792b01ffd63b, type: 3}
+  framesPerSecond: 10
 --- !u!1 &866220131187141257
 GameObject:
   m_ObjectHideFlags: 0
