@@ -122,13 +122,10 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator Chaplin_IsThere_AndClickable()
         {
+            // That he's there with a sprite is TheWholeCast_IsThere's job; this is what makes him clickable.
             var chaplin = Find("Chaplin");
-            Assert.IsNotNull(chaplin, "Chaplin should be back on the ending screen.");
-            Assert.IsNotNull(Find("Sword Swallower"), "The Sword Swallower stays too.");
             Assert.AreEqual("Cast", chaplin.transform.parent.name, "Chaplin stands with the rest of the cast.");
-            var image = chaplin.GetComponent<Image>();
-            Assert.IsNotNull(image.sprite);
-            Assert.IsTrue(image.raycastTarget, "Chaplin has to catch clicks.");
+            Assert.IsTrue(chaplin.GetComponent<Image>().raycastTarget, "Chaplin has to catch clicks.");
             Assert.IsNull(chaplin.GetComponent<Button>(), "He's hidden: no button look, and no extra button.");
 
             var egg = chaplin.GetComponent<ChaplinEasterEgg>();

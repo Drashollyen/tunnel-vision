@@ -158,12 +158,15 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator NextLevel_ShowsWhenThereIsANextLevel()
+        public IEnumerator NextLevel_ShowsWhenThereIsANextLevel_WithLevelSelectBesideIt()
         {
+            var label = LabelNextButton();
             _goal.Reach();
             yield return null;
 
+            Assert.IsFalse(_screen.EndsDemo);
             Assert.IsTrue(_next.gameObject.activeSelf);
+            Assert.AreEqual(LevelCompleteScreen.NextLevelLabel, label.text);
             Assert.AreEqual("Level2", _screen.NextScene);
             Assert.IsTrue(_select.gameObject.activeSelf);
         }
@@ -307,18 +310,6 @@ namespace TunnelVision.Tests
 #else
             yield break;
 #endif
-        }
-
-        [UnityTest]
-        public IEnumerator OtherLevels_SayNextLevel()
-        {
-            var label = LabelNextButton();
-            _goal.Reach();
-            yield return null;
-
-            Assert.IsFalse(_screen.EndsDemo);
-            Assert.AreEqual(LevelCompleteScreen.NextLevelLabel, label.text);
-            Assert.IsTrue(_select.gameObject.activeSelf);
         }
     }
 }

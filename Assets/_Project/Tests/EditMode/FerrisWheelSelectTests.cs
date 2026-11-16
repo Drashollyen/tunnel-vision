@@ -43,18 +43,12 @@ namespace TunnelVision.Tests
         [TestCase(2, 2, FerrisWheelSelect.CabinState.Playable)]
         [TestCase(3, 0, FerrisWheelSelect.CabinState.NotInPrototype)]
         [TestCase(4, 0, FerrisWheelSelect.CabinState.NotInPrototype)]
+        // Progress saved from a longer build mustn't open cabins the prototype doesn't have.
+        [TestCase(4, 10, FerrisWheelSelect.CabinState.NotInPrototype)]
         public void GetCabinState_FollowsProgressAndPrototypeSize(
             int cabin, int highestUnlocked, FerrisWheelSelect.CabinState expected)
         {
             Assert.AreEqual(expected, FerrisWheelSelect.GetCabinState(cabin, PrototypeLevels, highestUnlocked));
-        }
-
-        [Test]
-        public void GetCabinState_ExtraCabinsStayOutEvenWhenProgressIsAhead()
-        {
-            // Progress saved from a longer build mustn't open cabins the prototype doesn't have.
-            Assert.AreEqual(FerrisWheelSelect.CabinState.NotInPrototype,
-                FerrisWheelSelect.GetCabinState(4, PrototypeLevels, 10));
         }
 
         [Test]

@@ -179,23 +179,14 @@ namespace TunnelVision.Tests
         }
 
         [UnityTest]
-        public IEnumerator QuestionMarkCabin_DoesNotRock()
+        public IEnumerator QuestionMarkCabin_PlaysTheNoticeSound_WithoutRocking()
         {
-            SelectCabin(3);
-            _wheel.StartSelectedLevel();
-
-            Assert.AreEqual(-1, _wheel.WobblingCabin);
-            yield break;
-        }
-
-        [UnityTest]
-        public IEnumerator QuestionMarkCabin_PlaysTheNoticeSound()
-        {
+            // That the notice opens is PrototypeNoticeTests' job; this checks how it sounds and moves.
             SelectCabin(3);
             _wheel.StartSelectedLevel();
 
             CollectionAssert.AreEqual(new[] { _notInPrototype }, _played);
-            Assert.IsTrue(_dialog.IsOpen);
+            Assert.AreEqual(-1, _wheel.WobblingCabin, "Only locked cabins rock.");
             yield break;
         }
 

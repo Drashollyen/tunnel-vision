@@ -10,8 +10,8 @@ using UnityEngine.TestTools;
 namespace TunnelVision.Tests
 {
     /// <summary>
-    /// The game has no pickups yet, so these build a bare player and a counter in a scene of
-    /// their own and call Add() directly, the way a pickup will.
+    /// The HUD's teddy counter, on its own: these build a bare player and a counter in a scene of
+    /// their own and call Add() directly, the way a teddy does when it's picked up.
     /// </summary>
     public class CollectibleCounterTests
     {

@@ -47,13 +47,6 @@ namespace TunnelVision.Tests
             IsolatedScene.Close();
         }
 
-        [Test]
-        public void Smoothing_IsOnAlone_AndOffWhileRiding()
-        {
-            Assert.AreEqual(RigidbodyInterpolation2D.Interpolate, PlayerMovement.SmoothingFor(riding: false));
-            Assert.AreEqual(RigidbodyInterpolation2D.None, PlayerMovement.SmoothingFor(riding: true));
-        }
-
         [UnityTest]
         public IEnumerator OnTheirOwn_ThePlayerIsSmoothed_EvenIfTheSceneTurnedItOff()
         {

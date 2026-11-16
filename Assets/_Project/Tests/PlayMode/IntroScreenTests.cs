@@ -38,7 +38,7 @@ namespace TunnelVision.Tests
         }
 
         [Test]
-        public void IntroScreen_HasPlayOptionsAndQuitButtons()
+        public void IntroScreen_HasPlayOptionsInfoAndQuitButtons()
         {
             Assert.That(FindButton("Play Button"), Is.Not.Null);
             Assert.That(FindButton("Options Button"), Is.Not.Null);

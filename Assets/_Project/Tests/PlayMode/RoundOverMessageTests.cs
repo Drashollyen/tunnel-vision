@@ -106,7 +106,6 @@ namespace TunnelVision.Tests
 
             Assert.IsTrue(_panel.activeSelf);
             Assert.AreEqual(RoundOverMessage.LifeLostTitle, _title.text);
-            Assert.AreEqual("Game Over", _title.text);
             Assert.AreEqual($"{_lives.MaxLives - 1} Lives Remaining", _subtitle.GetParsedText(), "The line reads the same while its number animates.");
             Assert.AreEqual(1f, Time.timeScale);
             Assert.IsFalse(_button.gameObject.activeSelf);
@@ -178,7 +177,7 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator WithoutAButton_GameOverAsksForEnterInstead()
         {
-            // The HUD prefab has no Level Select button until it's built.
+            // The real prefabs have a Level Select button; this is the fallback if one is ever left unwired.
             Set("levelSelectButton", null);
             yield return null;
             LoseAllLives();
