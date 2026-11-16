@@ -54,8 +54,7 @@ namespace TunnelVision.UI
             return text.ToString();
         }
 
-        /// <summary>One stats line: "Level 1:  1:23  ·  3 Teddies  ·  0 Lives Lost". The main menu's Stats page uses it too.</summary>
-        public static string Line(string label, float seconds, int teddies, int livesLost) =>
+        private static string Line(string label, float seconds, int teddies, int livesLost) =>
             $"{label}:  {LevelCompleteScreen.FormatTime(seconds)}  ·  " +
             $"{teddies} {(teddies == 1 ? "Teddy" : "Teddies")}  ·  " +
             $"{livesLost} {(livesLost == 1 ? "Life" : "Lives")} Lost";
