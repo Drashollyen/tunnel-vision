@@ -136,7 +136,6 @@ namespace TunnelVision.Tests
             Assert.IsNotNull(egg);
             Assert.AreEqual("chaplin-tunnel-vision", egg.Voice.name);
             Assert.AreEqual(Find("Confetti").GetComponent<ConfettiRain>(), egg.Confetti);
-            Assert.AreEqual(Find("Cast").transform, egg.Cast);
             yield break;
         }
 
@@ -171,26 +170,17 @@ namespace TunnelVision.Tests
                 Assert.IsNotNull(Find("Easter Egg Overlay"), "The black screen goes on top of everything.");
 
                 var seen = new System.Collections.Generic.HashSet<ChaplinEasterEgg.Stage>();
-                for (var until = Time.realtimeSinceStartup + 25f; Time.realtimeSinceStartup < until && egg.Current != ChaplinEasterEgg.Stage.Closing;)
+                for (var until = Time.realtimeSinceStartup + 15f; Time.realtimeSinceStartup < until && egg.Current != ChaplinEasterEgg.Stage.Closing;)
                 {
                     seen.Add(egg.Current);
                     yield return null;
                 }
 
-                Assert.IsTrue(seen.Contains(ChaplinEasterEgg.Stage.Glitch), "The screen should glitch out.");
+                Assert.IsTrue(seen.Contains(ChaplinEasterEgg.Stage.FadingToBlack), "The screen should fade to black.");
                 Assert.IsTrue(seen.Contains(ChaplinEasterEgg.Stage.Voice), "Chaplin's clip should play.");
-                Assert.IsTrue(seen.Contains(ChaplinEasterEgg.Stage.Torch), "A torch should search for him.");
-                Assert.IsTrue(seen.Contains(ChaplinEasterEgg.Stage.CloseUp), "It should close in on his face.");
                 Assert.AreEqual(ChaplinEasterEgg.Stage.Closing, egg.Current);
                 Assert.AreEqual(1, quits, "The game closes once at the end.");
-
-                Assert.IsNull(Find("Scary Message"), "No message box any more.");
-                Assert.IsFalse(egg.GetComponent<Image>().enabled, "The close-up stands in for him.");
-                Assert.Greater(egg.CloseUp.localScale.x, 5f, "His face should fill the screen.");
-                foreach (var loop in egg.Cast.GetComponentsInChildren<CelebrationLoop>())
-                {
-                    Assert.IsFalse(loop.enabled, "Everyone freezes when the lights go.");
-                }
+                Assert.AreEqual(1f, egg.Black.color.a, 0.001f, "It ends on black.");
                 foreach (var colour in egg.Confetti.PieceColours)
                 {
                     Assert.AreEqual(Color.black, colour, "The confetti should have turned black.");

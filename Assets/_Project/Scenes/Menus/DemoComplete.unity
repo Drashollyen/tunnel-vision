@@ -1965,22 +1965,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.ChaplinEasterEgg
   voice: {fileID: 8300000, guid: 547388e7364340f4903b04244dd5089b, type: 3}
-  glitchSound: {fileID: 0}
   confetti: {fileID: 887342482604219609}
-  cast: {fileID: 701772106406277449}
   musicFadeSeconds: 1.5
-  glitchSeconds: 1.2
+  blackFadeSeconds: 1.2
   darkBeforeVoice: 0.4
-  darkAfterVoice: 0.5
-  torchSweepSeconds: 4
-  torchLockSeconds: 0.8
-  closeUpSeconds: 1.2
-  closeUpHoldSeconds: 1.6
+  darkAfterVoice: 0.8
   confettiColour: {r: 0, g: 0, b: 0, a: 1}
-  faceOnSprite: {x: 0.45, y: 0.81}
-  faceHeightOnSprite: 0.15
-  closeUpFaceHeight: 0.6
-  torchRadius: 170
 --- !u!114 &7311500000000000007
 MonoBehaviour:
   m_ObjectHideFlags: 0
