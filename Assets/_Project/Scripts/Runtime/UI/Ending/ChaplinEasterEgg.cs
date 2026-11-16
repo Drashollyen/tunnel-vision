@@ -1,78 +1,95 @@
 using System;
 using System.Collections;
-using TMPro;
+using System.Collections.Generic;
 using TunnelVision.Audio;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace TunnelVision.UI
 {
     /// <summary>
-    /// The hidden Chaplin on the Demo Complete screen. Clicking him fades the music out, turns the
-    /// confetti black, cuts the lights and plays his clip. Then a dark message from him counts
-    /// down, and at zero the game closes (in the Editor, Play mode stops).
+    /// The hidden Chaplin on the Demo Complete screen. Press F or click him: the music fades and
+    /// the confetti turns black, the screen glitches out to black, his "Tunnel Vision" clip plays
+    /// in the dark, then a torch searches the screen, finds him, closes in on his face, and the
+    /// game closes (in the Editor, Play mode stops).
     /// <para>
-    /// Goes on Chaplin's Image, which must be a raycast target. The black screen and the message
-    /// are made by code on their own canvas, above everything else. Their colours, font and
-    /// timings are fields here, so they can be tuned in the Inspector. Real time throughout.
+    /// Goes on Chaplin's Image, which must be a raycast target. The black screen, glitch, torch
+    /// and close-up are made by code on their own canvas above everything else; timings and
+    /// sizes are fields here, so they can be tuned in the Inspector. Real time throughout.
     /// </para>
     /// </summary>
+    [RequireComponent(typeof(Image))]
     public class ChaplinEasterEgg : MonoBehaviour, IPointerClickHandler
     {
         public enum Stage
         {
             Waiting,
             MusicFading,
-            LightsOut,
+            Glitch,
             Voice,
-            Countdown,
+            Torch,
+            CloseUp,
             Closing,
         }
 
-        public const string HeaderText = "Chaplin, The Sword Swallower";
-
         [Header("Wiring")]
         [SerializeField] private AudioClip voice;
+        [Tooltip("Optional. Left empty, a glitch sound is made by code.")]
+        [SerializeField] private AudioClip glitchSound;
         [SerializeField] private ConfettiRain confetti;
-        [SerializeField] private TMP_FontAsset font;
+        [Tooltip("The cast line-up. Everyone in it freezes when the lights go.")]
+        [SerializeField] private Transform cast;
 
         [Header("Timings (Seconds)")]
         [SerializeField] private float musicFadeSeconds = 1.5f;
-        [SerializeField] private float lightsOutSeconds = 0.8f;
-        [SerializeField] private float darkBeforeVoice = 0.6f;
-        [SerializeField] private float darkAfterVoice = 0.8f;
-        [SerializeField] private int countdownFrom = 10;
+        [SerializeField] private float glitchSeconds = 1.2f;
+        [SerializeField] private float darkBeforeVoice = 0.4f;
+        [SerializeField] private float darkAfterVoice = 0.5f;
+        [SerializeField] private float torchSweepSeconds = 4f;
+        [SerializeField] private float torchLockSeconds = 0.8f;
+        [SerializeField] private float closeUpSeconds = 1.2f;
+        [SerializeField] private float closeUpHoldSeconds = 1.6f;
 
         [Header("Look")]
         [SerializeField] private Color confettiColour = Color.black;
-        [SerializeField] private Color boxColour = new Color(0.07f, 0f, 0f, 0.98f);
-        [SerializeField] private Color borderColour = new Color(0.45f, 0f, 0.02f, 1f);
-        [SerializeField] private Color headerColour = new Color(0.62f, 0.04f, 0.04f, 1f);
-        [SerializeField] private Color messageColour = new Color(0.66f, 0.58f, 0.58f, 1f);
-        [SerializeField] private Color countdownColour = new Color(0.8f, 0f, 0f, 1f);
-        [SerializeField] private float shakePixels = 3f;
+        [Tooltip("Where his face is on the sprite, from 0 to 1 across and up.")]
+        [SerializeField] private Vector2 faceOnSprite = new Vector2(0.45f, 0.81f);
+        [Tooltip("How tall his face is, as a share of the sprite's height.")]
+        [SerializeField] private float faceHeightOnSprite = 0.15f;
+        [Tooltip("How much of the screen's height his face fills in the close-up.")]
+        [SerializeField] private float closeUpFaceHeight = 0.6f;
+        [SerializeField] private float torchRadius = 170f;
 
-        /// <summary>What closes the game at zero. Tests swap it so the test run isn't stopped.</summary>
+        /// <summary>What closes the game at the end. Tests swap it so the test run isn't stopped.</summary>
         public static Action QuitAction = QuitGame;
 
-        private Image _lightsOut;
-        private GameObject _box;
-        private TMP_Text _message;
-        private TMP_Text _number;
-        private AudioSource _voiceSource;
+        // Torch texture: a soft hole in black. The image is this many hole-widths across, so it
+        // still covers the screen wherever the hole goes.
+        private const int TorchTexture = 768;
+        private const float TorchSpan = 12f;
+        private const int GlitchBars = 14;
+        private const float GlitchStepSeconds = 0.04f;
+
+        private Image _image;
+        private Sprite _idle;
+        private RectTransform _overlay;
+        private Image _black;
+        private RectTransform _torch;
+        private RectTransform _closeUp;
+        private readonly List<Image> _bars = new List<Image>();
+        private AudioSource _audio;
+        private Texture2D _torchTexture;
 
         public Stage Current { get; private set; } = Stage.Waiting;
         public AudioClip Voice => voice;
         public ConfettiRain Confetti => confetti;
-        public TMP_FontAsset FontAsset => font;
-        public int CountdownFrom => countdownFrom;
+        public Transform Cast => cast;
 
-        /// <summary>The message box, once it's showing.</summary>
-        public GameObject MessageBox => _box;
-
-        /// <summary>The message text, once it's showing.</summary>
-        public TMP_Text MessageText => _message;
+        /// <summary>Chaplin's close-up, once the torch is out.</summary>
+        public RectTransform CloseUp => _closeUp;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetQuit()
@@ -90,23 +107,9 @@ namespace TunnelVision.UI
 #endif
         }
 
-        /// <summary>The whole number shown on the countdown, <paramref name="elapsed"/> seconds in. Never below zero.</summary>
-        public static int CountdownAt(float elapsed, int from)
-        {
-            return Mathf.Max(0, from - Mathf.FloorToInt(Mathf.Max(0f, elapsed)));
-        }
-
-        /// <summary>Chaplin's message. The countdown itself is the big red number underneath.</summary>
-        public const string Message =
-            "You Laughed. You Clapped. You Thought The Show Was Over.\n\n"
-            + "I Have Swallowed Every Blade In This Tent, Nicholas.\n"
-            + "I Swallowed The Lights. I Swallowed The Music.\n"
-            + "And Now I Will Swallow You.\n\n"
-            + "The Tent Comes Down In...";
-
         /// <summary>
-        /// How dark the lights-out screen is, <paramref name="t"/> seconds into a cut lasting
-        /// <paramref name="seconds"/>: the lights flicker a few times, then stay off.
+        /// How dark the screen is, <paramref name="t"/> seconds into a cut lasting
+        /// <paramref name="seconds"/>: it stutters off and on a few times, then stays black.
         /// </summary>
         public static float LightsOutAlpha(float t, float seconds)
         {
@@ -125,6 +128,123 @@ namespace TunnelVision.UI
             return step == 1 || step == 3 || step >= 5 ? 1f : 0f;
         }
 
+        /// <summary>
+        /// Where the torch is <paramref name="t"/> (0 to 1) of the way through its search: it
+        /// eases from spot to spot, pausing briefly at each, like someone looking around.
+        /// </summary>
+        public static Vector2 SweepPoint(float t, IList<Vector2> points)
+        {
+            if (points == null || points.Count == 0)
+            {
+                return Vector2.zero;
+            }
+
+            if (points.Count == 1 || t <= 0f)
+            {
+                return points[0];
+            }
+
+            if (t >= 1f)
+            {
+                return points[points.Count - 1];
+            }
+
+            var scaled = t * (points.Count - 1);
+            var index = Mathf.FloorToInt(scaled);
+            var within = Mathf.SmoothStep(0f, 1f, scaled - index);
+            return Vector2.Lerp(points[index], points[index + 1], within);
+        }
+
+        /// <summary>
+        /// The part of <paramref name="rect"/> a sprite of <paramref name="spriteSize"/> fills
+        /// with Preserve Aspect on, lined up by <paramref name="pivot"/> like the Image does.
+        /// </summary>
+        public static Rect DrawnRect(Rect rect, Vector2 pivot, Vector2 spriteSize)
+        {
+            if (spriteSize.x <= 0f || spriteSize.y <= 0f)
+            {
+                return rect;
+            }
+
+            var scale = Mathf.Min(rect.width / spriteSize.x, rect.height / spriteSize.y);
+            var size = spriteSize * scale;
+            var x = rect.x + (rect.width - size.x) * pivot.x;
+            var y = rect.y + (rect.height - size.y) * pivot.y;
+            return new Rect(x, y, size.x, size.y);
+        }
+
+        /// <summary>
+        /// A burst of digital glitching: short random stretches of noise, crushed buzzing and
+        /// dropouts. The same <paramref name="seed"/> always makes the same sound.
+        /// </summary>
+        public static float[] GlitchSamples(int sampleRate, float seconds, int seed)
+        {
+            var count = Mathf.Max(0, Mathf.RoundToInt(sampleRate * seconds));
+            var samples = new float[count];
+            var random = new System.Random(seed);
+            var i = 0;
+            while (i < count)
+            {
+                var length = Mathf.Clamp((int)(sampleRate * (0.02 + random.NextDouble() * 0.07)), 1, count - i);
+                var kind = random.Next(4);
+                var frequency = 80.0 + random.NextDouble() * 1100.0;
+                var hold = 1 + random.Next(40);
+                var held = 0f;
+                var loudness = 0.35f + (float)random.NextDouble() * 0.45f;
+                for (var j = 0; j < length; j++, i++)
+                {
+                    float value;
+                    switch (kind)
+                    {
+                        case 0: // Static.
+                            value = (float)(random.NextDouble() * 2.0 - 1.0);
+                            break;
+                        case 1: // Square buzz.
+                            value = Math.Sin(2.0 * Math.PI * frequency * j / sampleRate) >= 0.0 ? 1f : -1f;
+                            break;
+                        case 2: // Dropout.
+                            value = 0f;
+                            break;
+                        default: // Crushed noise: holds each value for a while.
+                            if (j % hold == 0)
+                            {
+                                held = (float)(random.NextDouble() * 2.0 - 1.0);
+                            }
+
+                            value = held;
+                            break;
+                    }
+
+                    samples[i] = value * loudness;
+                }
+            }
+
+            return samples;
+        }
+
+        private void Awake()
+        {
+            _image = GetComponent<Image>();
+            _idle = _image.sprite;
+        }
+
+        private void OnDestroy()
+        {
+            if (_torchTexture != null)
+            {
+                Destroy(_torchTexture);
+            }
+        }
+
+        private void Update()
+        {
+            var keyboard = Keyboard.current;
+            if (Current == Stage.Waiting && keyboard != null && keyboard.fKey.wasPressedThisFrame)
+            {
+                Play();
+            }
+        }
+
         public void OnPointerClick(PointerEventData eventData)
         {
             Play();
@@ -138,6 +258,7 @@ namespace TunnelVision.UI
                 return;
             }
 
+            Current = Stage.MusicFading;
             StartCoroutine(Run());
         }
 
@@ -145,7 +266,7 @@ namespace TunnelVision.UI
         {
             BuildOverlay();
 
-            Current = Stage.MusicFading;
+            // The happy music fades and the confetti turns black.
             if (MusicPlayer.Current != null)
             {
                 MusicPlayer.Current.FadeOut(musicFadeSeconds);
@@ -158,41 +279,77 @@ namespace TunnelVision.UI
 
             yield return new WaitForSecondsRealtime(musicFadeSeconds);
 
-            Current = Stage.LightsOut;
-            for (var t = 0f; t < lightsOutSeconds; t += Time.unscaledDeltaTime)
+            // The screen glitches out to black.
+            Current = Stage.Glitch;
+            _audio.PlayOneShot(glitchSound != null ? glitchSound : MakeGlitchClip(glitchSeconds));
+            var nextGlitch = 0f;
+            for (var t = 0f; t < glitchSeconds; t += Time.unscaledDeltaTime)
             {
-                SetDark(LightsOutAlpha(t, lightsOutSeconds));
+                SetBlack(LightsOutAlpha(t, glitchSeconds));
+                if (t >= nextGlitch)
+                {
+                    ScrambleBars();
+                    nextGlitch = t + GlitchStepSeconds;
+                }
+
                 yield return null;
             }
 
-            SetDark(1f);
-            yield return new WaitForSecondsRealtime(darkBeforeVoice);
+            HideBars();
+            SetBlack(1f);
+            FreezeCast();
 
+            // His clip, in the dark.
+            yield return new WaitForSecondsRealtime(darkBeforeVoice);
             Current = Stage.Voice;
             if (voice != null)
             {
-                _voiceSource.clip = voice;
-                _voiceSource.Play();
+                _audio.PlayOneShot(voice);
                 yield return new WaitForSecondsRealtime(voice.length);
             }
 
             yield return new WaitForSecondsRealtime(darkAfterVoice);
 
-            Current = Stage.Countdown;
-            _message.text = Message;
-            _box.SetActive(true);
-            var shown = -1;
-            for (var elapsed = 0f; ; elapsed += Time.unscaledDeltaTime)
+            // A torch searches the screen and finds him.
+            Current = Stage.Torch;
+            var face = MakeCloseUp(out var faceOffset, out var faceHeight);
+            _torch.gameObject.SetActive(true);
+            SetBlack(0f);
+            var size = _overlay.rect.size;
+            var path = new[]
             {
-                var left = CountdownAt(elapsed, countdownFrom);
-                if (left != shown)
-                {
-                    shown = left;
-                    _number.text = left.ToString();
-                }
+                new Vector2(size.x * 0.42f, size.y * 0.3f),
+                new Vector2(size.x * 0.12f, size.y * -0.18f),
+                new Vector2(size.x * -0.1f, size.y * 0.26f),
+                new Vector2(size.x * 0.3f, size.y * -0.05f),
+                new Vector2(size.x * -0.42f, size.y * 0.32f),
+                face,
+            };
+            for (var t = 0f; t < torchSweepSeconds; t += Time.unscaledDeltaTime)
+            {
+                PlaceTorch(SweepPoint(t / torchSweepSeconds, path), torchRadius);
+                yield return null;
+            }
 
-                Shake();
-                if (left <= 0)
+            for (var t = 0f; t < torchLockSeconds; t += Time.unscaledDeltaTime)
+            {
+                PlaceTorch(face, torchRadius);
+                yield return null;
+            }
+
+            // Closes in on his face.
+            Current = Stage.CloseUp;
+            var scale = faceHeight > 0f ? closeUpFaceHeight * size.y / faceHeight : 1f;
+            var closeRadius = closeUpFaceHeight * size.y * 0.75f;
+            for (var t = 0f; ; t += Time.unscaledDeltaTime)
+            {
+                var e = Mathf.SmoothStep(0f, 1f, closeUpSeconds > 0f ? t / closeUpSeconds : 1f);
+                var s = Mathf.Lerp(1f, scale, e);
+                var centre = Vector2.Lerp(face, Vector2.zero, e);
+                _closeUp.localScale = new Vector3(s, s, 1f);
+                _closeUp.anchoredPosition = centre - faceOffset * s;
+                PlaceTorch(centre, Mathf.Lerp(torchRadius, closeRadius, e));
+                if (e >= 1f)
                 {
                     break;
                 }
@@ -200,29 +357,137 @@ namespace TunnelVision.UI
                 yield return null;
             }
 
-            // Let the zero land before it all goes.
-            yield return new WaitForSecondsRealtime(0.4f);
+            for (var t = 0f; t < closeUpHoldSeconds; t += Time.unscaledDeltaTime)
+            {
+                PlaceTorch(Vector2.zero, closeRadius);
+                yield return null;
+            }
+
             Current = Stage.Closing;
             QuitAction?.Invoke();
         }
 
-        private void SetDark(float alpha)
+        private void SetBlack(float alpha)
         {
-            var colour = _lightsOut.color;
-            colour.a = alpha;
-            _lightsOut.color = colour;
+            _black.color = new Color(0f, 0f, 0f, alpha);
         }
 
-        private void Shake()
+        private void ScrambleBars()
         {
-            var box = (RectTransform)_box.transform;
-            box.anchoredPosition = UnityEngine.Random.insideUnitCircle * shakePixels;
+            var size = _overlay.rect.size;
+            foreach (var bar in _bars)
+            {
+                var on = Random.value < 0.6f;
+                bar.enabled = on;
+                if (!on)
+                {
+                    continue;
+                }
+
+                var rect = bar.rectTransform;
+                var width = Random.value < 0.5f ? size.x : size.x * Random.Range(0.2f, 0.8f);
+                rect.sizeDelta = new Vector2(width, Random.Range(6f, 90f));
+                rect.anchoredPosition = new Vector2(Random.Range(-size.x, size.x) * 0.3f, Random.Range(-size.y, size.y) * 0.5f);
+                switch (Random.Range(0, 5))
+                {
+                    case 0:
+                        bar.color = Color.black;
+                        break;
+                    case 1:
+                        bar.color = new Color(1f, 1f, 1f, 0.85f);
+                        break;
+                    case 2:
+                        bar.color = new Color(0.85f, 0f, 0.1f, 0.85f);
+                        break;
+                    case 3:
+                        bar.color = new Color(0f, 0.9f, 0.9f, 0.6f);
+                        break;
+                    default:
+                        bar.color = new Color(0.1f, 0.1f, 0.1f, 0.95f);
+                        break;
+                }
+            }
+        }
+
+        private void HideBars()
+        {
+            foreach (var bar in _bars)
+            {
+                bar.enabled = false;
+            }
+        }
+
+        // Everyone stops celebrating once the lights are out, and Chaplin goes back to standing.
+        private void FreezeCast()
+        {
+            var root = cast != null ? cast : transform;
+            foreach (var loop in root.GetComponentsInChildren<CelebrationLoop>())
+            {
+                loop.enabled = false;
+            }
+
+            foreach (var flipbook in root.GetComponentsInChildren<SpriteFlipbook>())
+            {
+                flipbook.enabled = false;
+            }
+
+            _image.sprite = _idle;
+        }
+
+        private void PlaceTorch(Vector2 centre, float radius)
+        {
+            // A slight flicker, like a real torch.
+            var flicker = 1f + (Mathf.PerlinNoise(Time.unscaledTime * 6f, 0.3f) - 0.5f) * 0.06f;
+            var across = radius * 2f * TorchSpan * flicker;
+            _torch.anchoredPosition = centre;
+            _torch.sizeDelta = new Vector2(across, across);
+        }
+
+        // A copy of Chaplin on the overlay, exactly over the real one, which hides. Returns where
+        // his face is, how far that is from the copy's pivot, and how tall his face is on screen.
+        private Vector2 MakeCloseUp(out Vector2 faceOffset, out float faceHeight)
+        {
+            var source = (RectTransform)transform;
+            var go = new GameObject("Chaplin Close-Up", typeof(RectTransform), typeof(Image));
+            go.layer = gameObject.layer;
+            _closeUp = (RectTransform)go.transform;
+            _closeUp.SetParent(_overlay, false);
+            _closeUp.SetSiblingIndex(0);
+            var image = go.GetComponent<Image>();
+            image.sprite = _idle;
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+
+            var toOverlay = source.lossyScale.x / Mathf.Max(0.0001f, _overlay.lossyScale.x);
+            _closeUp.anchorMin = _closeUp.anchorMax = new Vector2(0.5f, 0.5f);
+            _closeUp.pivot = source.pivot;
+            _closeUp.sizeDelta = source.rect.size * toOverlay;
+            _closeUp.anchoredPosition = _overlay.InverseTransformPoint(source.position);
+            _closeUp.localScale = Vector3.one;
+            _image.enabled = false;
+
+            var spriteSize = _idle != null ? _idle.rect.size : _closeUp.sizeDelta;
+            var local = new Rect(-_closeUp.pivot * _closeUp.sizeDelta, _closeUp.sizeDelta);
+            var drawn = DrawnRect(local, _closeUp.pivot, spriteSize);
+            faceOffset = drawn.position + Vector2.Scale(faceOnSprite, drawn.size);
+            faceHeight = drawn.height * faceHeightOnSprite;
+            return _closeUp.anchoredPosition + faceOffset;
+        }
+
+        private AudioClip MakeGlitchClip(float seconds)
+        {
+            const int rate = 44100;
+            var samples = GlitchSamples(rate, seconds, 1913);
+            var clip = AudioClip.Create("Glitch", Mathf.Max(1, samples.Length), 1, rate, false);
+            clip.SetData(samples, 0);
+            return clip;
         }
 
         private void BuildOverlay()
         {
             var root = new GameObject("Easter Egg Overlay", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             root.layer = gameObject.layer;
+            _overlay = (RectTransform)root.transform;
             var canvas = root.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 1000;
@@ -231,36 +496,59 @@ namespace TunnelVision.UI
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.matchWidthOrHeight = 1f;
 
-            _voiceSource = root.AddComponent<AudioSource>();
-            _voiceSource.playOnAwake = false;
-            _voiceSource.loop = false;
-            _voiceSource.spatialBlend = 0f;
-            SoundEffectsVolume.Exclude(_voiceSource);
+            _audio = root.AddComponent<AudioSource>();
+            _audio.playOnAwake = false;
+            _audio.loop = false;
+            _audio.spatialBlend = 0f;
+            SoundEffectsVolume.Exclude(_audio);
 
-            // Blocks clicks from here on, so the Main Menu button can't cut the show short.
-            _lightsOut = MakeImage("Lights Out", root.transform, new Color(0f, 0f, 0f, 0f));
-            Stretch((RectTransform)_lightsOut.transform);
-            _lightsOut.raycastTarget = true;
+            // From the bottom up: (the close-up goes here later), the torch, the black, the glitch
+            // bars, and an invisible cover so nothing underneath can be clicked any more.
+            _torchTexture = MakeTorchTexture();
+            var torch = MakeImage("Torch", _overlay, Color.white);
+            torch.sprite = Sprite.Create(_torchTexture, new Rect(0f, 0f, TorchTexture, TorchTexture), new Vector2(0.5f, 0.5f));
+            _torch = torch.rectTransform;
+            _torch.gameObject.SetActive(false);
 
-            var border = MakeImage("Scary Message", root.transform, borderColour);
-            _box = border.gameObject;
-            var boxRect = (RectTransform)_box.transform;
-            boxRect.sizeDelta = new Vector2(1180f, 620f);
+            _black = MakeImage("Black", _overlay, new Color(0f, 0f, 0f, 0f));
+            Stretch(_black.rectTransform);
 
-            var inside = MakeImage("Inside", boxRect, boxColour);
-            Stretch((RectTransform)inside.transform, 8f);
+            for (var i = 0; i < GlitchBars; i++)
+            {
+                var bar = MakeImage("Glitch Bar", _overlay, Color.black);
+                bar.enabled = false;
+                _bars.Add(bar);
+            }
 
-            var header = MakeText("Header", boxRect, 54f, headerColour);
-            header.text = HeaderText;
-            Place(header.rectTransform, new Vector2(0f, 240f), new Vector2(1080f, 80f));
+            var cover = MakeImage("Click Cover", _overlay, new Color(0f, 0f, 0f, 0f));
+            Stretch(cover.rectTransform);
+            cover.raycastTarget = true;
+        }
 
-            _message = MakeText("Message", boxRect, 36f, messageColour);
-            Place(_message.rectTransform, new Vector2(0f, 10f), new Vector2(1060f, 330f));
+        private static Texture2D MakeTorchTexture()
+        {
+            var texture = new Texture2D(TorchTexture, TorchTexture, TextureFormat.RGBA32, false)
+            {
+                name = "Torch",
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+            };
+            var pixels = new Color32[TorchTexture * TorchTexture];
+            var middle = (TorchTexture - 1) * 0.5f;
+            var radius = TorchTexture / TorchSpan * 0.5f;
+            for (var y = 0; y < TorchTexture; y++)
+            {
+                for (var x = 0; x < TorchTexture; x++)
+                {
+                    var distance = Mathf.Sqrt((x - middle) * (x - middle) + (y - middle) * (y - middle));
+                    var dark = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(radius * 0.55f, radius, distance));
+                    pixels[y * TorchTexture + x] = new Color32(0, 0, 0, (byte)(dark * 255f));
+                }
+            }
 
-            _number = MakeText("Countdown", boxRect, 110f, countdownColour);
-            Place(_number.rectTransform, new Vector2(0f, -225f), new Vector2(400f, 130f));
-
-            _box.SetActive(false);
+            texture.SetPixels32(pixels);
+            texture.Apply();
+            return texture;
         }
 
         private static Image MakeImage(string name, Transform parent, Color colour)
@@ -274,36 +562,12 @@ namespace TunnelVision.UI
             return image;
         }
 
-        private TMP_Text MakeText(string name, Transform parent, float size, Color colour)
-        {
-            var go = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
-            go.layer = parent.gameObject.layer;
-            go.transform.SetParent(parent, false);
-            var text = go.GetComponent<TextMeshProUGUI>();
-            if (font != null)
-            {
-                text.font = font;
-            }
-
-            text.fontSize = size;
-            text.color = colour;
-            text.alignment = TextAlignmentOptions.Center;
-            text.raycastTarget = false;
-            return text;
-        }
-
-        private static void Stretch(RectTransform rect, float inset = 0f)
+        private static void Stretch(RectTransform rect)
         {
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
-            rect.offsetMin = new Vector2(inset, inset);
-            rect.offsetMax = new Vector2(-inset, -inset);
-        }
-
-        private static void Place(RectTransform rect, Vector2 position, Vector2 size)
-        {
-            rect.anchoredPosition = position;
-            rect.sizeDelta = size;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
         }
     }
 }
