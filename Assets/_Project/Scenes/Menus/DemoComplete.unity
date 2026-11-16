@@ -1849,7 +1849,6 @@ RectTransform:
   - {fileID: 354245461547567575}
   - {fileID: 558896880564468768}
   - {fileID: 701772106406277449}
-  - {fileID: 7311500000000000002}
   - {fileID: 126176979004710137}
   - {fileID: 861762933505538301}
   m_Father: {fileID: 0}
@@ -1872,6 +1871,7 @@ GameObject:
   - component: {fileID: 7311500000000000004}
   - component: {fileID: 7311500000000000005}
   - component: {fileID: 7311500000000000006}
+  - component: {fileID: 7311500000000000007}
   m_Layer: 5
   m_Name: Chaplin
   m_TagString: Untagged
@@ -1891,11 +1891,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1770531897}
+  m_Father: {fileID: 701772106406277449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 150, y: 40}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: -540, y: 0}
   m_SizeDelta: {x: 134, y: 258}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &7311500000000000003
@@ -1979,6 +1979,22 @@ MonoBehaviour:
   messageColour: {r: 0.66, g: 0.58, b: 0.58, a: 1}
   countdownColour: {r: 0.8, g: 0, b: 0, a: 1}
   shakePixels: 3
+--- !u!114 &7311500000000000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7311500000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40775de9a32f4b4a8f797e95cdb0f934, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.CelebrationLoop
+  move: 0
+  amount: 18
+  speed: 1.3
+  offset: 0.6
 --- !u!1 &1779390894
 GameObject:
   m_ObjectHideFlags: 0
@@ -3013,6 +3029,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 7311500000000000002}
   - {fileID: 218269052517528872}
   - {fileID: 589843986918525261}
   - {fileID: 413636133420563097}
@@ -3539,6 +3556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.UI.EyeGlance
   targets:
+  - {fileID: 7311500000000000002}
   - {fileID: 589843986918525261}
   - {fileID: 413636133420563097}
   - {fileID: 324888172289157906}

@@ -65,7 +65,7 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator TheWholeCast_IsThere()
         {
-            foreach (var name in new[] { "Nicholas", "Clown", "Balloon Dog", "Sword Swallower" })
+            foreach (var name in new[] { "Chaplin", "Nicholas", "Clown", "Balloon Dog", "Sword Swallower" })
             {
                 var member = Find(name);
                 Assert.IsNotNull(member, name);
@@ -126,6 +126,7 @@ namespace TunnelVision.Tests
             var chaplin = Find("Chaplin");
             Assert.IsNotNull(chaplin, "Chaplin should be back on the ending screen.");
             Assert.IsNotNull(Find("Sword Swallower"), "The Sword Swallower stays too.");
+            Assert.AreEqual("Cast", chaplin.transform.parent.name, "Chaplin stands with the rest of the cast.");
             var image = chaplin.GetComponent<Image>();
             Assert.IsNotNull(image.sprite);
             Assert.IsTrue(image.raycastTarget, "Chaplin has to catch clicks.");
