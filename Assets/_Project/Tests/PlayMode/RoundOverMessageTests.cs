@@ -137,9 +137,10 @@ namespace TunnelVision.Tests
         [UnityTest]
         public IEnumerator GameOver_StaysUp()
         {
+            Set("showSeconds", 0.3f); // A Round Over would be gone by now; Game Over mustn't be.
             yield return null;
             LoseAllLives();
-            yield return new WaitForSecondsRealtime(3f); // Longer than a Round Over stays up.
+            yield return new WaitForSecondsRealtime(0.6f);
 
             Assert.IsTrue(_panel.activeSelf);
             Assert.AreEqual(0f, Time.timeScale);

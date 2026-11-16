@@ -89,6 +89,14 @@ namespace TunnelVision.Tests
             return button;
         }
 
+        // Waits for the page cross-fade to finish, rather than a fixed time.
+        private IEnumerator WaitForPanelSwitch()
+        {
+            var switcher = _menu.GetComponent<PanelSwitcher>();
+            yield return null;
+            yield return new WaitWhile(() => switcher != null && switcher.IsSwitching);
+        }
+
         private void Set(string field, object value)
         {
             Private.Set(_menu, field, value);
@@ -147,12 +155,12 @@ namespace TunnelVision.Tests
             yield return null;
 
             _menu.OpenOptions();
-            yield return new WaitForSecondsRealtime(0.4f); // The cross-fade, on unscaled time.
+            yield return WaitForPanelSwitch();
             Assert.IsTrue(_menu.IsOnOptions);
             Assert.IsFalse(_pausePanel.activeSelf);
 
             _options.PressBack();
-            yield return new WaitForSecondsRealtime(0.4f);
+            yield return WaitForPanelSwitch();
             Assert.IsFalse(_menu.IsOnOptions);
             Assert.IsTrue(_pausePanel.activeSelf);
             Assert.IsTrue(_menu.IsPaused, "Going back from Options shouldn't resume.");
@@ -164,10 +172,10 @@ namespace TunnelVision.Tests
             _menu.Pause();
             yield return null;
             _menu.OpenOptions();
-            yield return new WaitForSecondsRealtime(0.4f);
+            yield return WaitForPanelSwitch();
 
             _menu.PressEscape();
-            yield return new WaitForSecondsRealtime(0.4f);
+            yield return WaitForPanelSwitch();
 
             Assert.IsTrue(_menu.IsPaused);
             Assert.IsFalse(_menu.IsOnOptions);
@@ -193,7 +201,7 @@ namespace TunnelVision.Tests
             yield return null;
 
             _levelSelect.onClick.Invoke();
-            yield return new WaitForSecondsRealtime(0.4f);
+            yield return WaitForPanelSwitch();
 
             Assert.IsTrue(_menu.IsConfirmingLeave);
             Assert.IsTrue(_menu.IsPaused, "Asking shouldn't leave or resume yet.");
@@ -209,10 +217,10 @@ namespace TunnelVision.Tests
             _menu.Pause();
             yield return null;
             _levelSelect.onClick.Invoke();
-            yield return new WaitForSecondsRealtime(0.4f);
+            yield return WaitForPanelSwitch();
 
             _stay.onClick.Invoke();
-            yield return new WaitForSecondsRealtime(0.4f);
+            yield return WaitForPanelSwitch();
 
             Assert.IsFalse(_menu.IsConfirmingLeave);
             Assert.IsTrue(_pausePanel.activeSelf);
@@ -225,10 +233,10 @@ namespace TunnelVision.Tests
             _menu.Pause();
             yield return null;
             _levelSelect.onClick.Invoke();
-            yield return new WaitForSecondsRealtime(0.4f);
+            yield return WaitForPanelSwitch();
 
             _menu.PressEscape();
-            yield return new WaitForSecondsRealtime(0.4f);
+            yield return WaitForPanelSwitch();
 
             Assert.IsFalse(_menu.IsConfirmingLeave);
             Assert.IsTrue(_menu.IsPaused);
@@ -240,7 +248,7 @@ namespace TunnelVision.Tests
             _menu.Pause();
             yield return null;
             _levelSelect.onClick.Invoke();
-            yield return new WaitForSecondsRealtime(0.4f);
+            yield return WaitForPanelSwitch();
 
             _leave.onClick.Invoke();
 

@@ -10,8 +10,9 @@ namespace TunnelVision.Tests
 {
     public class PlayerRespawnTests
     {
-        // The death sequence takes about 5 seconds.
-        private const float RespawnTimeout = 10f;
+        // Each stage of the death sequence is cut to this, so a death takes about a second, not five.
+        private const float Step = 0.1f;
+        private const float RespawnTimeout = 3f;
 
         private GameObject _player;
         private GameObject _other;
@@ -34,6 +35,8 @@ namespace TunnelVision.Tests
             _player.AddComponent<BoxCollider2D>();
             _lives = _player.AddComponent<PlayerLives>();
             _respawn = _player.AddComponent<PlayerRespawn>();
+            TestPlayer.ShortenDeath(_respawn, Step);
+            Private.Set(_respawn, "deathPause", Step);
         }
 
         [TearDown]
