@@ -18,10 +18,13 @@ namespace TunnelVision.Tests
         }
 
         [Test]
-        public void Message_ShowsTheCountdown()
+        public void Message_LeavesTheNumberToTheBigCountdown()
         {
-            StringAssert.Contains("In 7...", ChaplinEasterEgg.MessageFor(7));
-            StringAssert.Contains("In 0...", ChaplinEasterEgg.MessageFor(0));
+            StringAssert.EndsWith("The Tent Comes Down In...", ChaplinEasterEgg.Message);
+            foreach (var c in ChaplinEasterEgg.Message)
+            {
+                Assert.IsFalse(char.IsDigit(c), "Only the big red countdown shows the number.");
+            }
         }
 
         [Test]
@@ -49,7 +52,7 @@ namespace TunnelVision.Tests
         [Test]
         public void Wording_IsTitleCase()
         {
-            foreach (var line in new[] { ChaplinEasterEgg.HeaderText, ChaplinEasterEgg.MessageFor(10) })
+            foreach (var line in new[] { ChaplinEasterEgg.HeaderText, ChaplinEasterEgg.Message })
             {
                 foreach (var word in line.Split(' ', '\n'))
                 {

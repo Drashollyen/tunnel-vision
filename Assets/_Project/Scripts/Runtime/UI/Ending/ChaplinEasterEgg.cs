@@ -96,15 +96,13 @@ namespace TunnelVision.UI
             return Mathf.Max(0, from - Mathf.FloorToInt(Mathf.Max(0f, elapsed)));
         }
 
-        /// <summary>Chaplin's message, with <paramref name="seconds"/> left on the countdown.</summary>
-        public static string MessageFor(int seconds)
-        {
-            return "You Laughed. You Clapped. You Thought The Show Was Over.\n\n"
-                   + "I Have Swallowed Every Blade In This Tent, Nicholas.\n"
-                   + "I Swallowed The Lights. I Swallowed The Music.\n"
-                   + "And Now I Will Swallow You.\n\n"
-                   + $"The Tent Comes Down In {seconds}...";
-        }
+        /// <summary>Chaplin's message. The countdown itself is the big red number underneath.</summary>
+        public const string Message =
+            "You Laughed. You Clapped. You Thought The Show Was Over.\n\n"
+            + "I Have Swallowed Every Blade In This Tent, Nicholas.\n"
+            + "I Swallowed The Lights. I Swallowed The Music.\n"
+            + "And Now I Will Swallow You.\n\n"
+            + "The Tent Comes Down In...";
 
         /// <summary>
         /// How dark the lights-out screen is, <paramref name="t"/> seconds into a cut lasting
@@ -181,6 +179,7 @@ namespace TunnelVision.UI
             yield return new WaitForSecondsRealtime(darkAfterVoice);
 
             Current = Stage.Countdown;
+            _message.text = Message;
             _box.SetActive(true);
             var shown = -1;
             for (var elapsed = 0f; ; elapsed += Time.unscaledDeltaTime)
@@ -189,7 +188,6 @@ namespace TunnelVision.UI
                 if (left != shown)
                 {
                     shown = left;
-                    _message.text = MessageFor(left);
                     _number.text = left.ToString();
                 }
 
