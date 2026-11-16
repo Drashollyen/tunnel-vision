@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using TMPro;
 using TunnelVision.Level;
 using UnityEngine;
@@ -7,9 +6,9 @@ using UnityEngine;
 namespace TunnelVision.UI
 {
     /// <summary>
-    /// The main menu's Stats page, in two columns: each level's best clear on the left, totals over
-    /// every playthrough on the right, each under a slightly larger title. Fills its text each time
-    /// the page opens.
+    /// The main menu's Stats page, in two columns, each its own centred text box: each level's best
+    /// clear on the left, totals over every playthrough on the right, each under a larger title.
+    /// Fills its text each time the page opens.
     /// </summary>
     public class StatsPage : MonoBehaviour
     {
@@ -17,27 +16,36 @@ namespace TunnelVision.UI
         public const string AllTimeHeading = "All Time";
         public const string NotCleared = "Not Cleared Yet";
 
-        // Where the right column starts, across the text box.
-        private const string RightColumn = "54%";
-        private const string TitleSize = "120%";
+        private const string TitleSize = "130%";
         private const string DetailSize = "80%";
 
-        [SerializeField] private TMP_Text stats;
+        [Tooltip("The left column.")]
+        [SerializeField] private TMP_Text bestClears;
+        [Tooltip("The right column.")]
+        [SerializeField] private TMP_Text allTime;
         [Tooltip("How many levels the prototype has. Each gets a line, cleared or not.")]
         [SerializeField] private int levelCount = 3;
 
         private void OnEnable()
         {
-            if (stats != null)
+            if (bestClears != null)
             {
-                stats.text = StatsText(levelCount);
+                bestClears.text = BestText(levelCount);
+            }
+
+            if (allTime != null)
+            {
+                allTime.text = AllTimeText();
             }
         }
 
-        /// <summary>The page's text, read from the saved all-time stats. The text box should be left-aligned.</summary>
-        public static string StatsText(int levelCount) => Columns(BestLines(levelCount), AllTimeLines());
+        /// <summary>The left column's text: the title, then each level's best clear.</summary>
+        public static string BestText(int levelCount) => string.Join("\n", BestLines(levelCount));
 
-        /// <summary>The left column: the title, then each level's fastest time with its other bests below.</summary>
+        /// <summary>The right column's text: the title, then the totals.</summary>
+        public static string AllTimeText() => string.Join("\n", AllTimeLines());
+
+        /// <summary>The title, then each level's fastest time with its other bests on a smaller line below.</summary>
         public static List<string> BestLines(int levelCount)
         {
             var lines = new List<string> { Title(BestHeading) };
@@ -58,7 +66,7 @@ namespace TunnelVision.UI
             return lines;
         }
 
-        /// <summary>The right column: the title, then the totals over every clear.</summary>
+        /// <summary>The title, then the totals over every clear.</summary>
         public static List<string> AllTimeLines() => new List<string>
         {
             Title(AllTimeHeading),
@@ -68,32 +76,6 @@ namespace TunnelVision.UI
             $"Collectibles:  {AllTimeStats.TotalTeddies}",
             $"Lives Lost:  {AllTimeStats.TotalLivesLost}",
         };
-
-        /// <summary>Puts two columns side by side, line for line; the shorter one just ends early.</summary>
-        public static string Columns(IReadOnlyList<string> left, IReadOnlyList<string> right)
-        {
-            var text = new StringBuilder();
-            var count = Mathf.Max(left.Count, right.Count);
-            for (var i = 0; i < count; i++)
-            {
-                if (i > 0)
-                {
-                    text.Append('\n');
-                }
-
-                if (i < left.Count)
-                {
-                    text.Append(left[i]);
-                }
-
-                if (i < right.Count)
-                {
-                    text.Append($"<pos={RightColumn}>{right[i]}");
-                }
-            }
-
-            return text.ToString();
-        }
 
         private static string Title(string title) => $"<size={TitleSize}><b>{title}</b></size>";
 

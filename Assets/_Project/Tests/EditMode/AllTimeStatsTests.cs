@@ -110,13 +110,14 @@ namespace TunnelVision.Tests
         [Test]
         public void StatsText_HasBothTitles_AndAnEmptyRecord()
         {
-            var text = StatsPage.StatsText(1);
+            var best = StatsPage.BestText(1);
+            var allTime = StatsPage.AllTimeText();
 
-            Assert.That(text, Does.Contain(StatsPage.BestHeading));
-            Assert.That(text, Does.Contain(StatsPage.AllTimeHeading));
-            Assert.That(text, Does.Contain("Levels Cleared:  0"));
-            Assert.That(text, Does.Contain("Demo Completed:  0"));
-            Assert.That(text, Does.Contain("Lives Lost:  0"));
+            Assert.That(best, Does.StartWith("<size=").And.Contain(StatsPage.BestHeading), "The title comes first, larger.");
+            Assert.That(allTime, Does.StartWith("<size=").And.Contain(StatsPage.AllTimeHeading));
+            Assert.That(allTime, Does.Contain("Levels Cleared:  0"));
+            Assert.That(allTime, Does.Contain("Demo Completed:  0"));
+            Assert.That(allTime, Does.Contain("Lives Lost:  0"));
         }
 
         [Test]
@@ -144,14 +145,6 @@ namespace TunnelVision.Tests
             Assert.That(lines, Has.Some.EqualTo($"Time Played:  {LevelCompleteScreen.FormatTime(75f)}"));
             Assert.That(lines, Has.Some.EqualTo("Collectibles:  2"));
             Assert.That(lines, Has.Some.EqualTo("Lives Lost:  1"));
-        }
-
-        [Test]
-        public void Columns_PutsTheRightColumnBesideTheLeft_LineForLine()
-        {
-            var text = StatsPage.Columns(new[] { "A", "B", "C" }, new[] { "X", "Y" });
-
-            Assert.That(text, Is.EqualTo("A<pos=54%>X\nB<pos=54%>Y\nC"));
         }
     }
 }

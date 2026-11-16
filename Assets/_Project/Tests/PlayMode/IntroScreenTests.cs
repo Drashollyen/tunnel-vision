@@ -108,7 +108,8 @@ namespace TunnelVision.Tests
 
             Assert.That(Find("Main Panel").activeInHierarchy, Is.False);
             Assert.That(Find("Stats Panel").activeInHierarchy, Is.True);
-            Assert.That(Find("Stats Text").GetComponent<TMP_Text>().text, Does.Contain(StatsPage.AllTimeHeading));
+            Assert.That(Find("Best Clears Text").GetComponent<TMP_Text>().text, Does.Contain(StatsPage.BestHeading));
+            Assert.That(Find("All Time Text").GetComponent<TMP_Text>().text, Does.Contain(StatsPage.AllTimeHeading));
 
             FindButton("Stats Close Button").onClick.Invoke();
             yield return WaitForPanelSwitch();
