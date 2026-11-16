@@ -55,6 +55,8 @@ namespace TunnelVision.Player
         private float _normalGlobalIntensity;
         private GameObject _madeFade;
         private Coroutine _fall;
+        private readonly System.Collections.Generic.List<CinemachineCamera> _heldCameras =
+            new System.Collections.Generic.List<CinemachineCamera>();
 
         /// <summary>True from a death until the player can move again.</summary>
         public bool IsRespawning => _isDying;
@@ -192,6 +194,9 @@ namespace TunnelVision.Player
 
             if (fallOnDeath)
             {
+                // The camera holds still while they fall out of the level, like old platformers;
+                // following them down would drag it along the bottom of the camera bounds.
+                HoldCameras();
                 _fall = StartCoroutine(fellIntoPit ? Fall(fallingSpeed) : DeathFall());
             }
 
@@ -222,6 +227,7 @@ namespace TunnelVision.Player
                 _fall = null;
             }
 
+            ReleaseCameras();
             MoveTo(_checkpoint != null ? _checkpoint.RespawnPosition : _levelStart);
             if (movement != null)
             {
@@ -283,6 +289,37 @@ namespace TunnelVision.Player
             }
 
             _fall = null;
+        }
+
+        /// <summary>Stops every camera that follows the player from following, until <see cref="ReleaseCameras"/>.</summary>
+        private void HoldCameras()
+        {
+            _heldCameras.Clear();
+            foreach (var cam in FindObjectsByType<CinemachineCamera>())
+            {
+                if (cam.Follow == transform)
+                {
+                    cam.Follow = null;
+                    _heldCameras.Add(cam);
+                }
+            }
+        }
+
+        /// <summary>Points the held cameras back at the player. Call while the screen is black, just before moving them.</summary>
+        private void ReleaseCameras()
+        {
+            foreach (var cam in _heldCameras)
+            {
+                if (cam != null)
+                {
+                    cam.Follow = transform;
+
+                    // Snap straight to the respawned player instead of gliding across the level.
+                    cam.PreviousStateIsValid = false;
+                }
+            }
+
+            _heldCameras.Clear();
         }
 
         private void MoveTo(Vector3 position)
