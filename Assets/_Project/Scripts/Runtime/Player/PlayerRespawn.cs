@@ -37,6 +37,16 @@ namespace TunnelVision.Player
         [SerializeField] private float fadeDuration = 0.75f;
         [SerializeField] private float blackHoldDuration = 0.3f;
 
+        [Header("Death Fall")]
+        [Tooltip("On death, pause in the death pose, hop up, then drop straight down through the floor.")]
+        [SerializeField] private bool fallOnDeath = true;
+        [Tooltip("Seconds frozen in the death pose before the hop.")]
+        [SerializeField] private float deathPause = 0.4f;
+        [Tooltip("How fast the hop starts upward, in units per second.")]
+        [SerializeField] private float deathHopSpeed = 9f;
+        [Tooltip("How hard the fall pulls down, in units per second squared.")]
+        [SerializeField] private float deathFallGravity = 30f;
+
         private PlayerLives _lives;
         private Rigidbody2D _body;
         private Vector3 _levelStart;
@@ -44,6 +54,7 @@ namespace TunnelVision.Player
         private bool _isDying;
         private float _normalGlobalIntensity;
         private GameObject _madeFade;
+        private Coroutine _fall;
 
         /// <summary>True from a death until the player can move again.</summary>
         public bool IsRespawning => _isDying;
@@ -167,6 +178,17 @@ namespace TunnelVision.Player
                 visionLight.enabled = false;
             }
 
+            // The death pose, then a hop and a drop through the floor while the level lights up.
+            if (movement != null)
+            {
+                movement.SetDead(true);
+            }
+
+            if (fallOnDeath)
+            {
+                _fall = StartCoroutine(DeathFall());
+            }
+
             // Shows the Round Over or Game Over text.
             _lives.LoseLife();
 
@@ -188,10 +210,17 @@ namespace TunnelVision.Player
 
             // Move while the screen is fully black, facing the way the level starts (to the right),
             // whichever way the player was facing when they died.
+            if (_fall != null)
+            {
+                StopCoroutine(_fall);
+                _fall = null;
+            }
+
             MoveTo(_checkpoint != null ? _checkpoint.RespawnPosition : _levelStart);
             if (movement != null)
             {
                 movement.FaceStartDirection();
+                movement.SetDead(false);
             }
 
             if (globalLight != null)
@@ -218,6 +247,28 @@ namespace TunnelVision.Player
             }
 
             _isDying = false;
+        }
+
+        /// <summary>
+        /// The death fall, like an old platformer: a moment frozen in the death pose, a hop up, then
+        /// a drop straight down through the floor and off the screen. Only moves up and down. Runs
+        /// until the screen is black (the physics body is off, so nothing stops the fall).
+        /// </summary>
+        private IEnumerator DeathFall()
+        {
+            yield return new WaitForSecondsRealtime(deathPause);
+
+            var velocity = deathHopSpeed;
+            var stopAt = Time.unscaledTime + SecondsUntilBlack;
+            while (Time.unscaledTime < stopAt)
+            {
+                var dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
+                velocity -= deathFallGravity * dt;
+                transform.position += new Vector3(0f, velocity * dt, 0f);
+                yield return null;
+            }
+
+            _fall = null;
         }
 
         private void MoveTo(Vector3 position)

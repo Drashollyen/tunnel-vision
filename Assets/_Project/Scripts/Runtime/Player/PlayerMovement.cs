@@ -25,6 +25,14 @@ namespace TunnelVision.Player
         [Header("Facing")]
         [SerializeField] private SpriteRenderer bodySprite;
 
+        [Header("Animation")]
+        [Tooltip("The body's Animator. Optional: without one the body just doesn't animate.")]
+        [SerializeField] private Animator bodyAnimator;
+
+        private static readonly int SpeedParam = Animator.StringToHash("Speed");
+        private static readonly int GroundedParam = Animator.StringToHash("Grounded");
+        private static readonly int DeadParam = Animator.StringToHash("Dead");
+
         [Header("Looking")]
         [SerializeField] private Transform eyeball;
         [SerializeField] private float eyeTurnSpeed = 360f;
@@ -68,6 +76,29 @@ namespace TunnelVision.Player
         void Update()
         {
             UpdateSmoothing();
+            UpdateAnimator();
+        }
+
+        // Walk while moving sideways, jump pose while off the ground.
+        private void UpdateAnimator()
+        {
+            if (bodyAnimator == null || bodyAnimator.runtimeAnimatorController == null || rb == null)
+            {
+                return;
+            }
+
+            var speed = rb.simulated ? Mathf.Abs(rb.linearVelocity.x) : 0f;
+            bodyAnimator.SetFloat(SpeedParam, speed);
+            bodyAnimator.SetBool(GroundedParam, !rb.simulated || groundCheckPos == null || IsGrounded());
+        }
+
+        /// <summary>Shows the death pose (true) or puts the body back to normal (false).</summary>
+        public void SetDead(bool dead)
+        {
+            if (bodyAnimator != null && bodyAnimator.runtimeAnimatorController != null)
+            {
+                bodyAnimator.SetBool(DeadParam, dead);
+            }
         }
 
         // Rides parent the player to the moving thing, and stepping off unparents them.
