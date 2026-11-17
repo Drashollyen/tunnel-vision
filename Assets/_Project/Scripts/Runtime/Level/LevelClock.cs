@@ -9,7 +9,7 @@ namespace TunnelVision.Level
     /// </summary>
     public static class LevelClock
     {
-        private static int _resetScene = -1;
+        private static Scene _resetScene;
         private static float _resetAt;
 
         /// <summary>Seconds of the current round.</summary>
@@ -17,7 +17,7 @@ namespace TunnelVision.Level
         {
             get
             {
-                var offset = SceneManager.GetActiveScene().handle == _resetScene ? _resetAt : 0f;
+                var offset = SceneManager.GetActiveScene() == _resetScene ? _resetAt : 0f;
                 return Mathf.Max(0f, Time.timeSinceLevelLoad - offset);
             }
         }
@@ -25,7 +25,7 @@ namespace TunnelVision.Level
         /// <summary>Starts the round time again from zero, in this level only.</summary>
         public static void Restart()
         {
-            _resetScene = SceneManager.GetActiveScene().handle;
+            _resetScene = SceneManager.GetActiveScene();
             _resetAt = Time.timeSinceLevelLoad;
         }
     }
