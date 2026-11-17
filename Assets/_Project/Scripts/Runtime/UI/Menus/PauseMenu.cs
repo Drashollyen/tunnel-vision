@@ -4,12 +4,15 @@ using TunnelVision.Player;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
     /// <summary>
-    /// Escape pauses a level and shows Resume, Options, Level Select and Main Menu. Options is the
+    /// Escape pauses a level and shows Resume, Restart, Options, Level Select and Main Menu.
+    /// Restart puts the player back at their last checkpoint, or asks first and restarts the
+    /// whole level if they haven't reached one. Options is the
     /// same page (the OptionsPanel prefab) as on the main menu. Escape on the options page goes
     /// back, and on the pause page resumes. It won't open on Out Of Lives, during the death
     /// sequence, or while a scene fades in or out. Level Select and Main Menu ask first, since
@@ -24,6 +27,8 @@ namespace TunnelVision.UI
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private OptionsMenu optionsPanel;
         [SerializeField] private Button resumeButton;
+        [Tooltip("Optional. Back to the last checkpoint, or the start of the level if there isn't one.")]
+        [SerializeField] private Button restartButton;
         [SerializeField] private Button optionsButton;
         [SerializeField] private Button levelSelectButton;
         [SerializeField] private Button mainMenuButton;
@@ -36,9 +41,14 @@ namespace TunnelVision.UI
         [SerializeField] private TMP_Text confirmTitle;
         [SerializeField] private Button leaveButton;
         [SerializeField] private Button stayButton;
+        [Tooltip("Optional. The Leave button's text, so it can say Restart when restarting.")]
+        [SerializeField] private TMP_Text leaveButtonLabel;
 
         public const string LevelSelectQuestion = "Go To Level Select?";
         public const string MainMenuQuestion = "Go To The Main Menu?";
+        public const string RestartQuestion = "Restart The Level?";
+        public const string LeaveLabel = "Leave";
+        public const string RestartLabel = "Restart";
         public const string ProgressWarning = "Any Progress In This Level Will Be Lost";
 
         // Game sounds (wheels, platforms) quiet down while paused and come back on Resume.
@@ -74,6 +84,8 @@ namespace TunnelVision.UI
 
             if (resumeButton != null)
                 resumeButton.onClick.AddListener(Resume);
+            if (restartButton != null)
+                restartButton.onClick.AddListener(Restart);
             if (optionsButton != null)
                 optionsButton.onClick.AddListener(OpenOptions);
             if (levelSelectButton != null)
@@ -176,8 +188,31 @@ namespace TunnelVision.UI
             }
         }
 
+        /// <summary>
+        /// What Restart does: with a checkpoint reached, resumes and puts the player back there.
+        /// Without one, asks first, then reloads the level from the start.
+        /// </summary>
+        public void Restart()
+        {
+            if (!IsPaused || IsConfirmingLeave)
+            {
+                return;
+            }
+
+            if (_respawn != null && _respawn.HasCheckpoint)
+            {
+                Resume();
+                _respawn.RestartAtCheckpoint();
+                return;
+            }
+
+            AskToLeave(SceneManager.GetActiveScene().name, RestartQuestion, RestartLabel);
+        }
+
         /// <summary>Asks before leaving the level. Without a confirmation panel it just leaves.</summary>
-        public void AskToLeave(string scene, string question)
+        public void AskToLeave(string scene, string question) => AskToLeave(scene, question, LeaveLabel);
+
+        private void AskToLeave(string scene, string question, string confirmLabel)
         {
             if (!IsPaused || IsConfirmingLeave)
             {
@@ -193,6 +228,8 @@ namespace TunnelVision.UI
             _leavingTo = scene;
             if (confirmTitle != null)
                 confirmTitle.text = question;
+            if (leaveButtonLabel != null)
+                leaveButtonLabel.text = confirmLabel;
             _panels.Switch(pausePanel, confirmPanel);
             ClearSelection();
         }
