@@ -47,13 +47,8 @@ namespace TunnelVision.Enemies
             _along = Horizontal ? _home.x : _home.y;
 
             // Remember where the points are now, so they stay put when they're children of the balloon.
-            _hasPath = pointA != null && pointB != null;
-            if (_hasPath)
-            {
-                _a = Horizontal ? pointA.position.x : pointA.position.y;
-                _b = Horizontal ? pointB.position.x : pointB.position.y;
-                _currentTarget = _b;
-            }
+            _hasPath = TryGetPath(_home, out _a, out _b);
+            _currentTarget = _b;
         }
 
         private void Update()
@@ -84,15 +79,52 @@ namespace TunnelVision.Enemies
             transform.position = new Vector3(x, y + bop, transform.position.z);
         }
 
+        /// <summary>
+        /// The two ends of his path along the chosen direction. If the points line up the other way
+        /// (side by side when he's set to Vertical), the gap between them is used as his path instead,
+        /// centred on where he's placed, so switching direction just works.
+        /// </summary>
+        private bool TryGetPath(Vector2 home, out float a, out float b)
+        {
+            a = b = 0f;
+            if (pointA == null || pointB == null)
+            {
+                return false;
+            }
+
+            Vector2 pa = pointA.position;
+            Vector2 pb = pointB.position;
+            a = Horizontal ? pa.x : pa.y;
+            b = Horizontal ? pb.x : pb.y;
+
+            if (Mathf.Abs(a - b) < ArriveDistance)
+            {
+                var half = Mathf.Abs(Horizontal ? pa.y - pb.y : pa.x - pb.x) / 2f;
+                var centre = Horizontal ? home.x : home.y;
+                a = centre - half;
+                b = centre + half;
+            }
+
+            return Mathf.Abs(a - b) >= ArriveDistance;
+        }
+
         private void OnDrawGizmos()
         {
-            if (pointA == null || pointB == null)
+            Vector2 home = Application.isPlaying ? _home : (Vector2)transform.position;
+            if (!TryGetPath(home, out var a, out var b))
             {
                 return;
             }
 
             Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(pointA.position, pointB.position);
+            if (Horizontal)
+            {
+                Gizmos.DrawLine(new Vector2(a, home.y), new Vector2(b, home.y));
+            }
+            else
+            {
+                Gizmos.DrawLine(new Vector2(home.x, a), new Vector2(home.x, b));
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
