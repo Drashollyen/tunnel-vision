@@ -112,6 +112,9 @@ MonoBehaviour:
   pointA: {fileID: 4100000000000000021}
   pointB: {fileID: 4100000000000000022}
   speed: 1
+  bopHeight: 0.25
+  bopsPerSecond: 2
+  idleTime: 1
 --- !u!114 &3254900352424223567
 MonoBehaviour:
   m_ObjectHideFlags: 0
