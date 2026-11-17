@@ -58,11 +58,8 @@ namespace TunnelVision.Player
         private readonly System.Collections.Generic.List<CinemachineCamera> _heldCameras =
             new System.Collections.Generic.List<CinemachineCamera>();
 
-        /// <summary>True from a death (or a restart at the checkpoint) until the player can move again.</summary>
+        /// <summary>True from a death until the player can move again.</summary>
         public bool IsRespawning => _isDying;
-
-        /// <summary>True once the player has reached a checkpoint in this level.</summary>
-        public bool HasCheckpoint => _checkpoint != null;
 
         /// <summary>Raised when the player reaches a checkpoint that wasn't already their respawn point.</summary>
         public event System.Action<Checkpoint> CheckpointReached;
@@ -142,57 +139,6 @@ namespace TunnelVision.Player
             _isDying = true;
             Died?.Invoke();
             StartCoroutine(DeathSequence(fellIntoPit));
-        }
-
-        /// <summary>
-        /// The pause menu's Restart From Checkpoint: fades to black, puts the player back at the
-        /// checkpoint and fades in. The round time stops for the fade and carries on after.
-        /// Costs no life. Does nothing without a checkpoint, or while dying.
-        /// </summary>
-        public void RestartAtCheckpoint()
-        {
-            if (_isDying || _checkpoint == null)
-            {
-                return;
-            }
-
-            _isDying = true;
-            StartCoroutine(CheckpointRestart());
-        }
-
-        private IEnumerator CheckpointRestart()
-        {
-            if (movement != null)
-            {
-                movement.EnableControls(false);
-            }
-
-            transform.SetParent(null, true);
-            _body.linearVelocity = Vector2.zero;
-            _body.simulated = false;
-            LevelClock.Hold();
-
-            yield return FadeBlack(1f, fadeDuration);
-
-            MoveTo(_checkpoint.RespawnPosition);
-            if (movement != null)
-            {
-                movement.FaceStartDirection();
-            }
-
-            yield return new WaitForSecondsRealtime(blackHoldDuration);
-            yield return FadeBlack(0f, fadeDuration);
-
-            _body.simulated = true;
-            _body.linearVelocity = Vector2.zero;
-            LevelClock.Release();
-
-            if (movement != null)
-            {
-                movement.EnableControls(true);
-            }
-
-            _isDying = false;
         }
 
         public void ReachCheckpoint(Checkpoint checkpoint)

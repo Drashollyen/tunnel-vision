@@ -4,16 +4,12 @@ using TunnelVision.Player;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
     /// <summary>
-    /// Escape pauses a level and shows Resume, Restart, Options, Level Select and Main Menu.
-    /// Restart asks first: from the start of the level (a reload, so the round time starts from
-    /// zero), or, once a checkpoint is reached, from that checkpoint (the round time stops for
-    /// the fade and carries on). Options is the
+    /// Escape pauses a level and shows Resume, Options, Level Select and Main Menu. Options is the
     /// same page (the OptionsPanel prefab) as on the main menu. Escape on the options page goes
     /// back, and on the pause page resumes. It won't open on Out Of Lives, during the death
     /// sequence, or while a scene fades in or out. Level Select and Main Menu ask first, since
@@ -28,8 +24,6 @@ namespace TunnelVision.UI
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private OptionsMenu optionsPanel;
         [SerializeField] private Button resumeButton;
-        [Tooltip("Optional. Asks whether to restart from the start or, once reached, the last checkpoint.")]
-        [SerializeField] private Button restartButton;
         [SerializeField] private Button optionsButton;
         [SerializeField] private Button levelSelectButton;
         [SerializeField] private Button mainMenuButton;
@@ -42,17 +36,9 @@ namespace TunnelVision.UI
         [SerializeField] private TMP_Text confirmTitle;
         [SerializeField] private Button leaveButton;
         [SerializeField] private Button stayButton;
-        [Tooltip("Optional. The Leave button's text, so it can say Restart when restarting.")]
-        [SerializeField] private TMP_Text leaveButtonLabel;
-        [Tooltip("Optional. On the question page, shown only when restarting with a checkpoint reached.")]
-        [SerializeField] private Button checkpointButton;
 
         public const string LevelSelectQuestion = "Go To Level Select?";
         public const string MainMenuQuestion = "Go To The Main Menu?";
-        public const string RestartQuestion = "Restart The Level?";
-        public const string LeaveLabel = "Leave";
-        public const string RestartLabel = "Restart";
-        public const string FromStartLabel = "From Start";
         public const string ProgressWarning = "Any Progress In This Level Will Be Lost";
 
         // Game sounds (wheels, platforms) quiet down while paused and come back on Resume.
@@ -88,8 +74,6 @@ namespace TunnelVision.UI
 
             if (resumeButton != null)
                 resumeButton.onClick.AddListener(Resume);
-            if (restartButton != null)
-                restartButton.onClick.AddListener(Restart);
             if (optionsButton != null)
                 optionsButton.onClick.AddListener(OpenOptions);
             if (levelSelectButton != null)
@@ -100,11 +84,6 @@ namespace TunnelVision.UI
                 leaveButton.onClick.AddListener(ConfirmLeave);
             if (stayButton != null)
                 stayButton.onClick.AddListener(CancelLeave);
-            if (checkpointButton != null)
-            {
-                checkpointButton.onClick.AddListener(RestartFromCheckpoint);
-                checkpointButton.gameObject.SetActive(false);
-            }
             if (optionsPanel != null)
                 optionsPanel.BackPressed += CloseOptions;
 
@@ -197,47 +176,8 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>True when Restart can offer the last checkpoint as well as the start.</summary>
-        public bool CanRestartFromCheckpoint =>
-            checkpointButton != null && _respawn != null && _respawn.HasCheckpoint;
-
-        /// <summary>
-        /// What Restart does: asks first. The question always offers the start of the level, and
-        /// also the last checkpoint once one is reached.
-        /// </summary>
-        public void Restart()
-        {
-            if (!IsPaused || IsConfirmingLeave)
-            {
-                return;
-            }
-
-            var withCheckpoint = CanRestartFromCheckpoint;
-            AskToLeave(SceneManager.GetActiveScene().name, RestartQuestion,
-                withCheckpoint ? FromStartLabel : RestartLabel, withCheckpoint);
-        }
-
-        /// <summary>
-        /// The question page's From Checkpoint: resumes, then puts the player back at the last
-        /// checkpoint. The round time stops for the fade and carries on after.
-        /// </summary>
-        public void RestartFromCheckpoint()
-        {
-            if (!IsConfirmingLeave || !CanRestartFromCheckpoint)
-            {
-                return;
-            }
-
-            _leavingTo = null;
-            confirmPanel.SetActive(false);
-            Resume();
-            _respawn.RestartAtCheckpoint();
-        }
-
         /// <summary>Asks before leaving the level. Without a confirmation panel it just leaves.</summary>
-        public void AskToLeave(string scene, string question) => AskToLeave(scene, question, LeaveLabel, false);
-
-        private void AskToLeave(string scene, string question, string confirmLabel, bool offerCheckpoint)
+        public void AskToLeave(string scene, string question)
         {
             if (!IsPaused || IsConfirmingLeave)
             {
@@ -253,10 +193,6 @@ namespace TunnelVision.UI
             _leavingTo = scene;
             if (confirmTitle != null)
                 confirmTitle.text = question;
-            if (leaveButtonLabel != null)
-                leaveButtonLabel.text = confirmLabel;
-            if (checkpointButton != null)
-                checkpointButton.gameObject.SetActive(offerCheckpoint);
             _panels.Switch(pausePanel, confirmPanel);
             ClearSelection();
         }
@@ -287,13 +223,6 @@ namespace TunnelVision.UI
             IsPaused = false;
             Time.timeScale = 1f;
             SceneFader.Load(scene);
-
-            if (!SceneFader.IsFading)
-            {
-                Debug.LogWarning($"PauseMenu: couldn't load {scene}, so the game carries on.", this);
-                IsPaused = true; // So Resume puts the controls, sounds and overlay back.
-                Resume();
-            }
         }
 
         private void OnDestroy()

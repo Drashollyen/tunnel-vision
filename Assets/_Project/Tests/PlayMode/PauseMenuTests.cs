@@ -26,9 +26,6 @@ namespace TunnelVision.Tests
         private TMP_Text _question;
         private Button _leave;
         private Button _stay;
-        private Button _restart;
-        private TMP_Text _leaveLabel;
-        private Button _checkpoint;
 
         [UnitySetUp]
         public IEnumerator Build()
@@ -48,7 +45,6 @@ namespace TunnelVision.Tests
             _pausePanel = new GameObject("Pause Panel", typeof(RectTransform));
             _pausePanel.transform.SetParent(_overlay.transform, false);
             _resume = MakeButton("Resume Button");
-            _restart = MakeButton("Restart Button");
             var optionsButton = MakeButton("Options Button");
             _levelSelect = MakeButton("Level Select Button");
 
@@ -56,11 +52,8 @@ namespace TunnelVision.Tests
             _confirm.transform.SetParent(_overlay.transform, false);
             _question = new GameObject("Title", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
             _question.transform.SetParent(_confirm.transform, false);
-            _checkpoint = MakeButton("Checkpoint Button", _confirm.transform);
             _leave = MakeButton("Leave Button", _confirm.transform);
             _stay = MakeButton("Stay Button", _confirm.transform);
-            _leaveLabel = new GameObject("Leave Text", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
-            _leaveLabel.transform.SetParent(_leave.transform, false);
 
             var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(OptionsPrefab);
             Assert.IsNotNull(prefab, "The shared options page should exist.");
@@ -78,9 +71,6 @@ namespace TunnelVision.Tests
             Set("confirmTitle", _question);
             Set("leaveButton", _leave);
             Set("stayButton", _stay);
-            Set("restartButton", _restart);
-            Set("leaveButtonLabel", _leaveLabel);
-            Set("checkpointButton", _checkpoint);
             holder.SetActive(true);
             yield return null;
         }
@@ -219,38 +209,6 @@ namespace TunnelVision.Tests
             Assert.AreEqual(PauseMenu.LevelSelectQuestion, _question.text);
             Assert.IsNull(EventSystem.current.currentSelectedGameObject,
                 "Nothing should stay highlighted from the button that was clicked.");
-        }
-
-        [UnityTest]
-        public IEnumerator Restart_WithNoCheckpoint_AsksToRestartTheLevel()
-        {
-            _menu.Pause();
-            yield return null;
-
-            _restart.onClick.Invoke();
-            yield return WaitForPanelSwitch();
-
-            Assert.IsTrue(_menu.IsConfirmingLeave, "With no checkpoint, it should ask before restarting.");
-            Assert.AreEqual(PauseMenu.RestartQuestion, _question.text);
-            Assert.AreEqual(PauseMenu.RestartLabel, _leaveLabel.text);
-            Assert.IsFalse(_checkpoint.gameObject.activeSelf, "No checkpoint reached, so only the start is offered.");
-        }
-
-        [UnityTest]
-        public IEnumerator LevelSelect_AfterRestartQuestion_SaysLeaveAgain()
-        {
-            _menu.Pause();
-            yield return null;
-
-            _restart.onClick.Invoke();
-            yield return WaitForPanelSwitch();
-            _stay.onClick.Invoke();
-            yield return WaitForPanelSwitch();
-
-            _levelSelect.onClick.Invoke();
-            yield return WaitForPanelSwitch();
-            Assert.AreEqual(PauseMenu.LeaveLabel, _leaveLabel.text);
-            Assert.IsFalse(_checkpoint.gameObject.activeSelf, "Leaving never offers the checkpoint.");
         }
 
         [UnityTest]
