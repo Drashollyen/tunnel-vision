@@ -157,18 +157,33 @@ namespace TunnelVision.Tests
                 ExecuteEvents.Execute(egg.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
                 yield return null;
 
-                Assert.AreEqual(ChaplinEasterEgg.Stage.MusicFading, egg.Current);
-                Assert.IsTrue(music == null || music.IsFadingOut, "The music should fade out.");
+                Assert.AreEqual(ChaplinEasterEgg.Stage.WindingDown, egg.Current);
+                Assert.IsTrue(music == null || music.IsWindingDown, "The music should wind down.");
                 Assert.IsNotNull(Find("Easter Egg Overlay"), "The black screen goes on top of everything.");
 
                 var seen = new System.Collections.Generic.HashSet<ChaplinEasterEgg.Stage>();
+                var lowestPitch = 1f;
+                var cutChecked = false;
                 for (var until = Time.realtimeSinceStartup + 15f; Time.realtimeSinceStartup < until && egg.Current != ChaplinEasterEgg.Stage.Closing;)
                 {
                     seen.Add(egg.Current);
+                    if (egg.Current == ChaplinEasterEgg.Stage.WindingDown && music != null)
+                    {
+                        lowestPitch = Mathf.Min(lowestPitch, music.Pitch);
+                    }
+
+                    if (egg.Current == ChaplinEasterEgg.Stage.CutToBlack && !cutChecked)
+                    {
+                        cutChecked = true;
+                        Assert.AreEqual(1f, egg.Black.color.a, 0.001f, "The cut goes straight to black.");
+                        Assert.IsTrue(MusicPlayer.Current == null, "The music stops dead at the cut.");
+                    }
+
                     yield return null;
                 }
 
-                Assert.IsTrue(seen.Contains(ChaplinEasterEgg.Stage.FadingToBlack), "The screen should fade to black.");
+                Assert.IsTrue(music == null || lowestPitch < 0.5f, "The music's pitch should drag down.");
+                Assert.IsTrue(seen.Contains(ChaplinEasterEgg.Stage.CutToBlack), "The screen should cut to black.");
                 Assert.IsTrue(seen.Contains(ChaplinEasterEgg.Stage.Voice), "Chaplin's clip should play.");
                 Assert.AreEqual(ChaplinEasterEgg.Stage.Closing, egg.Current);
                 Assert.AreEqual(1, quits, "The game closes once at the end.");

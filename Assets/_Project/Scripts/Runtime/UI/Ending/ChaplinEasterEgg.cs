@@ -4,14 +4,15 @@ using TunnelVision.Audio;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
     /// <summary>
-    /// The hidden Chaplin on the Demo Complete screen. Press F or click him: the music fades and
-    /// the confetti turns black, the screen fades to black, his "Tunnel Vision" clip plays, and
-    /// the game closes (in the Editor, Play mode stops).
+    /// The hidden Chaplin on the Demo Complete screen. Press F or click him: the music winds down
+    /// like a dying tape while the confetti turns black, then it cuts hard to a silent black
+    /// screen, his "Tunnel Vision" clip plays, and the game closes (in the Editor, Play mode stops).
     /// <para>
     /// Goes on Chaplin's Image, which must be a raycast target. The black screen is made by code
     /// on its own canvas above everything else. Real time throughout.
@@ -22,8 +23,8 @@ namespace TunnelVision.UI
         public enum Stage
         {
             Waiting,
-            MusicFading,
-            FadingToBlack,
+            WindingDown,
+            CutToBlack,
             Voice,
             Closing,
         }
@@ -33,10 +34,16 @@ namespace TunnelVision.UI
         [SerializeField] private ConfettiRain confetti;
 
         [Header("Timings (Seconds)")]
-        [SerializeField] private float musicFadeSeconds = 1.5f;
-        [SerializeField] private float blackFadeSeconds = 1.2f;
+        [FormerlySerializedAs("musicFadeSeconds")]
+        [SerializeField] private float windDownSeconds = 1.5f;
+        [Tooltip("Silence on the black screen before his clip.")]
         [SerializeField] private float darkBeforeVoice = 0.4f;
         [SerializeField] private float darkAfterVoice = 0.8f;
+
+        [Header("Sound")]
+        [Tooltip("How low the music's pitch drags before the cut (1 = normal).")]
+        [Range(0.05f, 1f)]
+        [SerializeField] private float windDownEndPitch = 0.15f;
 
         [Header("Look")]
         [SerializeField] private Color confettiColour = Color.black;
@@ -70,12 +77,6 @@ namespace TunnelVision.UI
 #endif
         }
 
-        /// <summary>How dark the screen is, <paramref name="t"/> seconds into a fade lasting <paramref name="seconds"/>.</summary>
-        public static float BlackAt(float t, float seconds)
-        {
-            return seconds > 0f ? Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / seconds)) : 1f;
-        }
-
         private void Update()
         {
             var keyboard = Keyboard.current;
@@ -98,7 +99,7 @@ namespace TunnelVision.UI
                 return;
             }
 
-            Current = Stage.MusicFading;
+            Current = Stage.WindingDown;
             StartCoroutine(Run());
         }
 
@@ -106,27 +107,28 @@ namespace TunnelVision.UI
         {
             BuildOverlay();
 
-            // The happy music fades and the confetti turns black.
-            if (MusicPlayer.Current != null)
+            // The happy music winds down and the confetti turns black.
+            var music = MusicPlayer.Current;
+            if (music != null)
             {
-                MusicPlayer.Current.FadeOut(musicFadeSeconds);
+                music.WindDown(windDownSeconds, windDownEndPitch);
             }
 
             if (confetti != null)
             {
-                confetti.FadeTo(confettiColour, musicFadeSeconds);
+                confetti.FadeTo(confettiColour, windDownSeconds);
             }
 
-            yield return new WaitForSecondsRealtime(musicFadeSeconds);
+            yield return new WaitForSecondsRealtime(windDownSeconds);
 
-            // Then everything fades to black.
-            Current = Stage.FadingToBlack;
-            for (var t = 0f; t < blackFadeSeconds; t += Time.unscaledDeltaTime)
+            // Then a hard cut: black screen, no sound at all.
+            Current = Stage.CutToBlack;
+            if (music != null)
             {
-                SetBlack(BlackAt(t, blackFadeSeconds));
-                yield return null;
+                music.Cut();
             }
 
+            SoundEffectsVolume.FadeOutGameplay(0f); // Any other sound too. His clip is left out.
             SetBlack(1f);
             yield return new WaitForSecondsRealtime(darkBeforeVoice);
 
