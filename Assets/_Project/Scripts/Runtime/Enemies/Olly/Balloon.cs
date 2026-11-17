@@ -20,8 +20,6 @@ namespace TunnelVision.Enemies
         [SerializeField] private float bopsPerSecond = 2f;
         [Tooltip("Seconds he idles at each end before turning back.")]
         [SerializeField] private float idleTime = 1f;
-        [Tooltip("How far below where he's placed to look for the ground.")]
-        [SerializeField] private float maxGroundDrop = 20f;
 
         private SpriteRenderer _body;
         private float _groundY;
@@ -34,7 +32,7 @@ namespace TunnelVision.Enemies
         private void Start()
         {
             _body = GetComponent<SpriteRenderer>();
-            _groundY = FindGroundY();
+            _groundY = transform.position.y;
 
             // Remember where the points are now, so they stay put when they're children of the balloon.
             _hasPath = pointA != null && pointB != null;
@@ -70,21 +68,6 @@ namespace TunnelVision.Enemies
             // Bops up off the ground and back down, walking or idling.
             var bop = Mathf.Abs(Mathf.Sin(Time.time * bopsPerSecond * Mathf.PI)) * bopHeight;
             transform.position = new Vector3(x, _groundY + bop, transform.position.z);
-        }
-
-        /// <summary>Drops his feet onto the first solid ground below him, so he can be placed anywhere above it.</summary>
-        private float FindGroundY()
-        {
-            var from = (Vector2)transform.position + Vector2.up * 0.5f;
-            foreach (var hit in Physics2D.RaycastAll(from, Vector2.down, maxGroundDrop))
-            {
-                if (!hit.collider.isTrigger && hit.collider.attachedRigidbody == null)
-                {
-                    return hit.point.y;
-                }
-            }
-
-            return transform.position.y;
         }
 
         private void OnDrawGizmos()

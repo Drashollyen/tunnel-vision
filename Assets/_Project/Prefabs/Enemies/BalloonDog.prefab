@@ -115,7 +115,6 @@ MonoBehaviour:
   bopHeight: 0.25
   bopsPerSecond: 2
   idleTime: 1
-  maxGroundDrop: 20
 --- !u!114 &3254900352424223567
 MonoBehaviour:
   m_ObjectHideFlags: 0
