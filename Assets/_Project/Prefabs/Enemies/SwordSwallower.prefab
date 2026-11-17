@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 114100000000000002}
   - component: {fileID: 61100000000000002}
   - component: {fileID: 114100000000000003}
-  - component: {fileID: 114100000000000004}
   m_Layer: 0
   m_Name: SwordSwallower
   m_TagString: Untagged
@@ -131,9 +130,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1100000000000000001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44489fc09c3c47f8bdaaccd46b1be556, type: 3}
+  m_Script: {fileID: 11500000, guid: ade2a02b50a64db8bbcdd297e85bc98a, type: 3}
   m_Name:
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Enemies.SwordSwallower
+  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Enemies.SwordSwallowerAI
   animator: {fileID: 95100000000000001}
   body: {fileID: 212100000000000001}
   artFacesRight: 0
@@ -141,6 +140,9 @@ MonoBehaviour:
   throwPoint: {fileID: 4100000000000000002}
   swordSpeed: 10
   cooldown: 2.5
+  range: 10
+  throwsPerRound: 3
+  reloadTime: 3
 --- !u!82 &82100000000000001
 AudioSource:
   m_ObjectHideFlags: 0
@@ -349,20 +351,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Level.Hazard
   fallsIn: 0
---- !u!114 &114100000000000004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1100000000000000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 263857db5fb104d299160d2a02d68ffe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: TunnelVision.Runtime::TunnelVision.Enemies.ThrowerBrain
-  clownThrower: {fileID: 0}
-  swordSwallower: {fileID: 114100000000000001}
-  range: 10
-  throwsPerRound: 3
-  reloadTime: 3

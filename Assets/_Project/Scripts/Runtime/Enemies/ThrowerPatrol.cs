@@ -4,12 +4,14 @@ namespace TunnelVision.Enemies
 {
     /// <summary>
     /// Walks the Thrower Clown back and forth between his two walking points. He stops to throw
-    /// (the ThrowerBrain decides when) and carries on walking between rounds.
+    /// (ThrowerClownAI decides when) and carries on walking between throws.
     /// Drag the PointA and PointB children in the scene to set where he walks.
     /// </summary>
-    [RequireComponent(typeof(Rigidbody2D), typeof(ClownThrower))]
+    [RequireComponent(typeof(Rigidbody2D), typeof(ThrowerClownAI))]
     public class ThrowerPatrol : MonoBehaviour
     {
+        private static readonly int SpeedParam = Animator.StringToHash("Speed");
+
         private const float ArriveDistance = 0.1f;
 
         [Tooltip("One end of his walk. Drag it in the scene; it stays put once the level starts.")]
@@ -19,19 +21,26 @@ namespace TunnelVision.Enemies
         [SerializeField] private float walkSpeed = 1.5f;
         [Tooltip("Seconds he stands still after letting go of a ball.")]
         [SerializeField] private float pauseAfterThrow = 0.6f;
+        [Tooltip("Tick if the sprites are drawn facing right; untick if they face left.")]
+        [SerializeField] private bool artFacesRight = true;
 
         private Rigidbody2D _rigidbody;
-        private ClownThrower _thrower;
+        private ThrowerClownAI _thrower;
+        private Animator _animator;
+        private SpriteRenderer _body;
         private float _leftX;
         private float _rightX;
         private bool _walkingRight = true;
+        private bool _wasThrowing;
         private float _resumeAt;
         private bool _hasWalk;
 
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
-            _thrower = GetComponent<ClownThrower>();
+            _thrower = GetComponent<ThrowerClownAI>();
+            _animator = GetComponent<Animator>();
+            _body = GetComponent<SpriteRenderer>();
 
             // Remember where the points are now, so they don't follow him as he walks.
             _hasWalk = pointA != null && pointB != null;
@@ -42,15 +51,17 @@ namespace TunnelVision.Enemies
             }
         }
 
-        private void OnEnable() => _thrower.Thrown += OnThrown;
-
-        private void OnDisable() => _thrower.Thrown -= OnThrown;
-
-        private void OnThrown(ClownBall ball) => _resumeAt = Time.time + pauseAfterThrow;
-
         private void FixedUpdate()
         {
-            if (!_hasWalk || _thrower.IsDead || _thrower.IsThrowing || Time.time < _resumeAt)
+            var throwing = _thrower.IsThrowing;
+            if (_wasThrowing && !throwing)
+            {
+                _resumeAt = Time.time + pauseAfterThrow;
+            }
+
+            _wasThrowing = throwing;
+
+            if (!_hasWalk || throwing || Time.time < _resumeAt)
             {
                 Walk(0f);
                 return;
@@ -68,13 +79,21 @@ namespace TunnelVision.Enemies
 
             var direction = _walkingRight ? 1f : -1f;
             Walk(direction * walkSpeed);
-            _thrower.Face(direction);
+
+            if (_body != null)
+            {
+                _body.flipX = (direction > 0f) != artFacesRight;
+            }
         }
 
         private void Walk(float speed)
         {
             _rigidbody.linearVelocity = new Vector2(speed, _rigidbody.linearVelocity.y);
-            _thrower.SetSpeed(speed);
+
+            if (_animator != null)
+            {
+                _animator.SetFloat(SpeedParam, Mathf.Abs(speed));
+            }
         }
 
         private void OnDrawGizmos()
