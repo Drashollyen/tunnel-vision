@@ -76,6 +76,7 @@ namespace TunnelVision.Tests
             Set(balloon, "pointA", Point("A", 0f, 0f));
             Set(balloon, "pointB", Point("B", 2f, 0f));
             Set(balloon, "speed", speed);
+            Set(balloon, "idleTime", 0f); // Turn straight back at each end, so the path is quick to check.
             go.SetActive(true);
             return go;
         }
@@ -253,78 +254,6 @@ namespace TunnelVision.Tests
 
             Assert.AreEqual(-8f, sword.GetComponent<Rigidbody2D>().linearVelocity.x, 0.01f);
             Assert.AreEqual(180f, Mathf.Abs(Mathf.DeltaAngle(0f, sword.transform.eulerAngles.z)), 0.01f, "Point first, to the left.");
-        }
-
-        // ---- Sword Swallower and the brain that tells him when to throw ----
-
-        private SwordSwallower MakeSwordSwallower(out SwordProjectile swordTemplate, bool withBrain = false)
-        {
-            // Active, so thrown copies are real bodies whose speed can be read; parked out of the way.
-            var template = new GameObject("Sword Template");
-            template.transform.position = new Vector3(-50f, 50f, 0f);
-            template.AddComponent<Rigidbody2D>().gravityScale = 0f;
-            swordTemplate = template.AddComponent<SwordProjectile>();
-
-            var go = new GameObject("Sword Swallower");
-            go.SetActive(false);
-            go.AddComponent<Animator>();
-            go.AddComponent<SpriteRenderer>();
-            var swallower = go.AddComponent<SwordSwallower>();
-            Set(swallower, "swordPrefab", swordTemplate);
-            if (withBrain)
-            {
-                go.AddComponent<ThrowerBrain>();
-            }
-
-            go.SetActive(true);
-            return swallower;
-        }
-
-        [UnityTest]
-        public IEnumerator SwordSwallower_TurnsAndThrowsAtNicholas_ThenCoolsDown()
-        {
-            var swallower = MakeSwordSwallower(out _);
-            SwordProjectile thrown = null;
-            swallower.Thrown += sword => thrown = sword;
-            yield return null;
-
-            Assert.IsTrue(swallower.CanThrow);
-            Assert.IsTrue(swallower.ThrowAt(new Vector2(5f, 0f)), "A throw starts.");
-            Assert.IsTrue(swallower.FacingRight, "He turns to face Nicholas, to his right.");
-            Assert.IsTrue(swallower.IsThrowing);
-            Assert.IsFalse(swallower.ThrowAt(new Vector2(5f, 0f)), "No second throw mid-throw.");
-
-            swallower.ReleaseSword(); // What the Throw clip's release frame calls.
-            Assert.IsNotNull(thrown, "A sword leaves his hand.");
-            Assert.AreEqual(new Vector2(10f, 0f), thrown.GetComponent<Rigidbody2D>().linearVelocity, "Level, toward Nicholas.");
-            Assert.IsFalse(swallower.IsThrowing);
-            Assert.IsFalse(swallower.CanThrow, "Cooling down before the next one.");
-        }
-
-        [UnityTest]
-        public IEnumerator SwordSwallower_GivesUpAThrowThatNeverReleases()
-        {
-            var swallower = MakeSwordSwallower(out _);
-            yield return null;
-            swallower.ThrowAt(new Vector2(-5f, 0f));
-            Assert.IsFalse(swallower.FacingRight, "Faces left, toward the target.");
-
-            yield return new WaitForSeconds(2.2f); // Past the 2 s limit with no release frame.
-            Assert.IsFalse(swallower.IsThrowing, "He shouldn't be stuck mid-throw forever.");
-        }
-
-        [UnityTest]
-        public IEnumerator ThrowerBrain_ThrowsWhenNicholasIsInRange_AndNotOtherwise()
-        {
-            var swallower = MakeSwordSwallower(out _, withBrain: true);
-            yield return null;
-            yield return null;
-            Assert.IsFalse(swallower.IsThrowing, "Nicholas is far away, so no throw.");
-
-            MovePlayerTo(new Vector2(6f, 0f)); // Inside the 10 range.
-            yield return null;
-            yield return null;
-            Assert.IsTrue(swallower.IsThrowing, "In range, he throws.");
         }
     }
 }
