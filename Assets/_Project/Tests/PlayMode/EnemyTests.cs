@@ -76,6 +76,7 @@ namespace TunnelVision.Tests
             Set(balloon, "pointA", Point("A", 0f, 0f));
             Set(balloon, "pointB", Point("B", 2f, 0f));
             Set(balloon, "speed", speed);
+            Set(balloon, "idleTime", 0f); // Turn straight back at each end, so the path is quick to check.
             go.SetActive(true);
             return go;
         }
