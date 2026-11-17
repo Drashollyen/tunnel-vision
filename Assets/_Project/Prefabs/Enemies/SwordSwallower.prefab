@@ -138,7 +138,7 @@ MonoBehaviour:
   artFacesRight: 0
   swordPrefab: {fileID: 114100000000000201, guid: 403651eb604a4b43b40f4d4d0d93adc5, type: 3}
   throwPoint: {fileID: 4100000000000000002}
-  swordSpeed: 7
+  swordSpeed: 5
   cooldown: 1
   range: 5
   throwsPerRound: 1
