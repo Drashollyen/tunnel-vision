@@ -134,7 +134,7 @@ namespace TunnelVision.UI
                 : null;
 
             // The time taken is game time, so pauses and menus don't count. Read it before freezing.
-            var seconds = Time.timeSinceLevelLoad;
+            var seconds = TunnelVision.Level.LevelClock.Seconds;
             var collectibles = FindAnyObjectByType<PlayerCollectibles>();
 
             // Walk on through the fade instead of stopping dead; freeze once the screen is black.

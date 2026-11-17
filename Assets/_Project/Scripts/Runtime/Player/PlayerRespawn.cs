@@ -145,9 +145,9 @@ namespace TunnelVision.Player
         }
 
         /// <summary>
-        /// The pause menu's Restart with a checkpoint reached: fades to black, puts the player back
-        /// at the checkpoint and fades in again. Costs no life. Does nothing without a checkpoint,
-        /// or while dying.
+        /// The pause menu's Restart From Checkpoint: fades to black, puts the player back at the
+        /// checkpoint, starts the round time again from zero and fades in. Costs no life. Does
+        /// nothing without a checkpoint, or while dying.
         /// </summary>
         public void RestartAtCheckpoint()
         {
@@ -178,6 +178,8 @@ namespace TunnelVision.Player
             {
                 movement.FaceStartDirection();
             }
+
+            LevelClock.Restart();
 
             yield return new WaitForSecondsRealtime(blackHoldDuration);
             yield return FadeBlack(0f, fadeDuration);

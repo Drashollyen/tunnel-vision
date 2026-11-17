@@ -28,6 +28,7 @@ namespace TunnelVision.Tests
         private Button _stay;
         private Button _restart;
         private TMP_Text _leaveLabel;
+        private Button _checkpoint;
 
         [UnitySetUp]
         public IEnumerator Build()
@@ -55,6 +56,7 @@ namespace TunnelVision.Tests
             _confirm.transform.SetParent(_overlay.transform, false);
             _question = new GameObject("Title", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
             _question.transform.SetParent(_confirm.transform, false);
+            _checkpoint = MakeButton("Checkpoint Button", _confirm.transform);
             _leave = MakeButton("Leave Button", _confirm.transform);
             _stay = MakeButton("Stay Button", _confirm.transform);
             _leaveLabel = new GameObject("Leave Text", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
@@ -78,6 +80,7 @@ namespace TunnelVision.Tests
             Set("stayButton", _stay);
             Set("restartButton", _restart);
             Set("leaveButtonLabel", _leaveLabel);
+            Set("checkpointButton", _checkpoint);
             holder.SetActive(true);
             yield return null;
         }
@@ -230,6 +233,7 @@ namespace TunnelVision.Tests
             Assert.IsTrue(_menu.IsConfirmingLeave, "With no checkpoint, it should ask before restarting.");
             Assert.AreEqual(PauseMenu.RestartQuestion, _question.text);
             Assert.AreEqual(PauseMenu.RestartLabel, _leaveLabel.text);
+            Assert.IsFalse(_checkpoint.gameObject.activeSelf, "No checkpoint reached, so only the start is offered.");
         }
 
         [UnityTest]
@@ -246,6 +250,7 @@ namespace TunnelVision.Tests
             _levelSelect.onClick.Invoke();
             yield return WaitForPanelSwitch();
             Assert.AreEqual(PauseMenu.LeaveLabel, _leaveLabel.text);
+            Assert.IsFalse(_checkpoint.gameObject.activeSelf, "Leaving never offers the checkpoint.");
         }
 
         [UnityTest]

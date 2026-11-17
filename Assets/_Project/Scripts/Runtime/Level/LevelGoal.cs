@@ -62,10 +62,10 @@ namespace TunnelVision.Level
             // And this playthrough's result, for the demo's ending.
             var lives = FindAnyObjectByType<PlayerLives>();
             var livesLost = lives != null ? lives.LivesLost : 0;
-            RunStats.Record(new RunStats.LevelResult(levelIndex, Time.timeSinceLevelLoad, teddies, livesLost));
+            RunStats.Record(new RunStats.LevelResult(levelIndex, LevelClock.Seconds, teddies, livesLost));
 
             // And the all-time stats, for the main menu's Stats page.
-            AllTimeStats.RecordClear(levelIndex, Time.timeSinceLevelLoad, teddies, livesLost, endsDemo);
+            AllTimeStats.RecordClear(levelIndex, LevelClock.Seconds, teddies, livesLost, endsDemo);
 
             var screen = FindAnyObjectByType<LevelCompleteScreen>();
             if (screen != null)
