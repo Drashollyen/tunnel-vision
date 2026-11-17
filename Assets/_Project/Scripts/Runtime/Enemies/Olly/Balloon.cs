@@ -7,14 +7,14 @@ namespace TunnelVision.Enemies
     {
         private const float ArriveDistance = 0.1f;
 
-        [Tooltip("One end of his walk. Only the sideways position counts; he stays on the ground.")]
+        [Tooltip("One end of his walk. Only the sideways position counts; he floats at the height he's placed.")]
         [SerializeField] private Transform pointA;
         [Tooltip("The other end of his walk.")]
         [SerializeField] private Transform pointB;
         [SerializeField] private float speed = 1f;
 
         [Header("Bop")]
-        [Tooltip("How high he bops off the ground, in units.")]
+        [Tooltip("How high he bops, in units.")]
         [SerializeField] private float bopHeight = 0.25f;
         [Tooltip("Bops per second.")]
         [SerializeField] private float bopsPerSecond = 2f;
@@ -22,7 +22,7 @@ namespace TunnelVision.Enemies
         [SerializeField] private float idleTime = 1f;
 
         private SpriteRenderer _body;
-        private float _groundY;
+        private float _floatY;
         private float _a;
         private float _b;
         private float _currentTarget;
@@ -32,7 +32,7 @@ namespace TunnelVision.Enemies
         private void Start()
         {
             _body = GetComponent<SpriteRenderer>();
-            _groundY = transform.position.y;
+            _floatY = transform.position.y;
 
             // Remember where the points are now, so they stay put when they're children of the balloon.
             _hasPath = pointA != null && pointB != null;
@@ -65,9 +65,9 @@ namespace TunnelVision.Enemies
                 }
             }
 
-            // Bops up off the ground and back down, walking or idling.
+            // Bops up and back down, walking or idling.
             var bop = Mathf.Abs(Mathf.Sin(Time.time * bopsPerSecond * Mathf.PI)) * bopHeight;
-            transform.position = new Vector3(x, _groundY + bop, transform.position.z);
+            transform.position = new Vector3(x, _floatY + bop, transform.position.z);
         }
 
         private void OnDrawGizmos()
