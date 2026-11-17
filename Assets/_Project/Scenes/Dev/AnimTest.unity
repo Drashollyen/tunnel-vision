@@ -1208,9 +1208,8 @@ MonoBehaviour:
   - {fileID: 880000001}
   - {fileID: 870000001}
   - {fileID: 890000001}
-  - {fileID: 840000001}
-  - {fileID: 850000001}
-  startWith: 3
+  - {fileID: 900000001}
+  startWith: 1
 --- !u!1 &870000001
 GameObject:
   m_ObjectHideFlags: 0
@@ -1220,7 +1219,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 870000002}
-  - component: {fileID: 870000003}
   m_Layer: 0
   m_Name: Thrower Clown
   m_TagString: Untagged
@@ -1244,31 +1242,6 @@ Transform:
   - {fileID: 870000011}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &870000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 870000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bb36d1e57eb4cf88cc497b6df3cbcf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DevClownPatrol
-  walkSpeed: 2
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  startFacingRight: 0
-  patrolDistance: 5
-  edgeLookAhead: 0.6
-  edgeDepth: 0.5
-  wallCheckHeight: 1.5
-  sightHeight: 1.7
-  sightAhead: 6
-  sightBehind: 6
-  laughCooldown: 4
 --- !u!1001 &870000010
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1312,7 +1285,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 880000002}
-  - component: {fileID: 880000003}
   m_Layer: 0
   m_Name: Clown
   m_TagString: Untagged
@@ -1334,33 +1306,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 880000011}
+  - {fileID: 880000022}
+  - {fileID: 880000023}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &880000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 880000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bb36d1e57eb4cf88cc497b6df3cbcf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DevClownPatrol
-  walkSpeed: 2
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  startFacingRight: 0
-  patrolDistance: 5
-  edgeLookAhead: 0.6
-  edgeDepth: 0.5
-  wallCheckHeight: 1.5
-  sightHeight: 1.7
-  sightAhead: 6
-  sightBehind: 6
-  laughCooldown: 4
 --- !u!1001 &880000010
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1369,6 +1318,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 880000002}
     m_Modifications:
+    - target: {fileID: 5584011015517985497, guid: 87f91d697bcc483885068063317eb1d0, type: 3}
+      propertyPath: pointA
+      value: 
+      objectReference: {fileID: 880000022}
+    - target: {fileID: 5584011015517985497, guid: 87f91d697bcc483885068063317eb1d0, type: 3}
+      propertyPath: pointB
+      value: 
+      objectReference: {fileID: 880000023}
     - target: {fileID: 1100000000000000001, guid: 87f91d697bcc483885068063317eb1d0, type: 3}
       propertyPath: m_Name
       value: Clown
@@ -1404,7 +1361,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 890000002}
-  - component: {fileID: 890000003}
   m_Layer: 0
   m_Name: Sword Swallower
   m_TagString: Untagged
@@ -1428,20 +1384,6 @@ Transform:
   - {fileID: 890000011}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &890000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 890000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f751b9ae2ed42b3aed5531726b65c31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DevSwordSwallowerTest
-  sightHeight: 1.8
-  sightRange: 12
 --- !u!1001 &890000010
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2397,7 +2339,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &840000001
+--- !u!1 &880000020
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2405,91 +2347,30 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 840000002}
-  - component: {fileID: 840000003}
+  - component: {fileID: 880000022}
   m_Layer: 0
-  m_Name: In-House Clown
+  m_Name: Clown PointA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &840000002
+--- !u!4 &880000022
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 840000001}
+  m_GameObject: {fileID: 880000020}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13, y: -3, z: 0}
+  m_LocalPosition: {x: -3, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 840000011}
-  m_Father: {fileID: 0}
+  m_Children:[]
+  m_Father: {fileID: 880000002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &840000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 840000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bb36d1e57eb4cf88cc497b6df3cbcf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DevClownPatrol
-  walkSpeed: 2
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  startFacingRight: 0
-  patrolDistance: 5
-  edgeLookAhead: 0.6
-  edgeDepth: 0.5
-  wallCheckHeight: 1.5
-  sightHeight: 1.7
-  sightAhead: 6
-  sightBehind: 6
-  laughCooldown: 4
---- !u!1001 &840000010
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 840000002}
-    m_Modifications:
-    - target: {fileID: 1100000000000000001, guid: edd033d175914e448a49eaa668e83e3c, type: 3}
-      propertyPath: m_Name
-      value: InHouseClown
-      objectReference: {fileID: 0}
-    - target: {fileID: 4100000000000000001, guid: edd033d175914e448a49eaa668e83e3c, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4100000000000000001, guid: edd033d175914e448a49eaa668e83e3c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4100000000000000001, guid: edd033d175914e448a49eaa668e83e3c, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: edd033d175914e448a49eaa668e83e3c, type: 3}
---- !u!4 &840000011 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4100000000000000001, guid: edd033d175914e448a49eaa668e83e3c, type: 3}
-  m_PrefabInstance: {fileID: 840000010}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &850000001
+--- !u!1 &880000021
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2497,77 +2378,82 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 850000002}
-  - component: {fileID: 850000003}
+  - component: {fileID: 880000023}
   m_Layer: 0
-  m_Name: In-House Thrower Clown
+  m_Name: Clown PointB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &850000002
+--- !u!4 &880000023
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 850000001}
+  m_GameObject: {fileID: 880000021}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13, y: -3, z: 0}
+  m_LocalPosition: {x: 3, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 850000011}
-  m_Father: {fileID: 0}
+  m_Children:[]
+  m_Father: {fileID: 880000002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &850000003
-MonoBehaviour:
+--- !u!1 &900000001
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 850000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bb36d1e57eb4cf88cc497b6df3cbcf7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DevClownPatrol
-  walkSpeed: 2
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  startFacingRight: 0
-  patrolDistance: 5
-  edgeLookAhead: 0.6
-  edgeDepth: 0.5
-  wallCheckHeight: 1.5
-  sightHeight: 1.7
-  sightAhead: 6
-  sightBehind: 6
-  laughCooldown: 4
---- !u!1001 &850000010
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 900000002}
+  m_Layer: 0
+  m_Name: Balloon Dog
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &900000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 900000011}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &900000010
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 850000002}
+    m_TransformParent: {fileID: 900000002}
     m_Modifications:
-    - target: {fileID: 1100000000000000001, guid: 0baf90c917ba4c06ac05b701d4126c15, type: 3}
+    - target: {fileID: 1100000000000000011, guid: 777284a77265474db193e21f99604be8, type: 3}
       propertyPath: m_Name
-      value: InHouseThrowerClown
+      value: BalloonDog
       objectReference: {fileID: 0}
-    - target: {fileID: 4100000000000000001, guid: 0baf90c917ba4c06ac05b701d4126c15, type: 3}
+    - target: {fileID: 4100000000000000011, guid: 777284a77265474db193e21f99604be8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4100000000000000001, guid: 0baf90c917ba4c06ac05b701d4126c15, type: 3}
+    - target: {fileID: 4100000000000000011, guid: 777284a77265474db193e21f99604be8, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4100000000000000001, guid: 0baf90c917ba4c06ac05b701d4126c15, type: 3}
+    - target: {fileID: 4100000000000000011, guid: 777284a77265474db193e21f99604be8, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
@@ -2575,19 +2461,17 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 0baf90c917ba4c06ac05b701d4126c15, type: 3}
---- !u!4 &850000011 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: 777284a77265474db193e21f99604be8, type: 3}
+--- !u!4 &900000011 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 4100000000000000001, guid: 0baf90c917ba4c06ac05b701d4126c15, type: 3}
-  m_PrefabInstance: {fileID: 850000010}
+  m_CorrespondingSourceObject: {fileID: 4100000000000000011, guid: 777284a77265474db193e21f99604be8, type: 3}
+  m_PrefabInstance: {fileID: 900000010}
   m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 880000002}
-  - {fileID: 840000002}
-  - {fileID: 850000002}
   - {fileID: 870000002}
   - {fileID: 860000002}
   - {fileID: 890000002}
@@ -2605,3 +2489,4 @@ SceneRoots:
   - {fileID: 296850283}
   - {fileID: 640214579}
   - {fileID: 4322974745177258338}
+  - {fileID: 900000002}
