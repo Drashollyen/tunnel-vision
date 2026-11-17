@@ -11,8 +11,9 @@ namespace TunnelVision.UI
 {
     /// <summary>
     /// Escape pauses a level and shows Resume, Restart, Options, Level Select and Main Menu.
-    /// Restart asks first: from the start of the level, or, once a checkpoint is reached, from
-    /// that checkpoint too. Either way the round time starts again from zero. Options is the
+    /// Restart asks first: from the start of the level (a reload, so the round time starts from
+    /// zero), or, once a checkpoint is reached, from that checkpoint (the round time stops for
+    /// the fade and carries on). Options is the
     /// same page (the OptionsPanel prefab) as on the main menu. Escape on the options page goes
     /// back, and on the pause page resumes. It won't open on Out Of Lives, during the death
     /// sequence, or while a scene fades in or out. Level Select and Main Menu ask first, since
@@ -218,7 +219,7 @@ namespace TunnelVision.UI
 
         /// <summary>
         /// The question page's From Checkpoint: resumes, then puts the player back at the last
-        /// checkpoint with the round time starting again from zero.
+        /// checkpoint. The round time stops for the fade and carries on after.
         /// </summary>
         public void RestartFromCheckpoint()
         {
@@ -286,6 +287,13 @@ namespace TunnelVision.UI
             IsPaused = false;
             Time.timeScale = 1f;
             SceneFader.Load(scene);
+
+            if (!SceneFader.IsFading)
+            {
+                Debug.LogWarning($"PauseMenu: couldn't load {scene}, so the game carries on.", this);
+                IsPaused = true; // So Resume puts the controls, sounds and overlay back.
+                Resume();
+            }
         }
 
         private void OnDestroy()
