@@ -1,6 +1,7 @@
 # Runs on every pull request into main or revamp, and on pushes to them. The "Lint" and "Unity tests" jobs are required
 # status checks in the main branch ruleset, so a PR can't merge until both pass.
 # "Unity tests" only runs when Unity files change (see the "changes" job); otherwise it is skipped.
+# With no Assets/_Project/Tests folder it passes without starting Unity.
 name: CI
 
 on:
@@ -93,23 +94,39 @@ jobs:
         with:
           lfs: false
 
+      # The test code was removed for the final submission. With no tests, this check passes
+      # without starting Unity, so it stays green as a required check.
+      - name: Check for tests
+        id: has-tests
+        run: |
+          if [ -d Assets/_Project/Tests ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No tests in the project, so there's nothing to run."
+          fi
+
       # Cache LFS objects so every run doesn't re-download the art (LFS bandwidth is limited).
       - name: Create LFS file list
+        if: steps.has-tests.outputs.found == 'true'
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
       - name: Restore LFS cache
+        if: steps.has-tests.outputs.found == 'true'
         uses: actions/cache@v6
         with:
           path: .git/lfs
           key: lfs-${{ hashFiles('.lfs-assets-id') }}
 
       - name: Git LFS pull
+        if: steps.has-tests.outputs.found == 'true'
         run: |
           git lfs pull
           git add .
           git reset --hard
 
       - name: Restore Unity Library cache
+        if: steps.has-tests.outputs.found == 'true'
         uses: actions/cache@v6
         with:
           path: Library
@@ -119,6 +136,7 @@ jobs:
 
       - name: Run EditMode and PlayMode tests
         id: tests
+        if: steps.has-tests.outputs.found == 'true'
         uses: game-ci/unity-test-runner@v4.4.0
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -133,7 +151,7 @@ jobs:
           checkName: Unity test results
 
       - name: Upload test results
-        if: always()
+        if: always() && steps.has-tests.outputs.found == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: test-results

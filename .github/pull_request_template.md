@@ -1,6 +1,6 @@
 ## What does this change?
 
-<!-- One or two sentences. Link your card from the board, for example: Card: #22 -->
+<!-- One or two sentences. Then write Closes, a space, a hash and your card's number, so the card closes when this merges. -->
 
 ## How did you test it?
 
@@ -12,7 +12,7 @@
 
 ## Checklist
 
-- [ ] **The base branch at the top of this page is `revamp`, not `main`**
+- [ ] The base branch at the top of this page is `revamp`
 - [ ] PR title follows `type: description` (it becomes the commit message)
 - [ ] I got the latest `revamp` and checked the game still runs
 - [ ] Every new/moved asset has its `.meta` file committed

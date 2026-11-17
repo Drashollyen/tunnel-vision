@@ -24,7 +24,13 @@
 *.exe
 *.unitypackage
 *.unitypackage.meta
+*_BackUpThisFolder_ButDontShipItWithYourGame/
 crashlytics-build.properties
+
+# Written by the Performance Testing package during builds. Remove the
+# Resources.meta line if the project ever adds a real Assets/Resources folder.
+/Assets/Resources/PerformanceTestRun*
+/Assets/Resources.meta
 
 # Generated IDE project files (Unity regenerates them)
 ExportedObj/
@@ -99,3 +105,6 @@ $RECYCLE.BIN/
 # CI scratch files
 # ---------------------------------------------------------------------------
 .lfs-assets-id
+
+# Planning notes stay on each person's machine, not in the repo.
+/docs/

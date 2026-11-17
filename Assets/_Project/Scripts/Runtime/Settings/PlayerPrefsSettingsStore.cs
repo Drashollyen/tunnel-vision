@@ -2,13 +2,9 @@ using UnityEngine;
 
 namespace TunnelVision.Settings
 {
-    /// <summary>
-    /// <see cref="ISettingsStore"/> backed by Unity's PlayerPrefs.
-    /// </summary>
+    // The real settings store, saving with Unity's PlayerPrefs.
     public sealed class PlayerPrefsSettingsStore : ISettingsStore
     {
-        public bool HasKey(string key) => PlayerPrefs.HasKey(key);
-
         public float GetFloat(string key, float defaultValue) => PlayerPrefs.GetFloat(key, defaultValue);
 
         public void SetFloat(string key, float value) => PlayerPrefs.SetFloat(key, value);

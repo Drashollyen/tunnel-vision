@@ -1,13 +1,8 @@
 namespace TunnelVision.Settings
 {
-    /// <summary>
-    /// Key/value storage used by <see cref="GameSettings"/>.
-    /// Abstracted so tests can use an in-memory store instead of PlayerPrefs.
-    /// </summary>
+    // Where settings are saved. An interface so tests can use a fake in-memory store instead of PlayerPrefs.
     public interface ISettingsStore
     {
-        bool HasKey(string key);
-
         float GetFloat(string key, float defaultValue);
 
         void SetFloat(string key, float value);

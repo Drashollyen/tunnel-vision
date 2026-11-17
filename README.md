@@ -34,6 +34,8 @@ Or in Git Bash:
 git clone https://github.com/Drashollyen/tunnel-vision.git
 ```
 
+`revamp` is the default branch until Nov 19, so that's the branch you start on.
+
 **3. Run the setup script**
 
 In File Explorer, right-click the `tunnel-vision` folder and choose **Show more options > Open Git Bash here**. Then run:
@@ -56,29 +58,21 @@ Go to **Unity Hub > Add > Add project from disk** and select `tunnel-vision`. **
 ```
 Assets/
   _Project/                 Game content. All new work goes here.
-    Art/                    Sprites and physics materials
+    Art/                    Sprites by subject: Player, Enemies, Environment, Decoration, Collectibles, UI
     Audio/                  Music and sound effects
-    Input/                  Player controls
-    Prefabs/                Reusable objects, including Player
-    Scenes/                 IntroScreen (first in build), ConeTest, UITest, Game
-    Scripts/Runtime/        Game code (TunnelVision.Runtime)
-    Tests/EditMode/         Unit tests
-    Tests/PlayMode/         Scene tests
-    UI/                     Fonts and interface textures
+    Fonts/                  TextMesh Pro font assets
+    Physics/                Physics materials and player controls (Input)
+    Prefabs/                Reusable objects: Player, Enemies, Level, UI
+    Scenes/Menus/           IntroScreen (first in build), LevelSelect, DemoComplete
+    Scenes/Levels/          Level1 to Level3 (start new ones from Level1)
+    Scripts/Runtime/        Game code (TunnelVision.Runtime), one folder per namespace
+    Scripts/Editor/         Editor tools
   ThirdParty/               Downloaded assets. Don't edit (see CREDITS.md)
   Settings/                 URP and Input System settings
   TextMesh Pro/             TMP resources
 .github/                    CI workflows, templates, main ruleset
 .githooks/                  Checks that run when you commit and push
 ```
-
-## Main menu
-
-`IntroScreen` is built by hand in the Editor and driven by `IntroScreenController`.
-
-- **Play** loads the scene set in `IntroScreenController > Next Scene Name` (currently `ConeTest`).
-- **Options** opens a "Coming soon" page with a Back button.
-- **Quit** closes the game.
 
 ## CI
 
@@ -87,11 +81,11 @@ These checks run on every PR:
 | Check | What it does |
 |---|---|
 | **Lint** | `.meta` files, forbidden files, C# formatting. PRs into `main` must also be up to date with `main` |
-| **Unity tests** | EditMode and PlayMode tests. Skipped for docs/GitHub-only changes |
+| **Unity tests** | Runs the EditMode and PlayMode tests if the project has any (the test code was removed for the final submission, so it passes straight away). Skipped for docs/GitHub-only changes |
 | **Build Windows** | Runs only when `build.yml` changes. Skipped otherwise |
 | **PR title** | `type: description` format |
 
-Merges to `main` that change `Assets/`, `Packages/` or `ProjectSettings/` produce a Windows build. Download it from the run's **Artifacts** in the **Actions** tab.
+Merges into `revamp` and `main` need these checks to pass and the branch to be up to date. Merges to `main` that change `Assets/`, `Packages/` or `ProjectSettings/` produce a Windows build. Download it from the run's **Artifacts** in the **Actions** tab.
 
 ## Credits
 
