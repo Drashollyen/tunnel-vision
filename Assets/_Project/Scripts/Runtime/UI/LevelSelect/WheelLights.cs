@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>Runs a chase pattern along the bulbs under this object, like fairground lights.</summary>
+    // Runs a chasing pattern along the bulbs under this object, like fairground lights.
     public class WheelLights : MonoBehaviour
     {
         private const int BulbsPerGroup = 3;

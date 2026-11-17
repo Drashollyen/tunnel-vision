@@ -65,11 +65,8 @@ Assets/
     Prefabs/                Reusable objects: Player, Enemies, Level, UI
     Scenes/Menus/           IntroScreen (first in build), LevelSelect, DemoComplete
     Scenes/Levels/          Level1 to Level3 (start new ones from Level1)
-    Scenes/Dev/             Throwaway test scenes (keep them out of the build list)
     Scripts/Runtime/        Game code (TunnelVision.Runtime), one folder per namespace
     Scripts/Editor/         Editor tools
-    Tests/EditMode/         Unit tests
-    Tests/PlayMode/         Scene tests
   ThirdParty/               Downloaded assets. Don't edit (see CREDITS.md)
   Settings/                 URP and Input System settings
   TextMesh Pro/             TMP resources
@@ -84,7 +81,7 @@ These checks run on every PR:
 | Check | What it does |
 |---|---|
 | **Lint** | `.meta` files, forbidden files, C# formatting. PRs into `main` must also be up to date with `main` |
-| **Unity tests** | EditMode and PlayMode tests. Skipped for docs/GitHub-only changes |
+| **Unity tests** | Runs the EditMode and PlayMode tests if the project has any (the test code was removed for the final submission, so it passes straight away). Skipped for docs/GitHub-only changes |
 | **Build Windows** | Runs only when `build.yml` changes. Skipped otherwise |
 | **PR title** | `type: description` format |
 

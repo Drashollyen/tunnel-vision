@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace TunnelVision.Level
 {
+    // A drop tower ride: when the player stands in its trigger the seat drops fast, waits at the
+    // bottom, then slowly rises back to the top.
     public class DropTower : MonoBehaviour
     {
         private enum TowerState { Idle, Falling, Waiting, Rising }
@@ -24,17 +26,15 @@ namespace TunnelVision.Level
 
         private TowerState currentState = TowerState.Idle;
         private Vector3 topPosition;
-        private bool playerOnPlatform;
 
         public bool IsFalling => currentState == TowerState.Falling;
 
-        void Start()
+        private void Start()
         {
-            // Record the starting height as the return point
             topPosition = seatPlatform.transform.position;
         }
 
-        void Update()
+        private void Update()
         {
             if (currentState == TowerState.Falling)
             {
@@ -74,16 +74,15 @@ namespace TunnelVision.Level
             riseSound.PlayIfSet();
         }
 
-        // Using OnTriggerStay2D ensures it also triggers if the player is still standing
-        // underneath when the tower finishes resetting at the top
+        // Uses "Stay" rather than "Enter" so it drops again if the player is still there
+        // when the seat gets back to the top.
         private void OnTriggerStay2D(Collider2D collision)
         {
-            if (currentState == TowerState.Idle && !playerOnPlatform && collision.CompareTag("Player"))
+            if (currentState == TowerState.Idle && collision.CompareTag("Player"))
             {
                 currentState = TowerState.Falling;
                 fallSound.PlayIfSet();
             }
         }
-
     }
 }

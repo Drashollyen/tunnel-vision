@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
+    // The main menu. The public methods are hooked up to the buttons in the IntroScreen scene.
     public class IntroScreenController : MonoBehaviour
     {
         [SerializeField] private string nextSceneName = "LevelSelect";
@@ -16,7 +17,7 @@ namespace TunnelVision.UI
         {
             _panels = gameObject.AddComponent<PanelSwitcher>();
 
-            // The options page is a shared prefab, so its Back button reports back to us.
+            // The options page is shared with the pause menu, so it tells us when Back is pressed.
             if (optionsPanel != null && optionsPanel.TryGetComponent(out OptionsMenu options))
             {
                 options.BackPressed += CloseOptions;
@@ -25,7 +26,7 @@ namespace TunnelVision.UI
 
         public void Play()
         {
-            // A new playthrough: the demo's ending only counts levels cleared from here.
+            // Starts a new playthrough, so the ending only counts levels cleared from now on.
             Level.RunStats.Reset();
 
             SceneFader.Load(nextSceneName);

@@ -2,17 +2,9 @@ using UnityEngine;
 
 namespace TunnelVision.Enemies
 {
-    /// <summary>
-    /// An enemy's sounds: the clown, the Thrower Clown and the Sword Swallower all use it, each with
-    /// only the sounds it needs.
-    /// <list type="bullet">
-    /// <item>Footsteps: the Run clip calls <see cref="PlayStep"/> as each foot lands; every second one (by default) plays a sound, alternating between the step sounds.</item>
-    /// <item>Squeak: plays every so often, at random, while he's walking (his Animator's Speed is above 0.1).</item>
-    /// <item>Laugh: <see cref="PlayLaugh"/>, for the AI to call (say, on spotting Nicholas).</item>
-    /// <item>Throwing: the Throw clip calls <see cref="PlayWindup"/> on the wind-up and <see cref="PlayThrow"/> on the release.</item>
-    /// </list>
-    /// Any sound left empty is simply skipped, so an enemy that doesn't walk just leaves the walking sounds empty.
-    /// </summary>
+    // Plays an enemy's sounds. The clowns and the Sword Swallower all use it. Any sound left empty
+    // is skipped, so each enemy only fills in the sounds it needs.
+    // PlayStep, PlayWindup and PlayThrow are called by animation events on the Run and Throw clips.
     public class EnemySounds : MonoBehaviour
     {
         private static readonly int SpeedParam = Animator.StringToHash("Speed");
@@ -22,16 +14,16 @@ namespace TunnelVision.Enemies
         [SerializeField] private Animator animator;
 
         [Header("Walking")]
-        [Tooltip("Played in turn, one per footstep.")]
+        [Tooltip("Played in turn, one after the other.")]
         [SerializeField] private AudioClip[] steps;
 
-        [Tooltip("Plays a step sound on every this-many footsteps: 1 for every step, 2 for every other one.")]
+        [Tooltip("1 plays a sound on every footstep, 2 on every other one, and so on.")]
         [Min(1)]
         [SerializeField] private int stepSoundEvery = 2;
 
         [SerializeField] private AudioClip squeak;
 
-        [Tooltip("The squeak plays at a random moment between these many seconds of walking.")]
+        [Tooltip("While walking, the squeak plays at a random time between these two numbers of seconds.")]
         [SerializeField] private Vector2 squeakEverySeconds = new Vector2(2f, 6f);
 
         [Header("Voice")]
@@ -45,6 +37,7 @@ namespace TunnelVision.Enemies
         private int _footsteps;
         private float _untilSqueak;
 
+        // Fills in the references when the script is first added in the Inspector.
         private void Reset()
         {
             source = GetComponent<AudioSource>();
@@ -95,10 +88,7 @@ namespace TunnelVision.Enemies
             return Random.Range(min, max);
         }
 
-        /// <summary>
-        /// A footstep, called by the Run clip as each foot lands. Only every
-        /// <see cref="stepSoundEvery"/>th one makes a sound, alternating between the step sounds.
-        /// </summary>
+        // Called by the Run clip each time a foot lands.
         public void PlayStep()
         {
             if (steps == null || steps.Length == 0)
@@ -113,18 +103,16 @@ namespace TunnelVision.Enemies
                 return;
             }
 
+            // Wraps back to the first sound after the last one.
             _nextStep %= steps.Length;
             Play(steps[_nextStep]);
             _nextStep++;
         }
 
-        /// <summary>The clown laugh.</summary>
         public void PlayLaugh() => Play(laugh);
 
-        /// <summary>The wind-up before a throw. Called by the Throw clip.</summary>
         public void PlayWindup() => Play(windup);
 
-        /// <summary>The throw itself, as the ball leaves his hand. Called by the Throw clip.</summary>
         public void PlayThrow() => Play(throwSound);
 
         private void Play(AudioClip clip)

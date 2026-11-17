@@ -4,18 +4,16 @@ using UnityEngine;
 
 namespace TunnelVision.Editor
 {
-    /// <summary>
-    /// Applies the project's pixel art import settings (see CONTRIBUTING) to the
-    /// selected sprites, or to every texture inside the selected folders.
-    /// </summary>
+    // Adds a menu item (Tools > Tunnel Vision > Apply Pixel Art Settings) that gives the selected
+    // sprites, or every image inside the selected folders, the project's pixel art import settings.
     public static class PixelArtImport
     {
         public const int PixelsPerUnit = 16;
 
-        const string MenuPath = "Tools/Tunnel Vision/Apply Pixel Art Settings";
+        private const string MenuPath = "Tools/Tunnel Vision/Apply Pixel Art Settings";
 
         [MenuItem(MenuPath)]
-        static void ApplyToSelection()
+        private static void ApplyToSelection()
         {
             var paths = TexturePathsInSelection();
             if (paths.Count == 0)
@@ -48,10 +46,11 @@ namespace TunnelVision.Editor
             Debug.Log($"Applied pixel art settings to {changed} textures.");
         }
 
+        // Greys out the menu item when nothing is selected.
         [MenuItem(MenuPath, true)]
-        static bool CanApply() => Selection.assetGUIDs.Length > 0;
+        private static bool CanApply() => Selection.assetGUIDs.Length > 0;
 
-        /// <summary>Sets 16 pixels per unit, Point filtering and no compression. Keeps sprite mode and slices.</summary>
+        // Sharp, uncompressed pixels at 16 pixels per unit. Already-sliced sprite sheets keep their slices.
         public static void Apply(TextureImporter importer)
         {
             if (importer.textureType != TextureImporterType.Sprite)
@@ -66,7 +65,7 @@ namespace TunnelVision.Editor
             importer.mipmapEnabled = false;
         }
 
-        static List<string> TexturePathsInSelection()
+        private static List<string> TexturePathsInSelection()
         {
             var paths = new SortedSet<string>();
             foreach (var guid in Selection.assetGUIDs)

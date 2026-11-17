@@ -6,14 +6,10 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// A simple message box over a dimmed screen, closed with its button, Enter or Escape.
-    /// Goes on the dialog's root object: a full-screen dim image with the box as a child.
-    /// The root starts hidden.
-    /// </summary>
+    // A simple pop-up message, closed with its button, Enter or Escape. Starts hidden.
     public class NoticeDialog : MonoBehaviour
     {
-        [Tooltip("Optional. Replaced by the text passed to Show, if any.")]
+        [Tooltip("Optional. Its text is replaced by whatever is passed to Show.")]
         [SerializeField] private TMP_Text message;
         [Tooltip("Optional. Closes the dialog, and is selected while it's open so Enter works.")]
         [SerializeField] private Button closeButton;
@@ -22,7 +18,7 @@ namespace TunnelVision.UI
 
         public bool IsOpen { get; private set; }
 
-        /// <summary>The frame the dialog last closed on, so a key that closed it isn't used twice.</summary>
+        // Lets other scripts ignore the same key press that just closed this dialog.
         public int ClosedOnFrame { get; private set; } = -1;
 
         private void Awake()
@@ -32,6 +28,8 @@ namespace TunnelVision.UI
                 closeButton.onClick.AddListener(Hide);
             }
 
+            // Awake only runs the first time the object is switched on, which may be from Show.
+            // In that case it should stay visible.
             if (!IsOpen)
             {
                 gameObject.SetActive(false);
@@ -69,14 +67,14 @@ namespace TunnelVision.UI
 
         private void Update()
         {
-            // The key press that opened the dialog mustn't close it again straight away.
+            // Ignore keys on the frame it opened, so the key that opened it doesn't close it again.
             var keyboard = Keyboard.current;
             if (!IsOpen || keyboard == null || Time.frameCount == _openedOnFrame)
             {
                 return;
             }
 
-            // With the button selected, Enter already presses it through the EventSystem.
+            // When the button is selected, Unity already presses it on Enter, so don't do it twice.
             var enterHandledByButton = closeButton != null && EventSystem.current != null
                 && EventSystem.current.currentSelectedGameObject == closeButton.gameObject;
 
@@ -88,10 +86,7 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>
-        /// Closes the dialog as if its button were pressed, so a key gets the same click sound
-        /// and effects as the button. Without a button it just hides.
-        /// </summary>
+        // Closes the dialog as if its button was clicked, so keys get the same click sound.
         public void PressClose()
         {
             if (closeButton != null && closeButton.isActiveAndEnabled && EventSystem.current != null)
@@ -100,7 +95,7 @@ namespace TunnelVision.UI
                     ExecuteEvents.submitHandler);
             }
 
-            // Covers a greyed out button, or one with nothing listening.
+            // Still closes if there's no button, or the button didn't close it.
             Hide();
         }
     }

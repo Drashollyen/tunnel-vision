@@ -4,9 +4,11 @@ using UnityEngine;
 
 namespace TunnelVision.Enemies
 {
+    // Springs up out of its box when Nicholas comes close, then drops back down and waits before it
+    // can spring again. The jack's collider is only switched on while it is up.
     public class JackInTheBox : MonoBehaviour
     {
-        [Tooltip("The child object that moves. Its collider is only on while it is up.")]
+        [Tooltip("The child object that pops up. Its collider is only on while it is up.")]
         [SerializeField] private Transform jack;
         [SerializeField] private float triggerRange = 1.5f;
 
@@ -16,6 +18,7 @@ namespace TunnelVision.Enemies
 
         [Header("Timing")]
         [SerializeField] private float stayUpTime = 0.5f;
+        [Tooltip("Seconds it waits after dropping back down before it can spring again.")]
         [SerializeField] private float windUpTime = 1.5f;
 
         private Transform _player;

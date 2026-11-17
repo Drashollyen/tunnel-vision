@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace TunnelVision.Level
 {
-    /// <summary>
-    /// The end of a level. Unlocks the next level, then shows the HUD's Level Complete screen,
-    /// or goes straight back to the wheel if the scene has no such screen. Only fires once.
-    /// </summary>
+    // The end of a level. Saves progress and stats, then shows the Level Complete screen
+    // (or goes straight back to Level Select if the scene doesn't have one).
     public class LevelGoal : MonoBehaviour
     {
         [Tooltip("This level's position on the wheel, counting from 0.")]
@@ -15,7 +13,7 @@ namespace TunnelVision.Level
         [SerializeField] private string levelSelectScene = "LevelSelect";
         [Tooltip("The scene Next Level loads. Leave empty on the last level to offer only Level Select.")]
         [SerializeField] private string nextLevelScene;
-        [Tooltip("Tick on the demo's last level: Level Complete then offers only Continue, to the ending.")]
+        [Tooltip("Tick on the demo's last level: Level Complete then only offers Continue, to the ending.")]
         [SerializeField] private bool endsDemo;
         [SerializeField] private string demoEndScene = "DemoComplete";
 
@@ -23,7 +21,7 @@ namespace TunnelVision.Level
 
         public bool Reached => _reached;
 
-        /// <summary>Where along the level the player crosses into the goal: the left edge of its trigger.</summary>
+        // The left edge of the goal's trigger, where the player crosses into it.
         public float CrossingX
         {
             get
@@ -43,7 +41,7 @@ namespace TunnelVision.Level
             Reach();
         }
 
-        /// <summary>What touching the goal does. Public so tests can call it.</summary>
+        // Public so tests can call it.
         public void Reach()
         {
             if (_reached)
@@ -54,17 +52,17 @@ namespace TunnelVision.Level
             _reached = true;
             LevelProgress.CompleteLevel(levelIndex);
 
-            // Teddies found this run are only kept now the level is cleared.
+            // Teddies are only saved once the level is cleared.
             var collectibles = FindAnyObjectByType<PlayerCollectibles>();
             var teddies = collectibles != null ? collectibles.Count : 0;
             LevelProgress.RecordCollectibles(levelIndex, teddies);
 
-            // And this playthrough's result, for the demo's ending.
+            // This playthrough's result, shown on the demo's ending screen.
             var lives = FindAnyObjectByType<PlayerLives>();
             var livesLost = lives != null ? lives.LivesLost : 0;
             RunStats.Record(new RunStats.LevelResult(levelIndex, Time.timeSinceLevelLoad, teddies, livesLost));
 
-            // And the all-time stats, for the main menu's Stats page.
+            // The all-time stats, for the main menu's Stats page.
             AllTimeStats.RecordClear(levelIndex, Time.timeSinceLevelLoad, teddies, livesLost, endsDemo);
 
             var screen = FindAnyObjectByType<LevelCompleteScreen>();

@@ -4,49 +4,45 @@ using UnityEngine;
 
 namespace TunnelVision.Level
 {
+    // Moves back and forth between point A and point B, pausing at each end.
     public class MovingPlatform : MonoBehaviour
     {
         public Transform pointA;
         public Transform pointB;
         public float moveSpeed = 2f;
 
-        private Vector3 nextPosition;
-        private bool platformWaiting;
+        private Vector3 _nextPosition;
+        private bool _waiting;
         [SerializeField] private float waitDuration;
-        [SerializeField] public AudioSource movingSound;
+        public AudioSource movingSound;
 
-        private Rigidbody2D rb;
+        private Rigidbody2D _rb;
 
-
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        private void Start()
         {
-            rb = GetComponent<Rigidbody2D>();
-            nextPosition = pointB.position;
+            _rb = GetComponent<Rigidbody2D>();
+            _nextPosition = pointB.position;
             movingSound.PlayIfSet();
         }
 
-        // Update is called once per frame
-        void FixedUpdate()
+        private void FixedUpdate()
         {
-            Vector2 newPosition = Vector2.MoveTowards(rb.position, nextPosition, moveSpeed * Time.fixedDeltaTime);
-            rb.MovePosition(newPosition);
+            Vector2 newPosition = Vector2.MoveTowards(_rb.position, _nextPosition, moveSpeed * Time.fixedDeltaTime);
+            _rb.MovePosition(newPosition);
 
-            if (Vector2.Distance(rb.position, nextPosition) < 0.01f && !platformWaiting)
+            if (Vector2.Distance(_rb.position, _nextPosition) < 0.01f && !_waiting)
             {
                 movingSound.StopIfSet();
-                // Wait for a few seconds
-                platformWaiting = true;
-                StartCoroutine(PlatformWait(waitDuration));
+                _waiting = true;
+                StartCoroutine(WaitThenTurnAround(waitDuration));
             }
         }
 
-        IEnumerator PlatformWait(float duration)
+        private IEnumerator WaitThenTurnAround(float duration)
         {
             yield return new WaitForSeconds(duration);
-            platformWaiting = false;
-            // Set the new target position
-            nextPosition = (nextPosition == pointA.position) ? pointB.position : pointA.position;
+            _waiting = false;
+            _nextPosition = (_nextPosition == pointA.position) ? pointB.position : pointA.position;
             movingSound.PlayIfSet();
         }
 
@@ -54,6 +50,7 @@ namespace TunnelVision.Level
         {
             if (collision.gameObject.CompareTag("Player"))
             {
+                // The player becomes a child of the platform so they ride along with it.
                 collision.gameObject.transform.parent = transform;
             }
         }

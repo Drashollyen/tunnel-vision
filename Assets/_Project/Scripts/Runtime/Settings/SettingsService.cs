@@ -2,15 +2,13 @@ using UnityEngine;
 
 namespace TunnelVision.Settings
 {
-    /// <summary>
-    /// Holds the game's single <see cref="GameSettings"/> instance and applies the saved
-    /// values before the first scene loads, so every scene starts with the player's settings.
-    /// </summary>
+    // Holds the game's one set of settings. It loads and applies the saved values before the
+    // first scene loads, so every scene starts with the player's settings.
     public static class SettingsService
     {
         public static GameSettings Current { get; private set; }
 
-        // Runs on every Play session, including with Fast Enter Play Mode (no domain reload).
+        // Runs at the start of every Play session, even with Fast Enter Play Mode on.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
