@@ -5,18 +5,11 @@ using UnityEngine.SceneManagement;
 
 namespace TunnelVision.Audio
 {
-    /// <summary>
-    /// Scales every in-game sound (jumps, platforms, hazards and so on) by the Effects Volume
-    /// setting, so sounds follow the options page without each script having to. Each source
-    /// keeps the volume it was given in its scene, and the setting multiplies that. Runs when a
-    /// scene loads and whenever audio settings change. Music and menu sounds are left out.
-    /// <para>
-    /// It can also silence gameplay: <see cref="FadeOutGameplay"/> fades every game sound down and
-    /// pauses it (for Out Of Lives and the pause menu, when the game has stopped but looping
-    /// sounds like the wheels would otherwise carry on), and <see cref="ResumeGameplay"/> brings
-    /// them back. A new scene always starts with gameplay sound on.
-    /// </para>
-    /// </summary>
+    // Scales every in-game sound (jumps, platforms, hazards and so on) by the Effects Volume
+    // setting, so no sound script has to do it itself. Each sound keeps the volume it was given
+    // in the scene, and the setting multiplies that. Music and menu sounds are left out.
+    // It can also fade all gameplay sounds out and pause them (for Out Of Lives and the pause
+    // menu, so looping sounds like the wheels stop too), then bring them back.
     public static class SoundEffectsVolume
     {
         private static readonly Dictionary<AudioSource, float> BaseVolumes = new Dictionary<AudioSource, float>();
@@ -29,19 +22,18 @@ namespace TunnelVision.Audio
         private static float _fadeStartsAt;
         private static Fader _fader;
 
-        // The most a fade can move on in one frame, so a hitch (a slow frame) can't skip it.
+        // The most the fade can move in one frame, so one slow frame can't skip it.
         private const float MaxStepSeconds = 0.1f;
 
-        /// <summary>How loud gameplay sounds are allowed to be right now, from 0 (silenced) to 1.</summary>
+        // How loud gameplay sounds are allowed to be right now, from 0 (silent) to 1.
         public static float GameplayLevel => _gameplayLevel;
 
-        /// <summary>True once gameplay sounds have been faded out and paused.</summary>
         public static bool IsGameplaySilenced => _gameplayTarget <= 0f && _gameplayLevel <= 0f;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Reset()
         {
-            // Fast Enter Play Mode keeps statics, so start each session clean.
+            // Fast Enter Play Mode keeps static values between Play sessions, so clear them here.
             BaseVolumes.Clear();
             NotEffects.Clear();
             PausedByUs.Clear();
@@ -52,7 +44,7 @@ namespace TunnelVision.Audio
             GameSettings.AudioApplied += Apply;
         }
 
-        /// <summary>Leaves a source alone: for music and menu sounds, which have their own settings.</summary>
+        // Leaves this sound alone. For music and menu sounds, which have their own volume settings.
         public static void Exclude(AudioSource source)
         {
             if (source == null)
@@ -68,19 +60,15 @@ namespace TunnelVision.Audio
             }
         }
 
-        /// <summary>The volume a source plays at for a given base volume and setting.</summary>
         public static float Scaled(float baseVolume, float effectsVolume) => baseVolume * Mathf.Clamp01(effectsVolume);
 
-        /// <summary>
-        /// Fades every gameplay sound out over <paramref name="seconds"/>, after waiting
-        /// <paramref name="delay"/>, then pauses them. Uses real time, so it works while paused.
-        /// </summary>
+        // Waits for the delay, fades every gameplay sound out, then pauses them.
+        // Uses real time, so it works while the game is paused.
         public static void FadeOutGameplay(float seconds, float delay = 0f)
         {
             StartFade(0f, seconds, delay);
         }
 
-        /// <summary>Unpauses the gameplay sounds that were silenced and fades them back up.</summary>
         public static void ResumeGameplay(float seconds)
         {
             foreach (var source in PausedByUs)
@@ -95,7 +83,7 @@ namespace TunnelVision.Audio
             StartFade(1f, seconds, 0f);
         }
 
-        /// <summary>Turns gameplay sound straight back on, with no fade. For tests and scene changes.</summary>
+        // Turns gameplay sound straight back on, with no fade.
         public static void RestoreGameplayNow()
         {
             foreach (var source in PausedByUs)
@@ -132,7 +120,7 @@ namespace TunnelVision.Audio
 
         private static void Step()
         {
-            // Waiting for the delay, or nothing to do.
+            // Still waiting for the delay, or already there.
             if (Time.unscaledTime < _fadeStartsAt || _gameplayLevel == _gameplayTarget)
             {
                 return;
@@ -174,13 +162,13 @@ namespace TunnelVision.Audio
             Apply();
         }
 
-        /// <summary>Applies the current Effects Volume to every sound in the loaded scenes.</summary>
+        // Applies the current Effects Volume to every sound in the loaded scenes.
         public static void Apply()
         {
             var setting = SettingsService.Current != null ? SettingsService.Current.EffectsVolume : 1f;
             setting *= _gameplayLevel;
 
-            // Forget sources that have been destroyed.
+            // Forget sounds that have been destroyed.
             var gone = new List<AudioSource>();
             foreach (var source in BaseVolumes.Keys)
             {
@@ -213,7 +201,7 @@ namespace TunnelVision.Audio
             }
         }
 
-        /// <summary>Runs the gameplay fade each frame.</summary>
+        // A hidden object that runs the fade every frame, since a static class can't have an Update.
         private class Fader : MonoBehaviour
         {
             private void Update() => Step();

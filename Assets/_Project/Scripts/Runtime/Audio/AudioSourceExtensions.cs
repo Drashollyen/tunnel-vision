@@ -2,10 +2,8 @@ using UnityEngine;
 
 namespace TunnelVision.Audio
 {
-    /// <summary>
-    /// Play and Stop that do nothing when the sound isn't set, so an object without its
-    /// AudioSource (a test player, or a prefab that hasn't had one added) still works.
-    /// </summary>
+    // Play and Stop that do nothing when the AudioSource is missing, so an object without one
+    // (a test player, or a prefab that hasn't had one added yet) still works.
     public static class AudioSourceExtensions
     {
         public static void PlayIfSet(this AudioSource source)

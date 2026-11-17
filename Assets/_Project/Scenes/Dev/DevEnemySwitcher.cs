@@ -1,21 +1,19 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Local test only, not for the game. Shows one enemy at a time for showcasing: press 1, 2, 3 (and
-/// so on) to swap to that enemy, back at its starting spot. 0 hides them all. A key list in the
-/// top-right corner shows the keys; H hides it.
-/// </summary>
+// Test only, not for the game. Shows one enemy at a time: press 1, 2, 3 and so on to swap to that
+// enemy at its starting spot, or 0 to hide them all. H hides the key list in the top-right corner.
 public class DevEnemySwitcher : MonoBehaviour
 {
     [Tooltip("The enemies to swap between, in key order: the first is key 1.")]
     [SerializeField] private GameObject[] enemies;
-    [Tooltip("Which one shows at the start: 1 for the first. 0 shows none.")]
+    [Tooltip("Which one shows at the start: 1 for the first, 0 for none.")]
     [SerializeField] private int startWith = 1;
 
     private Vector3[] _starts;
     private int _current;
     private bool _showLabel = true;
+    private GUIStyle _style;
 
     private static readonly Key[] NumberKeys =
     {
@@ -63,7 +61,7 @@ public class DevEnemySwitcher : MonoBehaviour
         }
     }
 
-    /// <summary>Shows enemy <paramref name="number"/> (1 for the first) at its start and hides the rest; 0 hides all.</summary>
+    // Shows enemy number "number" (1 for the first) and hides the rest. 0 hides them all.
     private void Show(int number)
     {
         _current = number;
@@ -77,7 +75,7 @@ public class DevEnemySwitcher : MonoBehaviour
             var show = i + 1 == number;
             if (show)
             {
-                // Fresh each time: back at the start, so its patrol and throws begin again.
+                // Turn it off and on again at its start spot, so it starts fresh.
                 enemies[i].SetActive(false);
                 enemies[i].transform.position = _starts[i];
             }
@@ -124,6 +122,4 @@ public class DevEnemySwitcher : MonoBehaviour
         GUI.color = old;
         GUI.Label(new Rect(box.x + pad, box.y + pad, size.x, size.y), content, _style);
     }
-
-    private GUIStyle _style;
 }

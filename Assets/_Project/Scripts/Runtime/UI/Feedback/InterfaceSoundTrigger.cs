@@ -5,14 +5,12 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Added to each control by <see cref="InterfaceSounds"/> when the scene starts. Dropdowns copy
-    /// their list items from a template while the menu is open, so the copies get this too. That's
-    /// why it looks for the sounds when it needs them instead of being given them up front.
-    /// </summary>
+    // Plays the hover and click sounds for one control. InterfaceSounds adds it to every control
+    // when the scene starts. A dropdown copies its list items while it's open, so the copies get
+    // this too; that's why it looks for the sounds when it needs them instead of storing them.
     public class InterfaceSoundTrigger : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, ISubmitHandler
     {
-        /// <summary>Greyed out controls and closed dropdown boxes stay quiet on hover. List items don't.</summary>
+        // Greyed out controls and closed dropdown boxes stay quiet on hover. Dropdown list items don't.
         public bool PlaysHoverSound => IsInteractable && GetComponent<TMP_Dropdown>() == null;
 
         public bool IsInteractable

@@ -5,11 +5,8 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// The main menu's Stats page, in two columns, each its own centred text box: each level's best
-    /// clear on the left, totals over every playthrough on the right, each under a larger title.
-    /// Fills its text each time the page opens.
-    /// </summary>
+    // The main menu's Stats page: each level's best clear on the left, all-time totals on the right.
+    // The text is rebuilt every time the page opens.
     public class StatsPage : MonoBehaviour
     {
         public const string BestHeading = "Best Clears";
@@ -23,7 +20,7 @@ namespace TunnelVision.UI
         [SerializeField] private TMP_Text bestClears;
         [Tooltip("The right column.")]
         [SerializeField] private TMP_Text allTime;
-        [Tooltip("How many levels the prototype has. Each gets a line, cleared or not.")]
+        [Tooltip("How many levels the game has. Each gets a line, cleared or not.")]
         [SerializeField] private int levelCount = 3;
 
         private void OnEnable()
@@ -39,13 +36,11 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>The left column's text: the title, then each level's best clear.</summary>
         public static string BestText(int levelCount) => string.Join("\n", BestLines(levelCount));
 
-        /// <summary>The right column's text: the title, then the totals.</summary>
         public static string AllTimeText() => string.Join("\n", AllTimeLines());
 
-        /// <summary>The title, then each level's fastest time with its other bests on a smaller line below.</summary>
+        // The heading, then each level's fastest time with its other bests on a smaller line below.
         public static List<string> BestLines(int levelCount)
         {
             var lines = new List<string> { Title(BestHeading) };
@@ -66,7 +61,6 @@ namespace TunnelVision.UI
             return lines;
         }
 
-        /// <summary>The title, then the totals over every clear.</summary>
         public static List<string> AllTimeLines() => new List<string>
         {
             Title(AllTimeHeading),
@@ -77,8 +71,10 @@ namespace TunnelVision.UI
             $"Lives Lost:  {AllTimeStats.TotalLivesLost}",
         };
 
+        // <size> and <b> are TextMeshPro tags that make the heading bigger and bold.
         private static string Title(string title) => $"<size={TitleSize}><b>{title}</b></size>";
 
+        // "1 Collectible" or "3 Collectibles", picking the right word for the number.
         private static string Count(int count, string one, string many) => $"{count} {(count == 1 ? one : many)}";
     }
 }

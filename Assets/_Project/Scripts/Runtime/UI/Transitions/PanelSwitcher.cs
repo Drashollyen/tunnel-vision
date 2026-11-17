@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
-    /// <summary>Cross-fades from one menu panel to another. Works while the game is paused.</summary>
+    // Cross-fades from one menu panel to another. Uses real time, so it works while the game is paused.
     public class PanelSwitcher : MonoBehaviour
     {
         private const float FadeSeconds = 0.15f;
@@ -29,8 +29,8 @@ namespace TunnelVision.UI
             _toGroup.alpha = 0f;
             _toGroup.gameObject.SetActive(true);
 
-            // Wait a frame first: the click that started this switch still has to play its sound,
-            // and that plays the greyed out click if the button already reads as disabled.
+            // Wait one frame first: the click that started this still has to play its sound, and
+            // it would play the greyed out click if the button already counted as disabled.
             yield return null;
             _fromGroup.interactable = false;
 

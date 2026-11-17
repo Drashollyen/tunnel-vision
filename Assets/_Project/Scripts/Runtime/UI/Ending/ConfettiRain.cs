@@ -4,11 +4,9 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Confetti falling across this RectTransform: small coloured squares that drift, spin and
-    /// fall, then start again from the top. Made by code, so it needs no art. Real time.
-    /// Goes on a full-screen object that doesn't block clicks.
-    /// </summary>
+    // Confetti made by code, so it needs no art: small coloured squares that fall, drift and spin
+    // across this object, then start again at the top. Uses real time.
+    // Put it on a full-screen object that doesn't block clicks.
     [RequireComponent(typeof(RectTransform))]
     public class ConfettiRain : MonoBehaviour
     {
@@ -39,7 +37,6 @@ namespace TunnelVision.UI
         private float _tintAmount;
         private float _tintSpeed;
 
-        /// <summary>How many confetti pieces are falling.</summary>
         public int PieceCount => _pieces.Count;
 
         private void Awake()
@@ -72,7 +69,7 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>Turns every piece to <paramref name="colour"/> over <paramref name="seconds"/>.</summary>
+        // Turns every piece to this colour over the given seconds.
         public void FadeTo(Color colour, float seconds)
         {
             _tint = colour;
@@ -80,10 +77,7 @@ namespace TunnelVision.UI
             _tintSpeed = seconds > 0f ? 1f / seconds : float.PositiveInfinity;
         }
 
-        /// <summary>True once every piece has finished turning to the colour given to <see cref="FadeTo"/>.</summary>
-        public bool IsTinted => _tintSpeed > 0f && _tintAmount >= 1f;
-
-        /// <summary>The colour of each piece, for tests.</summary>
+        // Used by tests.
         public IEnumerable<Color> PieceColours
         {
             get

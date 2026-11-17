@@ -9,15 +9,10 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// The hidden Chaplin on the Demo Complete screen. Press F or click him: the music winds down
-    /// like a dying tape while the confetti turns black, then it cuts hard to a silent black
-    /// screen, his "Tunnel Vision" clip plays, and the game closes (in the Editor, Play mode stops).
-    /// <para>
-    /// Goes on Chaplin's Image, which must be a raycast target. The black screen is made by code
-    /// on its own canvas above everything else. Real time throughout.
-    /// </para>
-    /// </summary>
+    // The hidden Chaplin on the Demo Complete screen. Press F or click him: the music slows down
+    // like a dying tape while the confetti turns black, then it cuts hard to a silent black
+    // screen, his "Tunnel Vision" clip plays, and the game closes (in the Editor, Play mode stops).
+    // Goes on Chaplin's Image, which needs Raycast Target ticked. Uses real time throughout.
     public class ChaplinEasterEgg : MonoBehaviour, IPointerClickHandler
     {
         public enum Stage
@@ -41,14 +36,14 @@ namespace TunnelVision.UI
         [SerializeField] private float darkAfterVoice = 0.8f;
 
         [Header("Sound")]
-        [Tooltip("How low the music's pitch drags before the cut (1 = normal).")]
+        [Tooltip("How low the music's pitch drops before the cut (1 = normal).")]
         [Range(0.05f, 1f)]
         [SerializeField] private float windDownEndPitch = 0.15f;
 
         [Header("Look")]
         [SerializeField] private Color confettiColour = Color.black;
 
-        /// <summary>What closes the game at the end. Tests swap it so the test run isn't stopped.</summary>
+        // What closes the game at the end. Tests swap it out so the test run isn't stopped.
         public static Action QuitAction = QuitGame;
 
         private Image _black;
@@ -57,14 +52,12 @@ namespace TunnelVision.UI
         public Stage Current { get; private set; } = Stage.Waiting;
         public AudioClip Voice => voice;
         public ConfettiRain Confetti => confetti;
-
-        /// <summary>The black screen, once it's up.</summary>
         public Image Black => _black;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetQuit()
         {
-            // Fast Enter Play Mode keeps statics, so a swapped quit from a test can't linger.
+            // Fast Enter Play Mode keeps static values, so put the real quit back in case a test swapped it.
             QuitAction = QuitGame;
         }
 
@@ -91,7 +84,6 @@ namespace TunnelVision.UI
             Play();
         }
 
-        /// <summary>Starts the sequence. Does nothing if it's already running.</summary>
         public void Play()
         {
             if (Current != Stage.Waiting)
@@ -107,7 +99,7 @@ namespace TunnelVision.UI
         {
             BuildOverlay();
 
-            // The happy music winds down and the confetti turns black.
+            // The happy music slows down and the confetti turns black.
             var music = MusicPlayer.Current;
             if (music != null)
             {
@@ -128,7 +120,7 @@ namespace TunnelVision.UI
                 music.Cut();
             }
 
-            SoundEffectsVolume.FadeOutGameplay(0f); // Any other sound too. His clip is left out.
+            SoundEffectsVolume.FadeOutGameplay(0f); // Silences any other sound too. His clip is excluded, so it still plays.
             SetBlack(1f);
             yield return new WaitForSecondsRealtime(darkBeforeVoice);
 
@@ -151,6 +143,7 @@ namespace TunnelVision.UI
             _black.color = new Color(0f, 0f, 0f, alpha);
         }
 
+        // Builds the black screen and the voice's AudioSource on a new canvas drawn above everything else.
         private void BuildOverlay()
         {
             var root = new GameObject("Easter Egg Overlay", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
@@ -165,7 +158,7 @@ namespace TunnelVision.UI
             _audio.spatialBlend = 0f;
             SoundEffectsVolume.Exclude(_audio);
 
-            // Catches clicks from the start, so the Main Menu button can't cut it short.
+            // Blocks clicks from the start, even while still see-through, so the Main Menu button can't cut it short.
             var go = new GameObject("Black", typeof(RectTransform), typeof(Image));
             go.layer = root.layer;
             go.transform.SetParent(root.transform, false);

@@ -2,18 +2,13 @@ using UnityEngine;
 
 namespace TunnelVision.Level
 {
-    /// <summary>
-    /// Rides (wheel seats, lifts) carry the player by making it a child while it stands on them.
-    /// This is the stepping-off half, shared so they all do it safely.
-    /// </summary>
+    // Rides (wheel seats, moving platforms) carry the player by making the player their child.
+    // This handles stepping off safely, and is shared by all of them.
     public static class RideParenting
     {
-        /// <summary>
-        /// Unparents <paramref name="rider"/> from <paramref name="ride"/>, but only when it's
-        /// still riding this one (it may already have stepped onto the next seat), and never while
-        /// either is being switched on or off: Unity refuses to reparent then (it logs an error
-        /// when Play mode stops or the scene unloads), and there's nothing to undo anyway.
-        /// </summary>
+        // Only lets go if the player is still on this ride (they may already be on the next seat).
+        // Also skips it while either object is being turned off, because Unity throws an error if
+        // you change parents then (for example when Play mode stops or the scene unloads).
         public static void LetGo(Transform rider, Transform ride)
         {
             if (!CanLetGo(rider, ride))
@@ -24,7 +19,7 @@ namespace TunnelVision.Level
             rider.parent = null;
         }
 
-        /// <summary>Whether <see cref="LetGo"/> would unparent. Public for tests.</summary>
+        // Public so tests can call it.
         public static bool CanLetGo(Transform rider, Transform ride)
         {
             return rider != null && ride != null

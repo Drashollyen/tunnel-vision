@@ -4,10 +4,7 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Shows "Collectible Found" when the player picks up a teddy. Works the same way as the checkpoint
-    /// message: it fades in, stays a moment, and fades out. Goes in the HUD on the text.
-    /// </summary>
+    // Shows "Collectible Found" for a moment when the player picks up a teddy, timed like the checkpoint message.
     [RequireComponent(typeof(TMP_Text))]
     public class CollectibleMessage : MonoBehaviour
     {
@@ -17,7 +14,7 @@ namespace TunnelVision.UI
         private PlayerCollectibles _collectibles;
         private float _shownAt = float.NegativeInfinity;
 
-        /// <summary>How visible the message is, from 0 to 1.</summary>
+        // From 0 (hidden) to 1 (fully shown).
         public float Visibility => _text != null ? _text.alpha : 0f;
 
         private void Awake()
@@ -26,8 +23,7 @@ namespace TunnelVision.UI
             _text.text = Message;
             _text.alpha = 0f;
 
-            // Find or add, not just find: the Player has none until something adds one, and the
-            // counter beside this may not have woken up yet.
+            // "Or add" because the Player may not have a teddy counter yet if this wakes up first.
             _collectibles = PlayerCollectibles.FindOrAdd();
             if (_collectibles != null)
             {
@@ -53,7 +49,7 @@ namespace TunnelVision.UI
 
         private void Update()
         {
-            // Same timing as the checkpoint message, unscaled so pausing doesn't leave it on screen.
+            // Real time rather than game time, so pausing doesn't leave the message stuck on screen.
             _text.alpha = CheckpointMessage.AlphaAt(Time.unscaledTime - _shownAt);
         }
     }

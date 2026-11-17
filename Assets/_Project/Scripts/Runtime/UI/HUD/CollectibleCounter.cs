@@ -4,12 +4,7 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Shows how many collectibles the player has. Goes in the HUD with a text for the number
-    /// (and an icon beside it if wanted). If the Player has no PlayerCollectibles yet, one is
-    /// added, so the counter works before any pickups exist. On Out Of Lives it fades out just
-    /// after the last eye pops, and comes back if lives do.
-    /// </summary>
+    // Shows how many teddies the player has. Fades out when the player runs out of lives.
     public class CollectibleCounter : MonoBehaviour
     {
         [SerializeField] private TMP_Text countText;
@@ -22,11 +17,12 @@ namespace TunnelVision.UI
         private float _fadeStartsAt = float.PositiveInfinity;
         private bool _hidden;
 
-        /// <summary>How visible the counter is, from 0 (gone) to 1.</summary>
+        // From 0 (gone) to 1 (fully shown).
         public float Visibility => _group != null ? _group.alpha : 1f;
 
         private void Awake()
         {
+            // Adds the teddy counter to the Player if it doesn't have one yet.
             _collectibles = PlayerCollectibles.FindOrAdd();
             _lives = FindAnyObjectByType<PlayerLives>();
             _group = TryGetComponent(out CanvasGroup group) ? group : gameObject.AddComponent<CanvasGroup>();
@@ -46,7 +42,7 @@ namespace TunnelVision.UI
             }
 
             _collectibles.CountChanged += ShowCount;
-            ShowCount(_collectibles.Count); // Catches up if the count changed while the HUD was off.
+            ShowCount(_collectibles.Count); // Catches up in case the count changed while the HUD was hidden.
 
             if (_lives != null)
             {
@@ -72,7 +68,7 @@ namespace TunnelVision.UI
             _hidden = lives <= 0;
             if (_hidden)
             {
-                // After the last eye has popped, so the two don't compete.
+                // Wait for the last eye to finish popping so the two animations don't overlap.
                 _fadeStartsAt = Time.unscaledTime + LivesDisplay.LoseSeconds;
             }
             else
@@ -84,7 +80,7 @@ namespace TunnelVision.UI
 
         private void Update()
         {
-            // Unscaled time, because Out Of Lives pauses the game.
+            // Real time rather than game time, because running out of lives pauses the game.
             if (_hidden && Time.unscaledTime >= _fadeStartsAt)
             {
                 _group.alpha = 1f - Mathf.Clamp01((Time.unscaledTime - _fadeStartsAt) / FadeSeconds);

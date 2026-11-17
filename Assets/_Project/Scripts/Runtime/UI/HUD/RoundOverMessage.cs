@@ -8,68 +8,60 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Shows "Game Over" with the lives left each time the player loses a life, and
-    /// "Out Of Lives" when the last one goes. Out of lives (called Game Over in the code),
-    /// the game pauses and, after a short delay, a button offers the way back to Level Select.
-    /// </summary>
+    // Shows "Game Over" with the lives left each time the player loses a life. When the last life
+    // goes it shows "Out Of Lives" instead, pauses the game and offers a way back to Level Select.
+    // In the code, running out of lives is called "game over".
     public class RoundOverMessage : MonoBehaviour
     {
+        public const string PressEnterPrompt = "Press Enter For Level Select";
+        public const string LifeLostTitle = "Game Over";
+        public const string OutOfLivesTitle = "Out Of Lives";
+        public const float DefaultButtonFadeSeconds = 0.25f;
+
+        // When out of lives the game stops, but looping sounds (like the wheels) would keep playing,
+        // so they fade out once the death sound has had time to be heard.
+        public const float SoundsHoldSeconds = 0.8f;
+        public const float SoundsFadeSeconds = 1f;
+
         [SerializeField] private GameObject panel;
         [SerializeField] private TMP_Text title;
         [SerializeField] private TMP_Text subtitle;
-        [Tooltip("How long a lost life's message stays up when there's no death sequence to follow. " +
-                 "With one, it fades out as the screen goes black instead.")]
+        [Tooltip("Only used when there's no death fade. Otherwise the message fades out as the screen goes black.")]
         [SerializeField] private float showSeconds = 2f;
 
         [Header("Game Over")]
-        [Tooltip("Optional. Shown after the delay on Out Of Lives, for the mouse like the menus. " +
-                 "Left empty, the subtitle says to press Enter instead.")]
+        [Tooltip("Optional. Appears when out of lives. If left empty, the player presses Enter instead.")]
         [SerializeField] private Button levelSelectButton;
-        [Tooltip("When there's no death sequence to follow. With one, the button fades in as the screen goes black.")]
+        [Tooltip("Only used when there's no death fade. Otherwise the button fades in as the screen goes black.")]
         [SerializeField] private float buttonDelay = 1.5f;
         [SerializeField] private string levelSelectScene = "LevelSelect";
 
         private PlayerLives _playerLives;
+        private PlayerRespawn _respawn;
         private int _lastLives;
-        private float _hideAt = float.PositiveInfinity;
-        private float _showButtonAt = float.PositiveInfinity;
-        private CanvasGroup _buttonGroup;
-        private float _buttonFadeSeconds = DefaultButtonFadeSeconds;
-        private float _buttonFadeStartedAt = float.PositiveInfinity;
-
-        /// <summary>How long the button takes to fade in when there's no death sequence to match.</summary>
-        public const float DefaultButtonFadeSeconds = 0.25f;
         private bool _pausedTheGame;
         private NumberDrop _numberDrop;
         private CanvasGroup _panelGroup;
-        private PlayerRespawn _respawn;
+        private float _hideAt = float.PositiveInfinity;
         private float _fadeStartsAt = float.PositiveInfinity;
         private float _fadeSeconds;
+        private CanvasGroup _buttonGroup;
+        private float _showButtonAt = float.PositiveInfinity;
+        private float _buttonFadeSeconds = DefaultButtonFadeSeconds;
+        private float _buttonFadeStartedAt = float.PositiveInfinity;
 
-        public const string PressEnterPrompt = "Press Enter For Level Select";
-        public const string LifeLostTitle = "Game Over";
-        public const string OutOfLivesTitle = "Out Of Lives";
-
-        // Out of lives, the game stops but looping sounds (the wheels) would play on, so they fade
-        // out, after long enough for the death sound to be heard.
-        public const float SoundsHoldSeconds = 0.8f;
-        public const float SoundsFadeSeconds = 1f;
-
-        /// <summary>True once the last life has gone.</summary>
         public bool IsGameOver { get; private set; }
 
-        /// <summary>How visible the Back To Level Select button is, from 0 to 1.</summary>
+        // From 0 (hidden) to 1 (fully shown).
         public float ButtonVisibility =>
             levelSelectButton != null && levelSelectButton.gameObject.activeSelf && _buttonGroup != null ? _buttonGroup.alpha : 0f;
 
-        /// <summary>How visible the message is, from 0 to 1. It fades out as the screen goes black.</summary>
+        // From 0 (hidden) to 1 (fully shown).
         public float Visibility => _panelGroup != null && panel.activeSelf ? _panelGroup.alpha : 0f;
 
-        /// <summary>True when Game Over has no button and is showing the Press Enter prompt instead.</summary>
+        // True when there's no button, so the player is being asked to press Enter instead.
         public bool IsWaitingForKey { get; private set; }
 
-        /// <summary>The lives line, such as "2 Lives Remaining" or "1 Life Remaining".</summary>
         public static string LivesLine(int lives) => lives == 1 ? "1 Life Remaining" : $"{lives} Lives Remaining";
 
         private void Awake()
@@ -123,25 +115,25 @@ namespace TunnelVision.UI
 
         private void OnDestroy()
         {
-            // Never leave the game paused if this goes away some other way.
+            // Never leave the game paused if this is removed some other way.
             Unpause();
         }
 
         private void Start()
         {
-            // The player's Awake may run after this message's OnEnable, so read the lives again here.
+            // The player may not have set up its lives yet when OnEnable ran, so read them again here.
             _lastLives = _playerLives.CurrentLives;
         }
 
         private void Update()
         {
-            // Unscaled time, because Game Over pauses the game.
+            // Real time rather than game time, because running out of lives pauses the game.
             if (Time.unscaledTime >= _hideAt)
             {
                 Hide();
             }
 
-            // Fading out with the screen as it goes black.
+            // Fade out along with the screen going black.
             if (Time.unscaledTime >= _fadeStartsAt)
             {
                 var faded = _fadeSeconds > 0f ? (Time.unscaledTime - _fadeStartsAt) / _fadeSeconds : 1f;
@@ -168,7 +160,7 @@ namespace TunnelVision.UI
                 }
             }
 
-            // Without a button, Enter does the button's job so the player is never stuck.
+            // With no button, Enter does the button's job so the player is never stuck.
             var keyboard = Keyboard.current;
             if (IsWaitingForKey && keyboard != null
                 && (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame))
@@ -206,7 +198,7 @@ namespace TunnelVision.UI
 
             if (_respawn != null)
             {
-                // Stay up through the reveal, then fade out alongside the screen going black.
+                // Stay up while the player sees the lives drop, then fade out as the screen goes black.
                 _hideAt = float.PositiveInfinity;
                 _fadeSeconds = _respawn.FadeToBlackSeconds;
                 _fadeStartsAt = Time.unscaledTime + _respawn.SecondsUntilBlack - _fadeSeconds;
@@ -225,7 +217,7 @@ namespace TunnelVision.UI
             _hideAt = float.PositiveInfinity;
             if (_respawn != null)
             {
-                // Fades in while the screen goes black, so it's fully there on the black screen.
+                // Fade the button in while the screen goes black, so it's fully there once it's black.
                 _buttonFadeSeconds = _respawn.FadeToBlackSeconds;
                 _showButtonAt = Time.unscaledTime + _respawn.SecondsUntilBlack - _buttonFadeSeconds;
             }
@@ -254,8 +246,8 @@ namespace TunnelVision.UI
             _buttonGroup.alpha = 0f;
             _buttonFadeStartedAt = Time.unscaledTime;
 
-            // Not selected for the keyboard: a selected button stays highlighted and enlarged, so
-            // hovering and clicking wouldn't show. Clear anything left selected for the same reason.
+            // Don't select the button for the keyboard: a selected button stays highlighted, which
+            // would hide the mouse hover effect.
             if (EventSystem.current != null)
             {
                 EventSystem.current.SetSelectedGameObject(null);

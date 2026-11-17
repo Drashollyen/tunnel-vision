@@ -4,10 +4,8 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Scales a button up slightly while it's hovered or selected with the keyboard, and eases back.
-    /// Added to every button by InterfaceSounds. Disabled buttons don't react.
-    /// </summary>
+    // Makes a button grow slightly while it's hovered or selected with the keyboard, then shrink
+    // back. InterfaceSounds adds this to every button. Disabled buttons don't react.
     [RequireComponent(typeof(Button))]
     public class ButtonHover : MonoBehaviour,
         IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
@@ -37,7 +35,8 @@ namespace TunnelVision.UI
 
         public void OnPointerExit(PointerEventData eventData) => _hovered = false;
 
-        // A mouse click selects the button too, and that shouldn't leave it enlarged after the mouse moves away.
+        // Clicking a button selects it too. Only keyboard selection counts, so a clicked button
+        // doesn't stay big after the mouse moves away.
         public void OnSelect(BaseEventData eventData) => _keyboardSelected = !(eventData is PointerEventData);
 
         public void OnDeselect(BaseEventData eventData) => _keyboardSelected = false;

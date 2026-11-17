@@ -6,13 +6,11 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// The level select wheel. Left and right arrows turn it, the top cabin is selected,
-    /// Enter starts that level if it's unlocked, and Escape goes back to the menu.
-    /// With the mouse, clicking a cabin turns it to the top, and clicking the top cabin acts like Enter.
-    /// Cabins past the prototype's levels show "???" and open a notice instead.
-    /// Goes on the Wheel object. Cabins are listed clockwise, starting from the top.
-    /// </summary>
+    // The level select Ferris wheel. Left and right arrows turn it, the top cabin is the selected
+    // one, Enter starts that level if it's unlocked, and Escape goes back to the menu. With the
+    // mouse, clicking a cabin turns it to the top, and clicking the top cabin acts like Enter.
+    // Cabins past the prototype's levels show "???" and open a notice instead.
+    // Goes on the Wheel object. List the cabins clockwise, starting from the top.
     public class FerrisWheelSelect : MonoBehaviour
     {
         public enum CabinState
@@ -57,7 +55,7 @@ namespace TunnelVision.UI
         private const float ArrowBobHeight = 10f;
         private const float ArrowBobSpeed = 4f;
 
-        // The menu plays its greyed-out click at this volume, so the wheel matches it.
+        // The menu plays its greyed out click at this volume, so the wheel matches it.
         private const float ErrorVolume = 0.6f;
 
         // A locked cabin rocks on its hinge for a moment when picked.
@@ -72,7 +70,7 @@ namespace TunnelVision.UI
         private int _wobbleIndex = -1;
         private float _wobbleStartedAt;
 
-        /// <summary>The cabin that's rocking because it's locked, or -1 when none is.</summary>
+        // The cabin that's rocking because it's locked, or -1 when none is.
         public int WobblingCabin => _wobbleIndex;
 
         private float StepAngle => 360f / cabins.Length;
@@ -86,7 +84,6 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>Whether a cabin can be played, is locked by progress, or has no level in the prototype.</summary>
         public static CabinState GetCabinState(int index, int prototypeLevelCount, int highestUnlocked)
         {
             if (index >= prototypeLevelCount)
@@ -97,7 +94,7 @@ namespace TunnelVision.UI
             return index <= highestUnlocked ? CabinState.Playable : CabinState.Locked;
         }
 
-        /// <summary>The text on the plate under the wheel for a cabin.</summary>
+        // The text on the plate under the wheel.
         public static string PlateText(int index, CabinState state, string levelName)
         {
             switch (state)
@@ -114,10 +111,8 @@ namespace TunnelVision.UI
         public CabinState StateOf(int index) =>
             GetCabinState(index, prototypeLevelCount, LevelProgress.HighestUnlocked);
 
-        /// <summary>
-        /// The new target step after a press. Allows at most one step beyond the cabin
-        /// the wheel is nearest to now, so spamming can't queue up a long spin.
-        /// </summary>
+        // Where the wheel should turn to after an arrow press. It can only get one cabin ahead of
+        // where it is now, so mashing the arrow keys can't queue up a long spin.
         public static int NextStep(int steps, float angle, float stepAngle, int direction)
         {
             var showing = Mathf.RoundToInt(angle / stepAngle);
@@ -173,7 +168,8 @@ namespace TunnelVision.UI
                 return;
             }
 
-            // While the notice is up, or on the frame it closed, keys belong to the notice.
+            // While the notice is open, or on the frame it closed, the keys belong to the notice,
+            // so the Enter that closes it doesn't also start a level.
             if (prototypeNotice != null
                 && (prototypeNotice.IsOpen || prototypeNotice.ClosedOnFrame == Time.frameCount))
             {
@@ -251,10 +247,8 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>
-        /// How far a locked cabin is tipped, in degrees, this long after it was picked: a quick
-        /// swing back and forth that fades out, and 0 once it has settled.
-        /// </summary>
+        // How far a locked cabin is tipped, in degrees, this long after it was picked: a quick
+        // swing back and forth that dies away, then 0.
         public static float WobbleAngle(float elapsed)
         {
             if (elapsed < 0f || elapsed >= WobbleSeconds)
@@ -281,6 +275,7 @@ namespace TunnelVision.UI
                 }
             }
 
+            // Cabins turn the opposite way to the wheel, so they always hang upright.
             for (var i = 0; i < cabins.Length; i++)
             {
                 var tip = i == _wobbleIndex ? wobble : 0f;
@@ -288,10 +283,8 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>
-        /// What an arrow key does: one cabin left (-1) or right (1). Clicks only when the wheel
-        /// actually takes another step, so a press that spamming has used up stays silent.
-        /// </summary>
+        // What an arrow key does: direction is -1 for left or 1 for right. It only clicks when
+        // the wheel actually takes another step.
         public void Turn(int direction)
         {
             var next = NextStep(_steps, _angle, StepAngle, direction);
@@ -363,7 +356,7 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>What Enter does: starts the level, shows the prototype notice, or buzzes if locked.</summary>
+        // What Enter does: starts the level, shows the "???" notice, or wobbles the cabin if it's locked.
         public void StartSelectedLevel()
         {
             var state = StateOf(SelectedIndex);

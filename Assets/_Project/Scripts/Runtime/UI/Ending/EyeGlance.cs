@@ -2,10 +2,8 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Nicholas's eye on the ending screen: it looks at one friend, holds, then turns to the next,
-    /// round the group. Real time.
-    /// </summary>
+    // Nicholas's eye on the ending screen: it looks at one friend, holds, then turns to the next,
+    // round the group. Uses real time.
     public class EyeGlance : MonoBehaviour
     {
         [Tooltip("The things to look at, in turn.")]
@@ -13,10 +11,10 @@ namespace TunnelVision.UI
         [SerializeField] private float holdSeconds = 1.2f;
         [SerializeField] private float turnDegreesPerSecond = 360f;
 
-        private int _current;
+        private int _current = -1; // The first Update moves this on to 0, so he starts on the first target.
         private float _nextAt;
 
-        /// <summary>The eye's angle, in degrees, to look from one point at another.</summary>
+        // The angle, in degrees, that points from one position towards another.
         public static float AngleTo(Vector2 from, Vector2 to)
         {
             var direction = to - from;

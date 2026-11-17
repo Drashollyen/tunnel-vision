@@ -7,10 +7,8 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// The end of the demo: "Congratulations!" pops in over the cast celebrating together, with
-    /// this run's stats for each level and in total. One way out: the Main Menu button (mouse only).
-    /// </summary>
+    // The end of the demo: "Congratulations!" pops in over the cast celebrating together, with
+    // this run's stats for each level and in total. The only way out is the Main Menu button (mouse only).
     public class DemoCompleteScreen : MonoBehaviour
     {
         public const string Title = "Congratulations!";
@@ -31,7 +29,7 @@ namespace TunnelVision.UI
         private float _startedAt;
         private Vector3 _titleScale = Vector3.one;
 
-        /// <summary>One line per cleared level, then the totals.</summary>
+        // One line per cleared level, then the totals.
         public static string StatsText(IReadOnlyList<RunStats.LevelResult> results)
         {
             if (results == null || results.Count == 0)
@@ -59,7 +57,7 @@ namespace TunnelVision.UI
             $"{teddies} {(teddies == 1 ? "Teddy" : "Teddies")}  ·  " +
             $"{livesLost} {(livesLost == 1 ? "Life" : "Lives")} Lost";
 
-        /// <summary>The title's size this long after the screen opens: it pops past full size, then settles.</summary>
+        // The title's size this long after the screen opens: it grows a little past full size, then settles.
         public static float TitleScaleAt(float elapsed)
         {
             var t = Mathf.Clamp01((elapsed - TitleDelay) / TitlePopSeconds);
@@ -71,7 +69,7 @@ namespace TunnelVision.UI
             return Mathf.Lerp(1.15f, 1f, (t - 0.7f) / 0.3f);
         }
 
-        /// <summary>The subtitle's size this long after the screen opens: a slow, smooth swell and back, forever.</summary>
+        // The subtitle's size this long after the screen opens: a slow, smooth swell and back, forever.
         public static float SubtitleScaleAt(float elapsed) =>
             1f + SubtitlePulseAmount * 0.5f * (1f - Mathf.Cos(elapsed / SubtitlePulseSeconds * Mathf.PI * 2f));
 
@@ -85,11 +83,13 @@ namespace TunnelVision.UI
         {
             _startedAt = Time.unscaledTime;
             if (title != null)
-                _titleScale = title.localScale; // The pop grows to whatever size it was set at.
+            {
+                _titleScale = title.localScale; // Remember the size set in the scene, so the pop grows to that.
+                title.localScale = Vector3.zero;
+            }
+
             if (stats != null)
                 stats.text = StatsText(RunStats.All);
-            if (title != null)
-                title.localScale = Vector3.zero;
         }
 
         private void Update()

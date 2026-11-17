@@ -5,10 +5,8 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Every scene change goes through here: fade to black, load, fade back in.
-    /// It builds itself the first time it's used, so scenes don't need to include it.
-    /// </summary>
+    // Every scene change goes through here: fade to black, load the scene, fade back in.
+    // It builds itself the first time it's used, so scenes don't need to include it.
     public class SceneFader : MonoBehaviour
     {
         public const float FadeSeconds = 0.25f;
@@ -21,7 +19,7 @@ namespace TunnelVision.UI
 
         public static bool IsFading => _instance != null && _instance._fading;
 
-        /// <summary>Raised as a fade to another scene begins, with that scene's name.</summary>
+        // Fired as a fade to another scene begins, with that scene's name. The music listens for it.
         public static event System.Action<string> LoadStarted;
 
         public static void Load(string sceneName)
@@ -78,13 +76,14 @@ namespace TunnelVision.UI
 
             yield return Fade(0f, 1f);
             yield return SceneManager.LoadSceneAsync(sceneName);
-            Time.timeScale = 1f; // A paused scene (Game Over) must never carry its pause into the next one.
+            Time.timeScale = 1f; // A paused scene (like Game Over) must never carry its pause into the next one.
             yield return Fade(1f, 0f);
 
             _overlay.raycastTarget = false;
             _fading = false;
         }
 
+        // Uses real time, so it still works when the game is paused.
         private IEnumerator Fade(float from, float to)
         {
             for (var elapsed = 0f; elapsed < FadeSeconds; elapsed += Time.unscaledDeltaTime)

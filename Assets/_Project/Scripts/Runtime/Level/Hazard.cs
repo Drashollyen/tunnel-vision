@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace TunnelVision.Level
 {
-    /// <summary>Costs the player a life on touching this object's trigger collider.</summary>
+    // Kills the player when they touch this object's trigger.
     public class Hazard : MonoBehaviour
     {
-        [Tooltip("A pit the player falls into: they just keep falling, with no death hop.")]
+        [Tooltip("Tick for a pit: the player just keeps falling, with no death hop.")]
         [SerializeField] private bool fallsIn;
 
         private void OnTriggerEnter2D(Collider2D other)

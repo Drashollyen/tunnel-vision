@@ -6,23 +6,17 @@ using UnityEngine;
 
 namespace TunnelVision.Audio
 {
-    /// <summary>
-    /// A level's background music. When the player dies it fades out smoothly over the death
-    /// sequence, reaching silence as the screen goes black. On respawn it starts the track again
-    /// from the beginning and fades back in with the screen. Out of lives, it stays silent.
-    /// Leaving the level fades it out with the scene fader. As the player nears the goal it eases
-    /// down to silence, so the level complete jingle takes over without the two overlapping.
-    /// Follows the Music Volume setting,
-    /// on top of the volume set on the AudioSource. Goes on the object with the music's
-    /// AudioSource.
-    /// </summary>
+    // A level's background music. It fades out when the player dies and starts again from the
+    // beginning on respawn (but stays silent once out of lives). It also fades out when leaving
+    // the level, and gets quieter as the player nears the goal so it doesn't clash with the
+    // level complete jingle. Follows the Music Volume setting.
     [RequireComponent(typeof(AudioSource))]
     public class LevelMusic : MonoBehaviour
     {
-        [Tooltip("How far before the goal the music starts easing down, in world units.")]
+        [Tooltip("How far before the goal the music starts getting quieter, in world units.")]
         [SerializeField] private float approachDistance = 30f;
 
-        /// <summary>How fast the approach fade can rise or fall, per second, so a respawn doesn't jump it.</summary>
+        // How fast the near-the-goal volume can change, so a respawn doesn't make it jump.
         public const float ApproachChangePerSecond = 1.5f;
 
         private AudioSource _source;
@@ -36,14 +30,10 @@ namespace TunnelVision.Audio
         private float _fadeSpeed = float.PositiveInfinity;
 
         public float Fade => _fade;
-
-        /// <summary>How much the music is let through for being near the goal, from 0 (at it) to 1.</summary>
         public float Approach => _approach;
+        public bool IsSilenced => _fadeTarget <= 0f;
 
-        /// <summary>
-        /// The approach level for a distance to the goal: 1 at <paramref name="range"/> or further,
-        /// easing smoothly down to 0 at the goal and past it.
-        /// </summary>
+        // 1 when the goal is far away, easing smoothly down to 0 at the goal.
         public static float ApproachLevel(float distanceToGoal, float range)
         {
             if (range <= 0f)
@@ -54,13 +44,10 @@ namespace TunnelVision.Audio
             var t = Mathf.Clamp01(distanceToGoal / range);
             return t * t * (3f - 2f * t);
         }
-        public bool IsSilenced => _fadeTarget <= 0f;
 
-        /// <summary>The volume played at for the source's own volume, the fade and the setting.</summary>
         public static float VolumeFor(float baseVolume, float fade, float musicVolume) =>
             baseVolume * Mathf.Clamp01(fade) * Mathf.Clamp01(musicVolume);
 
-        /// <summary>The same, with the approach fade near the goal on top.</summary>
         public static float VolumeFor(float baseVolume, float fade, float approach, float musicVolume) =>
             VolumeFor(baseVolume, fade, musicVolume) * Mathf.Clamp01(approach);
 
@@ -68,7 +55,7 @@ namespace TunnelVision.Audio
         {
             _source = GetComponent<AudioSource>();
             _baseVolume = _source.volume;
-            SoundEffectsVolume.Exclude(_source); // Music has its own setting.
+            SoundEffectsVolume.Exclude(_source); // Music has its own volume setting.
 
             _respawn = FindAnyObjectByType<PlayerRespawn>();
             if (_respawn != null)
@@ -108,7 +95,7 @@ namespace TunnelVision.Audio
                 return;
             }
 
-            // From the top, rising with the screen.
+            // Start the track from the beginning and fade it in as the screen comes back.
             _source.Stop();
             _source.time = 0f;
             _fade = 0f;
@@ -130,7 +117,7 @@ namespace TunnelVision.Audio
 
         private void Update()
         {
-            // Unscaled, since Out Of Lives and the pause menu stop game time.
+            // Real time, because Out Of Lives and the pause menu stop game time.
             _fade = Mathf.MoveTowards(_fade, _fadeTarget, _fadeSpeed * Time.unscaledDeltaTime);
             _approach = Mathf.MoveTowards(_approach, TargetApproach(), ApproachChangePerSecond * Time.unscaledDeltaTime);
             ApplyVolume();

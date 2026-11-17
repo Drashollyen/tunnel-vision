@@ -7,22 +7,14 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Shown when the player reaches a level's goal. Nicholas walks on by himself (stopping at the
-    /// platform's edge) while the screen fades to black, the game freezes once it's black,
-    /// then the panel fades in on the black: "Level Complete" with the time taken and the
-    /// collectibles found, a Next Level button (when there is a next level) and Level Select.
-    /// Game sounds and music fade out as it starts. Used with the mouse,
-    /// like the other menus. Goes on an always-on object; the overlay is a child that starts hidden.
-    /// </summary>
+    // Shown when the player reaches the end of a level. Nicholas keeps walking while the screen fades
+    // to black, then the game freezes and "Level Complete" fades in with the time, teddies and buttons.
     public class LevelCompleteScreen : MonoBehaviour
     {
         public const string Title = "Level Complete";
         public const string NextLevelLabel = "Next Level";
         public const string ContinueLabel = "Continue";
-        /// <summary>How long the screen takes to go black, the same as the death sequence's fade.</summary>
-        public const float BlackFadeSeconds = 0.75f;
-        /// <summary>How long the panel then takes to appear on the black.</summary>
+        public const float BlackFadeSeconds = 0.75f; // Same as the fade when the player dies.
         public const float FadeInSeconds = 0.4f;
         public const float SoundsFadeSeconds = 0.5f;
         public const float MusicFadeSeconds = 1f;
@@ -47,36 +39,35 @@ namespace TunnelVision.UI
         private string _nextScene;
         private float _shownAt = float.PositiveInfinity;
 
-        /// <summary>True while any level complete screen is up, so nothing else (the pause menu) opens over it.</summary>
+        // Lets other scripts (like the pause menu) know not to open on top of this screen.
         public static bool IsAnyShowing { get; private set; }
 
         public bool IsShowing { get; private set; }
 
-        /// <summary>How black the screen is behind the panel, from 0 to 1.</summary>
+        // From 0 (clear) to 1 (fully black).
         public float Blackness => _backdrop != null ? _backdrop.color.a : 0f;
 
-        /// <summary>How visible the panel is, from 0 to 1.</summary>
+        // From 0 (hidden) to 1 (fully shown).
         public float PanelVisibility => _panelGroup != null ? _panelGroup.alpha : (_group != null ? _group.alpha : 0f);
 
-        /// <summary>The backdrop's blackness and the panel's visibility this long after crossing the goal.</summary>
+        // How black the screen is and how visible the panel is, this many seconds after the level ends.
         public static (float black, float panel) FadeAt(float elapsed) => (
             Mathf.Clamp01(elapsed / BlackFadeSeconds),
             Mathf.Clamp01((elapsed - BlackFadeSeconds) / FadeInSeconds));
 
-        /// <summary>True when this is the demo's last level, so the only way on is Continue.</summary>
+        // True on the last level, where the only button is Continue (to the ending).
         public bool EndsDemo { get; private set; }
 
-        /// <summary>The scene Next Level loads, or null when there isn't one.</summary>
+        // The scene Next Level loads, or null when there isn't one.
         public string NextScene => _nextScene;
 
-        /// <summary>A time in seconds as minutes and seconds, such as "1:05".</summary>
+        // Turns seconds into minutes and seconds, such as "1:05".
         public static string FormatTime(float seconds)
         {
             var whole = Mathf.Max(0, Mathf.FloorToInt(seconds));
             return $"{whole / 60}:{whole % 60:00}";
         }
 
-        /// <summary>The two lines under the title.</summary>
         public static string StatsText(float seconds, int collectibles) =>
             $"Time: {FormatTime(seconds)}\nCollectibles: {collectibles}";
 
@@ -102,22 +93,14 @@ namespace TunnelVision.UI
         {
             if (IsShowing)
             {
-                // Never leave the game frozen if this goes away some other way.
+                // Never leave the game frozen if this screen is removed some other way.
                 Time.timeScale = 1f;
                 IsAnyShowing = false;
             }
         }
 
-        /// <summary>
-        /// Shows the screen. <paramref name="nextScene"/> is the level Next Level loads; leave it
-        /// empty, or name a scene that isn't in the build, and only Level Select is offered.
-        /// </summary>
-        public void Show(string nextScene) => Show(nextScene, false);
-
-        /// <summary>
-        /// Shows the screen. On the demo's last level (<paramref name="endsDemo"/>), the only button
-        /// is Continue, leading to <paramref name="nextScene"/>, the demo's ending.
-        /// </summary>
+        // nextScene is what the Next Level (or Continue) button loads. If it's empty or not in the
+        // build, that button is hidden. endsDemo is true on the last level.
         public void Show(string nextScene, bool endsDemo)
         {
             if (IsShowing)
@@ -133,11 +116,11 @@ namespace TunnelVision.UI
                 ? nextScene
                 : null;
 
-            // The time taken is game time, so pauses and menus don't count. Read it before freezing.
+            // Game time, so time spent paused doesn't count. Read it before the game freezes.
             var seconds = Time.timeSinceLevelLoad;
             var collectibles = FindAnyObjectByType<PlayerCollectibles>();
 
-            // Walk on through the fade instead of stopping dead; freeze once the screen is black.
+            // Nicholas walks on by himself during the fade instead of stopping dead.
             _movement = FindAnyObjectByType<PlayerMovement>();
             if (_movement != null)
             {
@@ -161,8 +144,8 @@ namespace TunnelVision.UI
                 nextLevelButton.gameObject.SetActive(_nextScene != null);
             SetNextLabel(EndsDemo ? ContinueLabel : NextLevelLabel);
 
-            // The last level only goes on to the ending. If the ending can't load, Level Select
-            // stays, so the player is never stuck.
+            // On the last level only Continue shows. If the ending can't load, Level Select
+            // stays so the player is never stuck.
             if (levelSelectButton != null)
                 levelSelectButton.gameObject.SetActive(!EndsDemo || _nextScene == null);
 
@@ -170,7 +153,7 @@ namespace TunnelVision.UI
             _shownAt = Time.unscaledTime;
             Draw(0f);
 
-            // Mouse-only, like the other menus: nothing selected, so nothing stays highlighted.
+            // The menus are mouse-only, so make sure no button starts highlighted.
             if (EventSystem.current != null)
             {
                 EventSystem.current.SetSelectedGameObject(null);
@@ -212,7 +195,7 @@ namespace TunnelVision.UI
             _backdrop.color = color;
 
             _panelGroup.alpha = shown;
-            _panelGroup.blocksRaycasts = shown > 0f; // No clicking buttons that can't be seen yet.
+            _panelGroup.blocksRaycasts = shown > 0f; // Buttons can't be clicked until they start to appear.
         }
 
         private void SetNextLabel(string label)
@@ -241,8 +224,8 @@ namespace TunnelVision.UI
 
         private void Leave(string scene)
         {
-            // Stays frozen through the fade, so the level doesn't come back to life behind it.
-            // SceneFader clears the freeze once the next scene has loaded.
+            // The game stays frozen during the fade so the level doesn't come back to life behind it.
+            // SceneFader unfreezes it once the next scene has loaded.
             SceneFader.Load(scene);
         }
     }

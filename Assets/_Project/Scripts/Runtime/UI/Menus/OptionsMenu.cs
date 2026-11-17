@@ -7,12 +7,9 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Connects the options page controls to the saved settings.
-    /// Every change is applied and saved straight away, so there is no Apply button.
-    /// The same page (the OptionsPanel prefab) is used on the main menu and in the pause menu,
-    /// so whoever shows it listens to <see cref="BackPressed"/> to go back.
-    /// </summary>
+    // Connects the options page's sliders and dropdowns to the saved settings. Changes apply straight
+    // away, so there's no Apply button. The same page is used on the main menu and in the pause menu,
+    // so whichever menu shows it listens for BackPressed to go back.
     public class OptionsMenu : MonoBehaviour
     {
         // Same order as the display mode dropdown's options.
@@ -39,7 +36,6 @@ namespace TunnelVision.UI
         [SerializeField] private TMP_Dropdown resolutionDropdown;
         [SerializeField] private Button backButton;
 
-        /// <summary>Raised when the Back button is pressed.</summary>
         public event System.Action BackPressed;
 
         private List<Vector2Int> _resolutions = new List<Vector2Int>();
@@ -65,7 +61,6 @@ namespace TunnelVision.UI
             displayModeDropdown.AddOptions(DisplayModeLabels.ToList());
         }
 
-        /// <summary>What the Back button does. Also used for Escape.</summary>
         public void PressBack() => BackPressed?.Invoke();
 
         private void OnEnable()
@@ -83,7 +78,7 @@ namespace TunnelVision.UI
             RefreshResolutions();
         }
 
-        // Sliders change on every tick of a drag, so they're only saved when the page closes.
+        // Sliders change many times while being dragged, so they're only saved when the page closes.
         private void OnDisable()
         {
             SettingsService.Current.Save();
@@ -95,7 +90,7 @@ namespace TunnelVision.UI
             SettingsService.Current.ApplyAudio();
         }
 
-        // Music follows its setting every frame. Effects are rescaled when audio is applied.
+        // No ApplyAudio here: the music player checks this setting every frame by itself.
         private void SetMusicVolume(float value)
         {
             SettingsService.Current.MusicVolume = value;
@@ -151,7 +146,7 @@ namespace TunnelVision.UI
             resolutionDropdown.AddOptions(_resolutions.Select(ResolutionList.Label).ToList());
             resolutionDropdown.SetValueWithoutNotify(_resolutions.IndexOf(current));
 
-            // Borderless windowed always fills the screen, so there's nothing to choose.
+            // Borderless windowed always fills the whole screen, so there's no size to pick.
             resolutionDropdown.interactable = settings.DisplayMode != FullScreenMode.FullScreenWindow;
         }
 

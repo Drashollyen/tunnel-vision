@@ -5,10 +5,8 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Goes on a Canvas and gives every button, slider and toggle under it a hover and click sound.
-    /// The sounds follow the interface settings on the options page.
-    /// </summary>
+    // Goes on a Canvas and gives every button, slider and toggle under it a hover and click sound.
+    // The sounds follow the interface settings on the options page.
     public class InterfaceSounds : MonoBehaviour
     {
         public const string PlayerName = "Interface Sounds Player";
@@ -18,9 +16,9 @@ namespace TunnelVision.UI
 
         [SerializeField] private AudioClip hoverClip;
         [SerializeField] private AudioClip clickClip;
-        [Tooltip("How loud the click is compared with the hover sound, before the player's settings.")]
+        [Tooltip("How loud the click is compared with the hover sound.")]
         [SerializeField, Range(0f, 1f)] private float clickVolume = 0.6f;
-        [Tooltip("Played when a greyed out control is clicked, at the same volume as the click.")]
+        [Tooltip("Played when a greyed out control is clicked, at the click's volume.")]
         [SerializeField] private AudioClip disabledClickClip;
 
         private void Awake()
@@ -36,7 +34,7 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>Raised whenever a clip is played, so tests can tell which sound went off.</summary>
+        // Fired whenever a clip plays, so tests can tell which sound went off.
         public static event System.Action<AudioClip> ClipPlayed;
 
         public void PlayHover() => Play(hoverClip, 1f);
@@ -45,10 +43,8 @@ namespace TunnelVision.UI
 
         public void PlayDisabledClick() => Play(disabledClickClip, clickVolume);
 
-        /// <summary>
-        /// Plays any interface sound through the shared player, so it follows the player's
-        /// interface settings and isn't cut off by a scene change. Does nothing for a null clip.
-        /// </summary>
+        // Plays any interface sound through the shared player, so it follows the interface
+        // settings and isn't cut off by a scene change. Does nothing if there's no clip.
         public static void Play(AudioClip clip, float volume = 1f)
         {
             if (clip == null)
