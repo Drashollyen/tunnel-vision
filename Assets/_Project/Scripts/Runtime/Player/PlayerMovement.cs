@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TunnelVision.Audio;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,7 +9,7 @@ namespace TunnelVision.Player
         public Rigidbody2D rb;
         public float moveSpeed = 5f;
 
-        float horizontalMovement;
+        private float horizontalMovement;
 
         [Header("Jumping")]
         public float jumpPower = 10f;
@@ -26,7 +24,7 @@ namespace TunnelVision.Player
         [SerializeField] private SpriteRenderer bodySprite;
 
         [Header("Animation")]
-        [Tooltip("The body's Animator. Optional: without one the body just doesn't animate.")]
+        [Tooltip("Optional. Without one the body just doesn't animate.")]
         [SerializeField] private Animator bodyAnimator;
 
         private static readonly int SpeedParam = Animator.StringToHash("Speed");
@@ -36,7 +34,7 @@ namespace TunnelVision.Player
         [Header("Looking")]
         [SerializeField] private Transform eyeball;
         [SerializeField] private float eyeTurnSpeed = 360f;
-        private float targetAngle = 0f;
+        private float targetAngle;
 
         private bool facingRight = true;
         private Vector2 lookInput;
@@ -47,24 +45,17 @@ namespace TunnelVision.Player
         // How far ahead of the feet auto-walking checks for ground before taking a step.
         private const float EdgeLookAhead = 0.6f;
 
-        /// <summary>True while the player is walking by themselves (at the end of a level).</summary>
+        // How far from flat (in degrees) a surface can be and still count as standing on it.
+        private const float MaxStandingSlope = 45f;
+
+        // True while the player walks off by themselves at the end of a level.
         public bool IsAutoWalking => _autoWalk != 0f;
 
-        /// <summary>True while the body faces right.</summary>
         public bool FacingRight => facingRight;
 
-        /// <summary>
-        /// The smoothing the player's Rigidbody should use. On their own, Interpolate, so they glide
-        /// between physics steps like the camera does instead of shuddering. While riding something
-        /// (a wheel seat or moving platform makes the player its child) it's off, since the ride
-        /// already moves them smoothly and the two would fight.
-        /// </summary>
-        public static RigidbodyInterpolation2D SmoothingFor(bool riding) =>
-            riding ? RigidbodyInterpolation2D.None : RigidbodyInterpolation2D.Interpolate;
-
-        void Awake()
+        private void Awake()
         {
-            // How the player faces at the start of the level, to come back to on every respawn.
+            // Remember where the eye points at the start, to reset it on every respawn.
             if (eyeball != null)
             {
                 _startEyeRotation = eyeball.localRotation;
@@ -73,13 +64,12 @@ namespace TunnelVision.Player
             UpdateSmoothing();
         }
 
-        void Update()
+        private void Update()
         {
             UpdateSmoothing();
             UpdateAnimator();
         }
 
-        // Walk while moving sideways, jump pose while off the ground.
         private void UpdateAnimator()
         {
             if (bodyAnimator == null || bodyAnimator.runtimeAnimatorController == null || rb == null)
@@ -92,7 +82,7 @@ namespace TunnelVision.Player
             bodyAnimator.SetBool(GroundedParam, !rb.simulated || groundCheckPos == null || IsGrounded());
         }
 
-        /// <summary>Shows the death pose (true) or puts the body back to normal (false).</summary>
+        // Shows the death pose (true) or puts the body back to normal (false).
         public void SetDead(bool dead)
         {
             if (bodyAnimator != null && bodyAnimator.runtimeAnimatorController != null)
@@ -101,7 +91,9 @@ namespace TunnelVision.Player
             }
         }
 
-        // Rides parent the player to the moving thing, and stepping off unparents them.
+        // Normally the Rigidbody smooths its movement between physics steps so the player doesn't
+        // shudder. While riding something (a wheel seat or moving platform makes the player its
+        // child) smoothing is turned off, because the ride already moves them and the two would fight.
         private void UpdateSmoothing()
         {
             if (rb == null)
@@ -109,15 +101,16 @@ namespace TunnelVision.Player
                 return;
             }
 
-            var wanted = SmoothingFor(transform.parent != null);
+            var wanted = transform.parent != null
+                ? RigidbodyInterpolation2D.None
+                : RigidbodyInterpolation2D.Interpolate;
             if (rb.interpolation != wanted)
             {
                 rb.interpolation = wanted;
             }
         }
 
-        // Update is called once per frame
-        void FixedUpdate()
+        private void FixedUpdate()
         {
             if (_autoWalk != 0f)
             {
@@ -145,16 +138,12 @@ namespace TunnelVision.Player
             if (!controlsEnabled)
             { return; }
 
-
-
-            // If the player is on the ground when the jump button is pressed
             if (context.performed && IsGrounded())
             {
                 jumpSound.PlayIfSet();
                 rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpPower);
             }
-
-            // If the player releases the jump button while in mid-air
+            // Letting go of jump early cuts the jump short.
             else if (context.canceled && rb.linearVelocityY > 0f)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocityX, rb.linearVelocityY * 0.5f);
@@ -168,16 +157,15 @@ namespace TunnelVision.Player
             lookInput = context.ReadValue<Vector2>();
         }
 
-        // Improved the bool checks since we were returning both true and false in the if statement
         private bool IsGrounded()
         {
             return Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0f, groundLayer) != null
                 || IsRestingOnGround();
         }
 
-        // The ground check box is narrower than the body, so on the very corner of a platform the body
-        // can be held up while the box misses. Count any ground pushing up on the body as standing too
-        // (walls push sideways, so they don't count).
+        // The ground check box is narrower than the body, so on the very corner of a platform it can
+        // miss. This also counts any ground pushing up on the body as standing (walls push sideways,
+        // so they don't count).
         private bool IsRestingOnGround()
         {
             if (rb == null || !rb.simulated)
@@ -196,9 +184,6 @@ namespace TunnelVision.Player
             return rb.IsTouching(filter);
         }
 
-        // How far from flat (in degrees) a surface can be and still count as standing on it.
-        private const float MaxStandingSlope = 45f;
-
         private void UpdateFacing()
         {
             if (horizontalMovement > 0.01f)
@@ -216,6 +201,7 @@ namespace TunnelVision.Player
             }
         }
 
+        // Turns the eye smoothly towards the direction the look stick is pointing.
         private void UpdateLooking()
         {
             if (eyeball == null)
@@ -225,38 +211,27 @@ namespace TunnelVision.Player
 
             if (lookInput.sqrMagnitude > 0.01f)
             {
-                // Convert radians to degrees
-                targetAngle = Mathf.Atan2(
-                    lookInput.y,
-                    lookInput.x
-                ) * Mathf.Rad2Deg;
+                targetAngle = Mathf.Atan2(lookInput.y, lookInput.x) * Mathf.Rad2Deg;
             }
 
             float currentAngle = eyeball.localEulerAngles.z;
-
-            targetAngle = Mathf.MoveTowardsAngle(
-                currentAngle,
-                targetAngle,
-                eyeTurnSpeed * Time.deltaTime
-            );
-
-            // Converts angles into Unity-ready values
-            eyeball.localRotation = Quaternion.Euler(
-                0f, 0f, targetAngle
-            );
-
+            targetAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, eyeTurnSpeed * Time.deltaTime);
+            eyeball.localRotation = Quaternion.Euler(0f, 0f, targetAngle);
         }
 
-        void OnDrawGizmosSelected()
+        private void OnDrawGizmosSelected()
         {
+            if (groundCheckPos == null)
+            {
+                return;
+            }
+
             Gizmos.color = Color.white;
             Gizmos.DrawWireCube(groundCheckPos.position, groundCheckSize);
         }
 
-        /// <summary>
-        /// Turns the body and the eye back to how they faced at the start of the level (the body
-        /// facing right), and forgets any held direction. Used on every respawn.
-        /// </summary>
+        // Faces the body right and the eye back to how it started, and forgets any held input.
+        // Used on every respawn.
         public void FaceStartDirection()
         {
             facingRight = true;
@@ -275,11 +250,8 @@ namespace TunnelVision.Player
             }
         }
 
-        /// <summary>
-        /// Walks the player on by themselves in <paramref name="direction"/> (1 right, -1 left),
-        /// ignoring input, and stopping at the edge of whatever they're standing on so they never
-        /// walk off it. 0 stops. Used as the screen fades out at the end of a level.
-        /// </summary>
+        // Makes the player walk by themselves at the end of a level (1 = right, -1 = left, 0 = stop).
+        // Input is ignored, and they stop at the edge of whatever they're standing on.
         public void AutoWalk(float direction)
         {
             _autoWalk = Mathf.Sign(direction) * (direction == 0f ? 0f : 1f);
@@ -292,8 +264,7 @@ namespace TunnelVision.Player
             }
         }
 
-        /// <summary>True if there's ground just ahead of the feet in the given direction.</summary>
-        public bool HasGroundAhead(float direction)
+        private bool HasGroundAhead(float direction)
         {
             if (groundCheckPos == null)
             {
@@ -324,6 +295,5 @@ namespace TunnelVision.Player
             horizontalMovement = 0f;
             lookInput = Vector2.zero;
         }
-
     }
 }

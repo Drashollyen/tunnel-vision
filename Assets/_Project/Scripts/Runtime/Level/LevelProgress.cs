@@ -2,11 +2,8 @@ using UnityEngine;
 
 namespace TunnelVision.Level
 {
-    /// <summary>
-    /// Remembers how far the player has got, and the most teddies found in each cleared level.
-    /// Levels are numbered from 0. Teddies are only saved when a level is cleared: leaving or
-    /// running out of lives keeps nothing.
-    /// </summary>
+    // Saves which levels are unlocked and the most teddies found in each level.
+    // Levels are numbered from 0. Teddies are only saved when a level is cleared.
     public static class LevelProgress
     {
         private const string Key = "HighestLevelUnlocked";
@@ -25,13 +22,11 @@ namespace TunnelVision.Level
             }
         }
 
-        /// <summary>The PlayerPrefs key holding a level's best teddy count.</summary>
         public static string CollectiblesKey(int level) => CollectiblesKeyPrefix + level;
 
-        /// <summary>The most teddies found in one clear of the level, or 0 if it's never been cleared.</summary>
         public static int BestCollectibles(int level) => PlayerPrefs.GetInt(CollectiblesKey(level), 0);
 
-        /// <summary>Saves the teddies found on a clear, keeping the best run.</summary>
+        // Only saves the count if it beats the level's best.
         public static void RecordCollectibles(int level, int found)
         {
             if (found > BestCollectibles(level))

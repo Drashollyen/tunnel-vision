@@ -3,11 +3,9 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Shows a line that starts with a number ("2 Lives Remaining") and animates the change from
-    /// the old line: the old number drops away and fades, then the new one drops into place.
-    /// The rest of the line stays put. Goes on the text's object, or is added by code.
-    /// </summary>
+    // Shows a line that starts with a number ("2 Lives Remaining") and animates a change: the
+    // old number drops away and fades, then the new one drops into place, while the rest of the
+    // line stays still. Goes on the text's object, or is added by code.
     [RequireComponent(typeof(TMP_Text))]
     public class NumberDrop : MonoBehaviour
     {
@@ -15,6 +13,8 @@ namespace TunnelVision.UI
         public const float FallSeconds = 0.3f;
         public const float Overlap = 0.1f;
         private const float FallDistance = 40f;
+
+        // TextMeshPro tag that makes the text after it invisible (but still takes up space).
         private const string Hidden = "<alpha=#00>";
 
         private TMP_Text _textCache;
@@ -22,7 +22,7 @@ namespace TunnelVision.UI
         private TMP_Text _newNumber;
         private float _startedAt = float.NegativeInfinity;
 
-        /// <summary>The whole line as the player reads it once the animation is over.</summary>
+        // The full line, as it reads once the animation has finished.
         public string Line { get; private set; } = string.Empty;
 
         public bool IsAnimating => Time.unscaledTime - _startedAt < TotalSeconds;
@@ -32,7 +32,6 @@ namespace TunnelVision.UI
         // Looked up when first needed, since this may be added to an object that's switched off.
         private TMP_Text Text => _textCache != null ? _textCache : _textCache = GetComponent<TMP_Text>();
 
-        /// <summary>Shows <paramref name="newLine"/>, dropping its number in after the old line's.</summary>
         public void Play(string oldLine, string newLine)
         {
             Line = newLine;
@@ -53,7 +52,7 @@ namespace TunnelVision.UI
             Animate(0f);
         }
 
-        /// <summary>Shows a plain line straight away, with no number animation.</summary>
+        // Shows a line straight away, with no number animation.
         public void ShowPlain(string line)
         {
             Line = line;
@@ -103,7 +102,7 @@ namespace TunnelVision.UI
             number.alpha = alpha;
         }
 
-        /// <summary>Splits "2 Lives Remaining" into "2" and " Lives Remaining".</summary>
+        // Splits "2 Lives Remaining" into "2" and " Lives Remaining".
         public static (string number, string rest) Split(string line)
         {
             var space = line.IndexOf(' ');

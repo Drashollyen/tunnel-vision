@@ -6,13 +6,10 @@ using UnityEngine.SceneManagement;
 
 namespace TunnelVision.Audio
 {
-    /// <summary>
-    /// Background music for the menus. Put one at the root of each menu scene with the same
-    /// track: the first keeps playing from scene to scene without restarting, and the others
-    /// step aside. When the scene fader starts loading a scene that isn't a music scene (a
-    /// level), the music fades out with the screen, so it never overlaps the level.
-    /// Follows the Music Volume setting.
-    /// </summary>
+    // Menu music. Put one in each menu scene with the same track: the first one keeps playing
+    // from menu to menu without restarting, and the later copies remove themselves. When a
+    // scene that isn't in Music Scenes (a level) starts loading, the music fades out with the
+    // screen. Follows the Music Volume setting.
     [RequireComponent(typeof(AudioSource))]
     public class MusicPlayer : MonoBehaviour
     {
@@ -27,22 +24,35 @@ namespace TunnelVision.Audio
         private float _fade;
         private float _fadeTarget = 1f;
         private float _fadeSpeed;
+        private bool _windingDown;
+        private float _windStartedAt;
+        private float _windSeconds;
+        private float _windEndPitch;
 
-        /// <summary>The music playing now, if any.</summary>
         public static MusicPlayer Current => _current;
 
         public AudioClip Music => music;
         public bool IsFadingOut => _fadeTarget <= 0f;
         public float Fade => _fade;
+        public bool IsWindingDown => _windingDown;
+        public float Pitch => _source != null ? _source.pitch : 1f;
 
-        /// <summary>The volume the music plays at for a fade (0..1) and the Music Volume setting.</summary>
         public static float VolumeFor(float fade, float musicVolume) => Mathf.Clamp01(fade) * Mathf.Clamp01(musicVolume);
+
+        // The pitch t seconds into a wind-down: it drops slowly at first, then faster, until it
+        // reaches endPitch, like a tape or record player losing power.
+        public static float WindDownPitchAt(float t, float seconds, float endPitch)
+        {
+            var k = seconds > 0f ? Mathf.Clamp01(t / seconds) : 1f;
+            return Mathf.Lerp(1f, endPitch, k * k);
+        }
 
         private void Awake()
         {
-            // Already playing this track from the last menu: let it carry on.
+            // This track is already playing from the last menu, so let it carry on and remove this copy.
             if (_current != null && _current != this && _current.music == music && !_current.IsFadingOut)
             {
+                enabled = false;
                 Destroy(gameObject);
                 return;
             }
@@ -90,7 +100,6 @@ namespace TunnelVision.Audio
 
         public bool PlaysIn(string sceneName) => musicScenes != null && musicScenes.Contains(sceneName);
 
-        /// <summary>Called as the fader starts a load. Fades out alongside the screen for a level.</summary>
         public void OnLoadStarted(string sceneName)
         {
             if (!PlaysIn(sceneName))
@@ -105,7 +114,32 @@ namespace TunnelVision.Audio
             _fadeSpeed = seconds > 0f ? 1f / seconds : float.PositiveInfinity;
         }
 
-        // Covers loads that skip the fader: never let the music run on into a level.
+        // Slows the music down (dropping its pitch) over some seconds. It keeps playing slowly until Cut is called.
+        public void WindDown(float seconds, float endPitch)
+        {
+            _windingDown = true;
+            _windStartedAt = Time.unscaledTime;
+            _windSeconds = seconds;
+            _windEndPitch = endPitch;
+        }
+
+        // Stops the music instantly, with no fade.
+        public void Cut()
+        {
+            if (_source != null)
+            {
+                _source.Stop();
+            }
+
+            if (_current == this)
+            {
+                _current = null;
+            }
+
+            Destroy(gameObject);
+        }
+
+        // Safety net for scene loads that skip the SceneFader: menu music must never carry on into a level.
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             if (mode == LoadSceneMode.Single && !PlaysIn(scene.name))
@@ -116,9 +150,14 @@ namespace TunnelVision.Audio
 
         private void Update()
         {
-            // Unscaled, so a paused game doesn't freeze the fade.
+            // Real time, so pausing the game doesn't freeze the fade.
             _fade = Mathf.MoveTowards(_fade, _fadeTarget, _fadeSpeed * Time.unscaledDeltaTime);
             ApplyVolume();
+
+            if (_windingDown)
+            {
+                _source.pitch = WindDownPitchAt(Time.unscaledTime - _windStartedAt, _windSeconds, _windEndPitch);
+            }
 
             if (IsFadingOut && _fade <= 0f)
             {

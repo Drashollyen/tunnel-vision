@@ -8,16 +8,9 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Escape pauses a level and shows Resume, Options, Level Select and Main Menu. Options is the
-    /// same page (the OptionsPanel prefab) as on the main menu. Escape on the options page goes
-    /// back, and on the pause page resumes. It won't open on Out Of Lives, during the death
-    /// sequence, or while a scene fades in or out. Level Select and Main Menu ask first, since
-    /// leaving loses the level's progress. Like the main menu, it's used with the mouse: nothing
-    /// is selected for the keyboard, so no button stays highlighted on its own.
-    /// Goes on an always-on object. The overlay (a full-screen dim image holding both pages)
-    /// is a child that starts hidden.
-    /// </summary>
+    // Escape pauses the level and shows Resume, Options, Level Select and Main Menu. Leaving asks
+    // "are you sure?" first, because the level's progress is lost. Won't open while another screen
+    // has taken over (out of lives, dying, level complete, or a scene fade).
     public class PauseMenu : MonoBehaviour
     {
         [SerializeField] private GameObject overlay;
@@ -32,7 +25,7 @@ namespace TunnelVision.UI
 
         [Header("Leave Confirmation")]
         [SerializeField] private GameObject confirmPanel;
-        [Tooltip("Optional. Says where the player is about to go.")]
+        [Tooltip("Optional. Shows where the player is about to go.")]
         [SerializeField] private TMP_Text confirmTitle;
         [SerializeField] private Button leaveButton;
         [SerializeField] private Button stayButton;
@@ -41,7 +34,7 @@ namespace TunnelVision.UI
         public const string MainMenuQuestion = "Go To The Main Menu?";
         public const string ProgressWarning = "Any Progress In This Level Will Be Lost";
 
-        // Game sounds (wheels, platforms) quiet down while paused and come back on Resume.
+        // How quickly game sounds (wheels, platforms) go quiet on pause and come back on resume.
         public const float SoundFadeSeconds = 0.15f;
 
         private PanelSwitcher _panels;
@@ -54,10 +47,9 @@ namespace TunnelVision.UI
 
         public bool IsOnOptions => optionsPanel != null && optionsPanel.gameObject.activeSelf;
 
-        /// <summary>True while the "progress will be lost" question is showing.</summary>
         public bool IsConfirmingLeave => confirmPanel != null && confirmPanel.activeSelf;
 
-        /// <summary>False while something else has the screen, so the game can't be paused.</summary>
+        // False while another screen has taken over, so the game can't be paused.
         public bool CanPause =>
             !SceneFader.IsFading
             && (_roundOver == null || !_roundOver.IsGameOver)
@@ -101,7 +93,7 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>What Escape does: pause, go back from Options or the question, or resume.</summary>
+        // Escape pauses, goes back from Options or the "are you sure?" question, or resumes.
         public void PressEscape()
         {
             if (!IsPaused)
@@ -176,7 +168,7 @@ namespace TunnelVision.UI
             }
         }
 
-        /// <summary>Asks before leaving the level. Without a confirmation panel it just leaves.</summary>
+        // Asks before leaving the level. If there's no confirmation panel, it just leaves.
         public void AskToLeave(string scene, string question)
         {
             if (!IsPaused || IsConfirmingLeave)
@@ -219,7 +211,6 @@ namespace TunnelVision.UI
 
         private void Leave(string scene)
         {
-            // SceneFader also clears the pause when the next scene loads.
             IsPaused = false;
             Time.timeScale = 1f;
             SceneFader.Load(scene);
@@ -227,14 +218,14 @@ namespace TunnelVision.UI
 
         private void OnDestroy()
         {
-            // Never leave the game paused if the menu goes away some other way.
+            // Never leave the game paused if the menu is removed some other way.
             if (IsPaused)
             {
                 Time.timeScale = 1f;
             }
         }
 
-        // A clicked button stays selected, and its highlight would carry over to the next page.
+        // A clicked button stays highlighted, and that highlight would carry over to the next page.
         private static void ClearSelection()
         {
             if (EventSystem.current != null)

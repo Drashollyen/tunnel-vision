@@ -3,11 +3,13 @@ using UnityEngine;
 
 namespace TunnelVision.Enemies
 {
+    // Walks back and forth between two points, and runs at Nicholas when he gets close.
     [RequireComponent(typeof(Rigidbody2D))]
     public class Clown : MonoBehaviour
     {
         private static readonly int SpeedParam = Animator.StringToHash("Speed");
 
+        // How close counts as "arrived" at a point.
         private const float ArriveDistance = 0.1f;
 
         [Header("Patrol")]
@@ -85,6 +87,7 @@ namespace TunnelVision.Enemies
         private void MoveToward(float targetX, float speed)
         {
             var distance = targetX - _rigidbody.position.x;
+            // -1 to go left, 1 to go right, 0 to stand still once he's there.
             var direction = Mathf.Abs(distance) < ArriveDistance ? 0f : Mathf.Sign(distance);
             var moveSpeed = direction * speed;
 
@@ -105,6 +108,7 @@ namespace TunnelVision.Enemies
         {
             if (body != null)
             {
+                // Flip only when he needs to face the other way from how he's drawn.
                 body.flipX = (direction > 0f) != artFacesRight;
             }
         }

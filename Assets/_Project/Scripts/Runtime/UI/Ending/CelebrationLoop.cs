@@ -2,10 +2,8 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// A small looping celebration for a character on a screen: hopping, swaying or bobbing in
-    /// place. It always returns to where it started, so it never wanders off. Real time.
-    /// </summary>
+    // Makes a character on a screen hop, sway or bob in place, over and over. It always comes
+    // back to where it started, so it never wanders off. Uses real time.
     public class CelebrationLoop : MonoBehaviour
     {
         public enum Move
@@ -26,7 +24,7 @@ namespace TunnelVision.UI
         private RectTransform _rect;
         private Vector2 _rest;
 
-        /// <summary>How far up (Hop, Bob) or how far tilted (Sway) the character is at a moment.</summary>
+        // How high (Hop, Bob) or how tilted (Sway) the character is at a given time.
         public static float At(Move move, float time, float amount, float speed, float offset)
         {
             var phase = (time * speed + offset) * Mathf.PI * 2f;

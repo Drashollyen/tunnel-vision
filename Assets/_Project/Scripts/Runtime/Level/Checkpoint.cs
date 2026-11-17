@@ -4,22 +4,15 @@ using UnityEngine;
 
 namespace TunnelVision.Level
 {
-    /// <summary>
-    /// Becomes the player's respawn point when touched. The first time, it also gives back up
-    /// to <see cref="LivesGranted"/> lives (never past the maximum).
-    /// Place the object's origin on top of the ground.
-    /// </summary>
+    // Becomes the player's respawn point when touched, and the first time also gives back some lives.
+    // Place the object's origin on top of the ground.
     public class Checkpoint : MonoBehaviour
     {
-        public const int DefaultLivesGranted = 2;
-
         [Tooltip("Lives given back the first time the player reaches this checkpoint.")]
-        [SerializeField] private int livesGranted = DefaultLivesGranted;
+        [SerializeField] private int livesGranted = 2;
         private bool _livesTaken;
 
-        public int LivesGranted => livesGranted;
-
-        /// <summary>The lives this checkpoint gives: its full amount the first time, then none.</summary>
+        // Gives the full amount the first time, then 0 after that.
         public int TakeLives()
         {
             if (_livesTaken)
@@ -36,22 +29,22 @@ namespace TunnelVision.Level
         [SerializeField] private Color waitingColor = new Color(0.55f, 0.55f, 0.55f);
         [SerializeField] private Color activeColor = new Color(1f, 0.6f, 0.85f);
 
-        [Tooltip("Optional. When both are set, the checkpoint swaps sprites instead of changing colour.")]
+        [Tooltip("Optional. With both sprites set, it swaps sprites instead of changing colour.")]
         [SerializeField] private Sprite waitingSprite;
         [SerializeField] private Sprite activeSprite;
 
         public Vector3 RespawnPosition => transform.position + (Vector3)respawnOffset;
-        private AudioSource bellSound;
-        private bool bellPlayed = false;
+        private AudioSource _bellSound;
+        private bool _bellPlayed;
 
         private void Awake()
         {
             SetLit(false);
         }
 
-        void Start()
+        private void Start()
         {
-            bellSound = GetComponent<AudioSource>();
+            _bellSound = GetComponent<AudioSource>();
         }
 
         public void SetLit(bool lit)
@@ -77,12 +70,11 @@ namespace TunnelVision.Level
             if (player != null)
             {
                 player.ReachCheckpoint(this);
-                if (!bellPlayed)
+                if (!_bellPlayed)
                 {
-                    bellSound.PlayIfSet();
-                    bellPlayed = true;
+                    _bellSound.PlayIfSet();
+                    _bellPlayed = true;
                 }
-
             }
         }
     }

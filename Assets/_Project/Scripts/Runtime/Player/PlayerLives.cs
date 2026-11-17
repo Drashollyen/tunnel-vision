@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace TunnelVision.Player
 {
-    /// <summary>
-    /// The player's lives: starts full, loses one per death, and can win some back (checkpoints
-    /// do), never past the maximum.
-    /// </summary>
+    // The player's lives: starts full, loses one per death, and checkpoints can give some back
+    // (never more than the maximum).
     public class PlayerLives : MonoBehaviour
     {
         [SerializeField] private int maxLives = 4;
@@ -16,7 +14,7 @@ namespace TunnelVision.Player
         public int MaxLives => maxLives;
         public bool IsDead => CurrentLives <= 0;
 
-        /// <summary>Deaths since the level started (or restarted), whatever was won back since.</summary>
+        // Deaths since the level started, even if checkpoints gave lives back since.
         public int LivesLost { get; private set; }
 
         [SerializeField] private AudioSource deathSound;
@@ -39,7 +37,8 @@ namespace TunnelVision.Player
             LivesChanged?.Invoke(CurrentLives);
         }
 
-        /// <summary>Gives back up to this many lives, never past the maximum. Returns how many were added.</summary>
+        // Gives back up to this many lives without going over the maximum.
+        // Returns how many were actually added.
         public int GainLives(int amount)
         {
             if (IsDead || amount <= 0)

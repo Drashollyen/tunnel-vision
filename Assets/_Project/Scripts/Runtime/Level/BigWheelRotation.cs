@@ -6,7 +6,10 @@ namespace TunnelVision.Level
     {
         [SerializeField] private float fRotationSpeed = 20f;
         public Transform transRotationPoint;
-        void Update()
+
+        // Swings this seat around the wheel's centre. The first line cancels out the seat's own
+        // spin, so it stays upright like a real Ferris wheel seat.
+        private void Update()
         {
             transform.Rotate(Vector3.back, -fRotationSpeed * Time.deltaTime);
             transform.RotateAround(transRotationPoint.position, Vector3.back, fRotationSpeed * Time.deltaTime);
@@ -27,6 +30,5 @@ namespace TunnelVision.Level
                 RideParenting.LetGo(collision.transform, transform);
             }
         }
-
     }
 }

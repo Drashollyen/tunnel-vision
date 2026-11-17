@@ -4,11 +4,8 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// One eye per life. When a life goes, its eye swells a little and then pops: it shrinks
-    /// away and disappears. A life coming back pops its eye back in. Uses unscaled time, so it
-    /// still plays while the game is paused.
-    /// </summary>
+    // One eye per life. A lost life's eye swells and pops; a life coming back pops its eye back in.
+    // Uses real time rather than game time, so it still animates while the game is paused.
     public class LivesDisplay : MonoBehaviour
     {
         public const float SwellSeconds = 0.12f;
@@ -50,7 +47,7 @@ namespace TunnelVision.UI
             }
 
             _playerLives.LivesChanged += ShowLives;
-            ShowLives(_playerLives.CurrentLives); // Catches up if lives changed while the HUD was off.
+            ShowLives(_playerLives.CurrentLives); // Catches up in case lives changed while the HUD was hidden.
         }
 
         private void OnDisable()
@@ -68,8 +65,8 @@ namespace TunnelVision.UI
                 Debug.LogWarning($"LivesDisplay: has {eyes.Length} eyes but the player has {_playerLives.MaxLives} max lives.");
             }
 
-            // The player's Awake may run after this display's OnEnable, so set the eyes again here,
-            // straight away rather than animated, since this is how the level starts.
+            // The player may not have set up its lives yet when OnEnable ran, so set the eyes again
+            // here, instantly rather than animated, because this is the start of the level.
             _ready = false;
             ShowLives(_playerLives.CurrentLives);
         }
@@ -95,6 +92,7 @@ namespace TunnelVision.UI
 
         private void Update()
         {
+            // Only redraw eyes that are still animating (plus a tiny margin so the last frame lands).
             for (int i = 0; i < eyes.Length; i++)
             {
                 if (Time.unscaledTime - _changedAt[i] <= Mathf.Max(LoseSeconds, AppearSeconds) + 0.05f)
@@ -115,7 +113,7 @@ namespace TunnelVision.UI
             eyes[i].color = color;
         }
 
-        /// <summary>A losing eye's size: it swells, then shrinks to nothing.</summary>
+        // A lost eye's size over time: it swells, then shrinks to nothing.
         public static float LoseScale(float elapsed)
         {
             if (elapsed < SwellSeconds)
@@ -127,11 +125,11 @@ namespace TunnelVision.UI
             return Mathf.Lerp(SwellScale, 0f, Ease(pop));
         }
 
-        /// <summary>A losing eye's opacity: solid while it swells, gone once it has popped.</summary>
+        // A lost eye stays solid while it swells, then fades as it pops.
         public static float LoseAlpha(float elapsed) =>
             1f - Mathf.Clamp01((elapsed - SwellSeconds) / PopSeconds);
 
-        /// <summary>A returning eye's size: it grows past full size, then settles.</summary>
+        // A returning eye's size over time: it grows a bit too big, then settles to normal.
         public static float AppearScale(float elapsed)
         {
             var t = Mathf.Clamp01(elapsed / AppearSeconds);
@@ -143,6 +141,7 @@ namespace TunnelVision.UI
             return Mathf.Lerp(AppearOvershoot, 1f, Ease((t - 0.6f) / 0.4f));
         }
 
+        // Smooths a 0-to-1 value so movement starts and ends gently instead of at a constant speed.
         private static float Ease(float t) => t * t * (3f - 2f * t);
     }
 }

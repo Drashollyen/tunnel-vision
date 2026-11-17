@@ -279,4 +279,3 @@ Follow [docs/new-level.md](docs/new-level.md) to start a level from a copy of Le
 - Runtime code: `Assets/_Project/Scripts/Runtime`, namespace `TunnelVision.*`. Editor tools: `Scripts/Editor`.
 - Formatting follows `.editorconfig`.
 - Naming: `PascalCase` for types, methods and properties; `camelCase` for `[SerializeField] private` fields; `_camelCase` for other private fields.
-- Tests: `Tests/EditMode` for plain C#, `Tests/PlayMode` for scene tests. Run them in **Window > General > Test Runner**.

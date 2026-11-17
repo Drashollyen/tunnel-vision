@@ -4,10 +4,7 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Shows "Checkpoint Reached" when the player reaches a new checkpoint, alongside the stall's
-    /// light and bell: it fades in, stays a moment, and fades out. Goes in the HUD on the text.
-    /// </summary>
+    // Shows "Checkpoint Reached" for a moment when the player reaches a checkpoint: fades in, stays, fades out.
     [RequireComponent(typeof(TMP_Text))]
     public class CheckpointMessage : MonoBehaviour
     {
@@ -22,10 +19,10 @@ namespace TunnelVision.UI
 
         public static float TotalSeconds => FadeInSeconds + HoldSeconds + FadeOutSeconds;
 
-        /// <summary>How visible the message is, from 0 to 1.</summary>
+        // From 0 (hidden) to 1 (fully shown).
         public float Visibility => _text != null ? _text.alpha : 0f;
 
-        /// <summary>The message's opacity this long after a checkpoint is reached.</summary>
+        // How visible the message should be (0 to 1) this many seconds after it was triggered.
         public static float AlphaAt(float elapsed)
         {
             if (elapsed < 0f || elapsed >= TotalSeconds)
@@ -77,7 +74,7 @@ namespace TunnelVision.UI
 
         private void Update()
         {
-            // Unscaled, so the pause menu doesn't leave it hanging on screen.
+            // Real time rather than game time, so pausing doesn't leave the message stuck on screen.
             _text.alpha = AlphaAt(Time.unscaledTime - _shownAt);
         }
     }

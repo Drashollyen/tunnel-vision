@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TunnelVision.Level;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -7,11 +8,9 @@ using UnityEngine.UI;
 
 namespace TunnelVision.Player
 {
-    /// <summary>
-    /// Handles the player dying. Controls stop, the level lights up so the player can see
-    /// what got them, the screen fades to black, and the player comes back at the last
-    /// checkpoint. With no lives left it stops on Game Over (see RoundOverMessage).
-    /// </summary>
+    // Handles the player dying: controls stop, the level lights up so the player can see what got
+    // them, the screen fades to black, and they come back at the last checkpoint.
+    // With no lives left it stays on the black Game Over screen (see RoundOverMessage).
     [RequireComponent(typeof(PlayerLives), typeof(Rigidbody2D))]
     public class PlayerRespawn : MonoBehaviour
     {
@@ -38,13 +37,13 @@ namespace TunnelVision.Player
         [SerializeField] private float blackHoldDuration = 0.3f;
 
         [Header("Death Fall")]
-        [Tooltip("On death, pause in the death pose, hop up, then drop straight down through the floor.")]
+        [Tooltip("On death, pause, hop up, then drop down through the floor.")]
         [SerializeField] private bool fallOnDeath = true;
         [Tooltip("Seconds frozen in the death pose before the hop.")]
         [SerializeField] private float deathPause = 0.4f;
-        [Tooltip("How fast the hop starts upward, in units per second.")]
+        [Tooltip("How fast the hop starts going up.")]
         [SerializeField] private float deathHopSpeed = 9f;
-        [Tooltip("How hard the fall pulls down, in units per second squared.")]
+        [Tooltip("How hard the fall pulls down.")]
         [SerializeField] private float deathFallGravity = 30f;
 
         private PlayerLives _lives;
@@ -55,28 +54,24 @@ namespace TunnelVision.Player
         private float _normalGlobalIntensity;
         private GameObject _madeFade;
         private Coroutine _fall;
-        private readonly System.Collections.Generic.List<CinemachineCamera> _heldCameras =
-            new System.Collections.Generic.List<CinemachineCamera>();
+        private readonly List<CinemachineCamera> _heldCameras = new List<CinemachineCamera>();
 
-        /// <summary>True from a death until the player can move again.</summary>
+        // True from a death until the player can move again.
         public bool IsRespawning => _isDying;
 
-        /// <summary>Raised when the player reaches a checkpoint that wasn't already their respawn point.</summary>
+        // Only raised for a new checkpoint, not the one the player already respawns at.
         public event System.Action<Checkpoint> CheckpointReached;
 
-        /// <summary>Raised as a death sequence starts.</summary>
         public event System.Action Died;
 
-        /// <summary>Raised as the screen starts fading back in on the respawned player.</summary>
+        // Raised as the screen starts fading back in on the respawned player.
         public event System.Action Respawning;
 
-        /// <summary>How long from a death until the screen is fully black.</summary>
+        // How long from a death until the screen is fully black.
         public float SecondsUntilBlack => revealDuration + revealHoldDuration + fadeDuration;
 
-        /// <summary>How long the screen takes to fade back in after a respawn.</summary>
         public float FadeInSeconds => fadeDuration;
 
-        /// <summary>How long the screen takes to fade to black, ending at <see cref="SecondsUntilBlack"/>.</summary>
         public float FadeToBlackSeconds => fadeDuration;
 
         private void Awake()
@@ -124,10 +119,8 @@ namespace TunnelVision.Player
             }
         }
 
-        /// <summary>
-        /// Takes one life. Further calls do nothing until the player is back in play.
-        /// <paramref name="fellIntoPit"/> skips the death hop: the player just keeps falling.
-        /// </summary>
+        // Takes one life and starts the death sequence. Does nothing if they're already dying.
+        // fellIntoPit skips the death hop, so the player just keeps falling.
         public void Kill(bool fellIntoPit = false)
         {
             // Nothing can kill the player once the level is complete and they're walking off.
@@ -219,8 +212,7 @@ namespace TunnelVision.Player
                 yield break;
             }
 
-            // Move while the screen is fully black, facing the way the level starts (to the right),
-            // whichever way the player was facing when they died.
+            // While the screen is fully black, move the player back and face them right again.
             if (_fall != null)
             {
                 StopCoroutine(_fall);
@@ -261,21 +253,15 @@ namespace TunnelVision.Player
             _isDying = false;
         }
 
-        /// <summary>
-        /// The death fall, like an old platformer: a moment frozen in the death pose, a hop up, then
-        /// a drop straight down through the floor and off the screen. Only moves up and down. Runs
-        /// until the screen is black (the physics body is off, so nothing stops the fall).
-        /// </summary>
+        // The old-school platformer death: freeze for a moment, hop up, then drop through the floor.
         private IEnumerator DeathFall()
         {
             yield return new WaitForSecondsRealtime(deathPause);
             yield return Fall(deathHopSpeed);
         }
 
-        /// <summary>
-        /// Moves straight up and down from <paramref name="startSpeed"/> (positive is up) under the
-        /// death fall's gravity until the screen is black. With no hop, it's just a drop.
-        /// </summary>
+        // Moves the player up and down by hand (physics is off while dying) until the screen is black.
+        // A positive startSpeed means a hop up first. Uses unscaled time so it still plays if the game is paused.
         private IEnumerator Fall(float startSpeed)
         {
             var velocity = startSpeed;
@@ -291,7 +277,7 @@ namespace TunnelVision.Player
             _fall = null;
         }
 
-        /// <summary>Stops every camera that follows the player from following, until <see cref="ReleaseCameras"/>.</summary>
+        // Stops the cameras following the player until ReleaseCameras is called.
         private void HoldCameras()
         {
             _heldCameras.Clear();
@@ -305,7 +291,6 @@ namespace TunnelVision.Player
             }
         }
 
-        /// <summary>Points the held cameras back at the player. Call while the screen is black, just before moving them.</summary>
         private void ReleaseCameras()
         {
             foreach (var cam in _heldCameras)

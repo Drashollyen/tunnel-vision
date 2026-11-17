@@ -4,16 +4,14 @@ using UnityEngine;
 
 namespace TunnelVision.Settings
 {
-    /// <summary>Builds the list of window sizes shown on the options page.</summary>
+    // Builds the list of window sizes shown on the options page.
     public static class ResolutionList
     {
         private const int MinimumWidth = 800;
         private const int MinimumHeight = 600;
 
-        /// <summary>
-        /// Removes repeats (the same size at another refresh rate) and very small sizes, and always
-        /// keeps <paramref name="current"/>. The largest size comes first.
-        /// </summary>
+        // Drops repeats (the same size at another refresh rate) and very small sizes, always
+        // keeps the current size, and puts the largest first.
         public static List<Vector2Int> Build(IEnumerable<Vector2Int> available, Vector2Int current)
         {
             return available

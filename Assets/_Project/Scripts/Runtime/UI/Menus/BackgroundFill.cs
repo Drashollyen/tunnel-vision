@@ -2,23 +2,17 @@ using UnityEngine;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Scales a background sprite so it always covers the whole camera view, whatever the screen
-    /// shape: it grows until both the width and the height are filled, and anything extra spills
-    /// off the edges. Keeps the sprite's own proportions. Follows the camera if the window resizes.
-    /// </summary>
+    // Stretches a background sprite (keeping its shape) so it always covers the whole camera view,
+    // whatever the screen size. Any extra just hangs off the edges.
     [RequireComponent(typeof(SpriteRenderer))]
     public class BackgroundFill : MonoBehaviour
     {
-        [Tooltip("The camera to fill. Left empty, the main camera.")]
+        [Tooltip("Optional. Uses the main camera if left empty.")]
         [SerializeField] private Camera targetCamera;
 
         private SpriteRenderer _renderer;
 
-        /// <summary>
-        /// The scale that makes a sprite of <paramref name="spriteSize"/> cover a view of
-        /// <paramref name="viewSize"/>, both in world units.
-        /// </summary>
+        // How much to scale a sprite so it covers the view. Both sizes are in world units.
         public static float CoverScale(Vector2 spriteSize, Vector2 viewSize)
         {
             if (spriteSize.x <= 0f || spriteSize.y <= 0f)
@@ -35,6 +29,7 @@ namespace TunnelVision.UI
             Fit();
         }
 
+        // Every frame, in case the window is resized or the camera moves.
         private void LateUpdate()
         {
             Fit();

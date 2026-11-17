@@ -3,10 +3,8 @@ using UnityEngine.UI;
 
 namespace TunnelVision.UI
 {
-    /// <summary>
-    /// Plays a list of sprites on a UI Image, round and round: a character's idle animation on a
-    /// screen, without an Animator. Uses real time, so it plays whatever the game's time scale.
-    /// </summary>
+    // Plays a list of sprites on a UI Image, round and round, like a simple idle animation
+    // without an Animator. Uses real time, so it keeps playing while the game is paused.
     [RequireComponent(typeof(Image))]
     public class SpriteFlipbook : MonoBehaviour
     {
@@ -15,7 +13,6 @@ namespace TunnelVision.UI
 
         private Image _image;
 
-        /// <summary>Which frame shows this long into the loop.</summary>
         public static int FrameAt(float time, int frameCount, float framesPerSecond)
         {
             if (frameCount <= 0 || framesPerSecond <= 0f)

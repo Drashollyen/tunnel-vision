@@ -4,25 +4,24 @@ using UnityEngine;
 
 namespace TunnelVision.Level
 {
-    /// <summary>Costs the player a life on touching this object's trigger collider.</summary>
+    // Kills the player if they touch this trigger while the drop tower seat is falling.
     public class DropTowerCrush : MonoBehaviour
     {
+        private DropTower _dropTower;
+        private AudioSource _hitSound;
 
-        private DropTower dropTower;
-        private AudioSource hitSound;
-
-        void Start()
+        private void Start()
         {
-            dropTower = GetComponentInParent<DropTower>();
-            hitSound = GetComponentInParent<AudioSource>();
+            _dropTower = GetComponentInParent<DropTower>();
+            _hitSound = GetComponentInParent<AudioSource>();
         }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
             var player = other.GetComponentInParent<PlayerRespawn>();
-            if (player != null && dropTower.IsFalling)
+            if (player != null && _dropTower != null && _dropTower.IsFalling)
             {
-                hitSound.PlayIfSet();
+                _hitSound.PlayIfSet();
                 player.Kill();
             }
         }

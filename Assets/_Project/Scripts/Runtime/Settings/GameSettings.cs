@@ -2,10 +2,8 @@ using UnityEngine;
 
 namespace TunnelVision.Settings
 {
-    /// <summary>
-    /// Player-facing settings (volume, interface sounds, display) with load/save.
-    /// Plain C# so it can be unit tested without a scene.
-    /// </summary>
+    // The player's settings (volumes, interface sounds, display), with loading and saving.
+    // Plain C# rather than a MonoBehaviour, so tests can use it without a scene.
     public sealed class GameSettings
     {
         public const string MasterVolumeKey = "TunnelVision.Settings.MasterVolume";
@@ -24,7 +22,7 @@ namespace TunnelVision.Settings
         public const bool DefaultInterfaceSounds = true;
         public const FullScreenMode DefaultDisplayMode = FullScreenMode.FullScreenWindow;
 
-        /// <summary>A width and height of 0 means "use the size of the player's screen".</summary>
+        // A width and height of 0 means "use the size of the player's screen".
         public const int DefaultResolutionSize = 0;
 
         private readonly ISettingsStore _store;
@@ -33,7 +31,7 @@ namespace TunnelVision.Settings
         private float _musicVolume = DefaultMusicVolume;
         private float _effectsVolume = DefaultEffectsVolume;
 
-        /// <summary>Raised whenever the audio settings are pushed into the game.</summary>
+        // Fired whenever the audio settings are applied, so sounds can update their volume.
         public static event System.Action AudioApplied;
 
         public GameSettings(ISettingsStore store)
@@ -41,28 +39,25 @@ namespace TunnelVision.Settings
             _store = store;
         }
 
-        /// <summary>Overall game volume in the range 0..1.</summary>
+        // All volumes go from 0 to 1. Master is the overall volume; the others are on top of it.
         public float MasterVolume
         {
             get => _masterVolume;
             set => _masterVolume = Mathf.Clamp01(value);
         }
 
-        /// <summary>Volume of menu hover/click sounds in the range 0..1, on top of the master volume.</summary>
         public float InterfaceVolume
         {
             get => _interfaceVolume;
             set => _interfaceVolume = Mathf.Clamp01(value);
         }
 
-        /// <summary>Volume of the background music in the range 0..1, on top of the master volume.</summary>
         public float MusicVolume
         {
             get => _musicVolume;
             set => _musicVolume = Mathf.Clamp01(value);
         }
 
-        /// <summary>Volume of in-game sounds (jumps, platforms, hazards) in the range 0..1, on top of the master volume.</summary>
         public float EffectsVolume
         {
             get => _effectsVolume;
@@ -71,20 +66,16 @@ namespace TunnelVision.Settings
 
         public bool InterfaceSounds { get; set; } = DefaultInterfaceSounds;
 
-        /// <summary>Fullscreen (exclusive), borderless windowed (full screen window) or windowed.</summary>
         public FullScreenMode DisplayMode { get; set; } = DefaultDisplayMode;
 
         public int ResolutionWidth { get; set; } = DefaultResolutionSize;
 
         public int ResolutionHeight { get; set; } = DefaultResolutionSize;
 
-        /// <summary>Volume to play interface sounds at: 0 when they are switched off.</summary>
+        // 0 when interface sounds are switched off.
         public float EffectiveInterfaceVolume => InterfaceSounds ? InterfaceVolume : 0f;
 
-        /// <summary>
-        /// The window size for the current settings. Borderless windowed always fills the screen,
-        /// and a saved size of 0 means the screen's own size.
-        /// </summary>
+        // Borderless windowed always fills the screen, and a saved size of 0 means the screen's own size.
         public Vector2Int GetWindowSize(Vector2Int screenSize)
         {
             bool useScreenSize = DisplayMode == FullScreenMode.FullScreenWindow
@@ -131,7 +122,7 @@ namespace TunnelVision.Settings
             ResolutionHeight = DefaultResolutionSize;
         }
 
-        /// <summary>Pushes the current values into the running engine.</summary>
+        // Pushes the current values into the running game.
         public void Apply()
         {
             ApplyAudio();
@@ -150,6 +141,7 @@ namespace TunnelVision.Settings
             Screen.SetResolution(size.x, size.y, DisplayMode);
         }
 
+        // Falls back to the default if the saved value isn't one of the three modes the options page offers.
         private static FullScreenMode ParseDisplayMode(int value)
         {
             var mode = (FullScreenMode)value;
