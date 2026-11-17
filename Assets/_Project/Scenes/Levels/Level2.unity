@@ -456,6 +456,68 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
+--- !u!1001 &99523030
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 227946424}
+    m_Modifications:
+    - target: {fileID: 1100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_Name
+      value: ThrowerClown1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 184
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -11.6692095
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+--- !u!4 &99523031 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4100000000000000001, guid: 11350da6326140d5969fb9b7b6035efb, type: 3}
+  m_PrefabInstance: {fileID: 99523030}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &121679413
 GameObject:
   m_ObjectHideFlags: 0
@@ -996,6 +1058,7 @@ Transform:
   m_Children:
   - {fileID: 1996273039}
   - {fileID: 17376229}
+  - {fileID: 99523031}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &229190692
@@ -2573,7 +2636,7 @@ MonoBehaviour:
     rid: 5156287400885878987
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 00000000b3db2879dbdd0b7cbb06233b639d801ai
@@ -2615,7 +2678,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: -2
-      type: {class: , ns: , asm: }
+      type: {class: '', ns: '', asm: ''}
     - rid: 5156287400885878987
       type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
       data:

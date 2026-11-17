@@ -9,6 +9,7 @@ namespace TunnelVision.UI
     /// <summary>
     /// The level select wheel. Left and right arrows turn it, the top cabin is selected,
     /// Enter starts that level if it's unlocked, and Escape goes back to the menu.
+    /// With the mouse, clicking a cabin turns it to the top, and clicking the top cabin acts like Enter.
     /// Cabins past the prototype's levels show "???" and open a notice instead.
     /// Goes on the Wheel object. Cabins are listed clockwise, starting from the top.
     /// </summary>
@@ -197,11 +198,19 @@ namespace TunnelVision.UI
                 }
             }
 
+            var clicked = ClickedCabin();
+            if (clicked >= 0 && clicked != SelectedIndex)
+            {
+                TurnTo(clicked);
+                clicked = -1;
+            }
+
             var targetAngle = _steps * StepAngle;
             _angle = Mathf.MoveTowards(_angle, targetAngle, turnSpeed * Time.unscaledDeltaTime);
 
-            if (keyboard != null && _angle == targetAngle
-                && (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame))
+            var enterPressed = keyboard != null
+                && (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame);
+            if (_angle == targetAngle && (enterPressed || clicked == SelectedIndex))
             {
                 StartSelectedLevel();
             }
@@ -289,6 +298,53 @@ namespace TunnelVision.UI
             if (next != _steps)
             {
                 _steps = next;
+                InterfaceSounds.Play(turnSound);
+            }
+        }
+
+        /// <summary>The cabin under the mouse when the left button was pressed this frame, or -1.</summary>
+        private int ClickedCabin()
+        {
+            var mouse = Mouse.current;
+            if (mouse == null || !mouse.leftButton.wasPressedThisFrame)
+            {
+                return -1;
+            }
+
+            var point = mouse.position.ReadValue();
+            for (var i = 0; i < cabins.Length; i++)
+            {
+                // The Body is the visible cabin; the cabin itself is only a small hinge.
+                var body = cabins[i].Find("Body") as RectTransform;
+                var target = body != null ? body : cabins[i];
+                var canvas = target.GetComponentInParent<Canvas>();
+                var view = canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+                if (RectTransformUtility.RectangleContainsScreenPoint(target, point, view))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// The step change that brings cabin <paramref name="index"/> to the top the short way round,
+        /// from cabin <paramref name="selected"/> on a wheel of <paramref name="count"/> cabins.
+        /// </summary>
+        public static int StepsTo(int selected, int index, int count)
+        {
+            var delta = ((index - selected) % count + count) % count;
+            return delta > count / 2 ? delta - count : delta;
+        }
+
+        /// <summary>What clicking a cabin does: turns the wheel the short way until that cabin is at the top.</summary>
+        public void TurnTo(int index)
+        {
+            var delta = StepsTo(SelectedIndex, index, cabins.Length);
+            if (delta != 0)
+            {
+                _steps += delta;
                 InterfaceSounds.Play(turnSound);
             }
         }

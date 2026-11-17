@@ -34,6 +34,16 @@ namespace TunnelVision.Tests
             Assert.AreEqual(0, steps);
         }
 
+        [Test]
+        public void StepsTo_ClickedCabin_TurnsTheShortWayRound()
+        {
+            Assert.AreEqual(0, FerrisWheelSelect.StepsTo(2, 2, 5), "Already at the top.");
+            Assert.AreEqual(1, FerrisWheelSelect.StepsTo(0, 1, 5));
+            Assert.AreEqual(-1, FerrisWheelSelect.StepsTo(0, 4, 5), "Cabin 5 is one step back, not four forward.");
+            Assert.AreEqual(2, FerrisWheelSelect.StepsTo(4, 1, 5), "Wraps past the last cabin.");
+            Assert.AreEqual(-2, FerrisWheelSelect.StepsTo(1, 4, 5));
+        }
+
         // The prototype has 3 levels. Cabins 4 and 5 (index 3 and 4) aren't in it.
         private const int PrototypeLevels = 3;
 
