@@ -24,6 +24,7 @@
 *.exe
 *.unitypackage
 *.unitypackage.meta
+*_BackUpThisFolder_ButDontShipItWithYourGame/
 crashlytics-build.properties
 
 # Written by the Performance Testing package during builds. Remove the
